@@ -64,8 +64,9 @@ def test_config_option_requires_argument_is_reported(tmp_path: Path) -> None:
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
         """\
-Error:
-Option '--config' requires an argument.
++- Error ------------------------------------------------------------------------------------------------------------+
+| Option '--config' requires an argument.                                                                            |
++--------------------------------------------------------------------------------------------------------------------+
 """
     )
 
@@ -121,8 +122,9 @@ def test_session_and_continue_conflict_is_reported(tmp_path: Path) -> None:
         """\
 Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
 Try 'python -m bugpilot.cli -h' for help.
-Error:
-Invalid value for --continue: Cannot combine --continue, --session.
++- Error ------------------------------------------------------------------------------------------------------------+
+| Invalid value for --continue: Cannot combine --continue, --session.                                                |
++--------------------------------------------------------------------------------------------------------------------+
 """
     )
 
@@ -136,8 +138,9 @@ def test_session_picker_with_print_mode_is_reported(tmp_path: Path) -> None:
         """\
 Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
 Try 'python -m bugpilot.cli -h' for help.
-Error:
-Invalid value for --session: --session without a session ID is only supported for shell UI
++- Error ------------------------------------------------------------------------------------------------------------+
+| Invalid value for --session: --session without a session ID is only supported for shell UI                         |
++--------------------------------------------------------------------------------------------------------------------+
 """
     )
 
@@ -151,8 +154,9 @@ def test_resume_alias_and_continue_conflict_is_reported(tmp_path: Path) -> None:
         """\
 Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
 Try 'python -m bugpilot.cli -h' for help.
-Error:
-Invalid value for --continue: Cannot combine --continue, --session.
++- Error ------------------------------------------------------------------------------------------------------------+
+| Invalid value for --continue: Cannot combine --continue, --session.                                                |
++--------------------------------------------------------------------------------------------------------------------+
 """
     )
 
@@ -187,7 +191,8 @@ def test_continue_without_previous_session_is_reported(tmp_path: Path) -> None:
         """\
 Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
 Try 'python -m bugpilot.cli -h' for help.
-Error:
-Invalid value for --continue: No previous session found for the working directory
++- Error ------------------------------------------------------------------------------------------------------------+
+| Invalid value for --continue: No previous session found for the working directory                                  |
++--------------------------------------------------------------------------------------------------------------------+
 """
     )

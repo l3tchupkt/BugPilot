@@ -38,10 +38,7 @@ def test_load_default_agent_spec():
             "bugpilot.tools.file:Glob",
             "bugpilot.tools.file:Grep",
             "bugpilot.tools.file:WriteFile",
-            "bugpilot.tools.file:StrReplaceFile",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-            "bugpilot.tools.plan:ExitPlanMode",
+            "bugpilot.tools.file:StrReplaceFile", "bugpilot.tools.plan:ExitPlanMode",
             "bugpilot.tools.plan.enter:EnterPlanMode",
         ]
     )
@@ -81,10 +78,7 @@ def test_load_default_agent_spec():
             "bugpilot.tools.file:Glob",
             "bugpilot.tools.file:Grep",
             "bugpilot.tools.file:WriteFile",
-            "bugpilot.tools.file:StrReplaceFile",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-        ]
+            "bugpilot.tools.file:StrReplaceFile"]
     )
     assert subagent_specs["coder"].exclude_tools == snapshot(
         [
@@ -109,10 +103,7 @@ def test_load_default_agent_spec():
             "bugpilot.tools.file:Glob",
             "bugpilot.tools.file:Grep",
             "bugpilot.tools.file:WriteFile",
-            "bugpilot.tools.file:StrReplaceFile",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-            "bugpilot.tools.plan:ExitPlanMode",
+            "bugpilot.tools.file:StrReplaceFile", "bugpilot.tools.plan:ExitPlanMode",
             "bugpilot.tools.plan.enter:EnterPlanMode",
         ]
     )
@@ -162,10 +153,7 @@ You are meant to be a fast agent. Complete the search request efficiently and re
             "bugpilot.tools.file:ReadFile",
             "bugpilot.tools.file:ReadMediaFile",
             "bugpilot.tools.file:Glob",
-            "bugpilot.tools.file:Grep",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-        ]
+            "bugpilot.tools.file:Grep"]
     )
     assert subagent_specs["explore"].exclude_tools == snapshot(
         [
@@ -192,10 +180,7 @@ You are meant to be a fast agent. Complete the search request efficiently and re
             "bugpilot.tools.file:Glob",
             "bugpilot.tools.file:Grep",
             "bugpilot.tools.file:WriteFile",
-            "bugpilot.tools.file:StrReplaceFile",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-            "bugpilot.tools.plan:ExitPlanMode",
+            "bugpilot.tools.file:StrReplaceFile", "bugpilot.tools.plan:ExitPlanMode",
             "bugpilot.tools.plan.enter:EnterPlanMode",
         ]
     )
@@ -228,10 +213,7 @@ Before designing your implementation plan, consider whether you fully understand
             "bugpilot.tools.file:ReadFile",
             "bugpilot.tools.file:ReadMediaFile",
             "bugpilot.tools.file:Glob",
-            "bugpilot.tools.file:Grep",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-        ]
+            "bugpilot.tools.file:Grep"]
     )
     assert subagent_specs["plan"].exclude_tools == snapshot(
         [
@@ -259,10 +241,7 @@ Before designing your implementation plan, consider whether you fully understand
             "bugpilot.tools.file:Glob",
             "bugpilot.tools.file:Grep",
             "bugpilot.tools.file:WriteFile",
-            "bugpilot.tools.file:StrReplaceFile",
-            "bugpilot.tools.web:SearchWeb",
-            "bugpilot.tools.web:FetchURL",
-            "bugpilot.tools.plan:ExitPlanMode",
+            "bugpilot.tools.file:StrReplaceFile", "bugpilot.tools.plan:ExitPlanMode",
             "bugpilot.tools.plan.enter:EnterPlanMode",
         ]
     )
@@ -355,10 +334,7 @@ agent:
                 "bugpilot.tools.file:Glob",
                 "bugpilot.tools.file:Grep",
                 "bugpilot.tools.file:WriteFile",
-                "bugpilot.tools.file:StrReplaceFile",
-                "bugpilot.tools.web:SearchWeb",
-                "bugpilot.tools.web:FetchURL",
-                "bugpilot.tools.plan:ExitPlanMode",
+                "bugpilot.tools.file:StrReplaceFile", "bugpilot.tools.plan:ExitPlanMode",
                 "bugpilot.tools.plan.enter:EnterPlanMode",
             ]
         )

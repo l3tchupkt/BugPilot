@@ -28,8 +28,7 @@ def test_default_config_dump():
             "default_editor": "",
             "theme": "dark",
             "show_thinking_stream": True,
-            "models": {},
-            "providers": {},
+            "models": {}, "provider": None, "providers": {},
             "loop_control": {
                 "max_steps_per_turn": 1000,
                 "max_retries_per_step": 3,
