@@ -4,7 +4,7 @@
 Agent Tracing Visualizer 目前为技术预览版（Technical Preview），功能和界面可能在后续版本中发生变化。
 :::
 
-Agent Tracing Visualizer 是一个基于浏览器的可视化仪表板，用于检查和分析 Kimi Code CLI 的会话追踪数据。它可以帮助你理解 Agent 的行为、查看 Wire 事件时间线、分析上下文使用情况，以及浏览历史会话。
+Agent Tracing Visualizer 是一个基于浏览器的可视化仪表板，用于检查和分析 BugPilot 的会话追踪数据。它可以帮助你理解 Agent 的行为、查看 Wire 事件时间线、分析上下文使用情况，以及浏览历史会话。
 
 ## 启动
 

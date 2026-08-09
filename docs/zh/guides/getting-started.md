@@ -1,16 +1,16 @@
 # 开始使用
 
-## Kimi Code CLI 是什么
+## BugPilot 是什么
 
-Kimi Code CLI 是一个运行在终端中的 AI Agent，帮助你完成软件开发任务和终端操作。它可以阅读和编辑代码、执行 Shell 命令、搜索和抓取网页，并在执行过程中自主规划和调整行动。
+BugPilot 是一个运行在终端中的 AI Agent，帮助你完成软件开发任务和终端操作。它可以阅读和编辑代码、执行 Shell 命令、搜索和抓取网页，并在执行过程中自主规划和调整行动。
 
-Kimi Code CLI 适合以下场景：
+BugPilot 适合以下场景：
 
 - **编写和修改代码**：实现新功能、修复 bug、重构代码
 - **理解项目**：探索陌生的代码库，解答架构和实现问题
 - **自动化任务**：批量处理文件、执行构建和测试、运行脚本
 
-Kimi Code CLI 支持以下几种使用方式：
+BugPilot 支持以下几种使用方式：
 
 - **[交互式命令行（`kimi`）](../reference/kimi-command.md)**：在终端中以 Shell 方式与 AI 对话，支持自然语言描述任务或直接执行 Shell 命令
 - **[浏览器界面（`kimi web`）](../reference/kimi-web.md)**：在本地浏览器中打开图形界面，支持会话管理、文件引用、代码高亮等
@@ -26,10 +26,10 @@ Kimi Code CLI 支持以下几种使用方式：
 
 
 ::: tip
-Kimi Code CLI 已升级为 [Kimi Code](https://github.com/l3tchupkt/kimi-code)，安装 Kimi Code 后会**自动迁移**你的配置与会话。新用户建议直接安装 Kimi Code；
+BugPilot 已升级为 [Kimi Code](https://github.com/l3tchupkt/kimi-code)，安装 Kimi Code 后会**自动迁移**你的配置与会话。新用户建议直接安装 Kimi Code；
 :::
 
-运行安装脚本即可完成安装。脚本会先安装 [uv](https://docs.astral.sh/uv/)（Python 包管理工具），再通过 uv 安装 Kimi Code CLI：
+运行安装脚本即可完成安装。脚本会先安装 [uv](https://docs.astral.sh/uv/)（Python 包管理工具），再通过 uv 安装 BugPilot：
 
 ```sh
 # Linux / macOS
@@ -58,7 +58,7 @@ uv tool install --python 3.13 bugpilot
 ```
 
 ::: tip 提示
-Kimi Code CLI 支持 Python 3.12-3.14，但建议使用 3.13 以获得最佳兼容性。
+BugPilot 支持 Python 3.12-3.14，但建议使用 3.13 以获得最佳兼容性。
 :::
 
 ## 升级与卸载
@@ -69,7 +69,7 @@ Kimi Code CLI 支持 Python 3.12-3.14，但建议使用 3.13 以获得最佳兼�
 uv tool upgrade bugpilot --no-cache
 ```
 
-卸载 Kimi Code CLI：
+卸载 BugPilot：
 
 ```sh
 uv tool uninstall bugpilot
@@ -77,7 +77,7 @@ uv tool uninstall bugpilot
 
 ## 第一次运行
 
-在你想要工作的项目目录中运行 `kimi` 命令启动 Kimi Code CLI：
+在你想要工作的项目目录中运行 `kimi` 命令启动 BugPilot：
 
 ```sh
 cd your-project
@@ -90,16 +90,16 @@ kimi
 /login
 ```
 
-执行后首先选择平台。推荐选择 **Kimi Code**，会自动打开浏览器进行 OAuth 授权；选择其他平台则需要输入 API 密钥。配置完成后 Kimi Code CLI 会自动保存设置并重新加载。详见 [平台与模型](../configuration/providers.md)。
+执行后首先选择平台。推荐选择 **Kimi Code**，会自动打开浏览器进行 OAuth 授权；选择其他平台则需要输入 API 密钥。配置完成后 BugPilot 会自动保存设置并重新加载。详见 [平台与模型](../configuration/providers.md)。
 
-现在你可以直接用自然语言和 Kimi Code CLI 对话了。试着描述你想完成的任务，比如：
+现在你可以直接用自然语言和 BugPilot 对话了。试着描述你想完成的任务，比如：
 
 ```
 帮我看一下这个项目的目录结构
 ```
 
 ::: tip 提示
-如果项目中没有 `AGENTS.md` 文件，可以运行 `/init` 命令让 Kimi Code CLI 分析项目并生成该文件，帮助 AI 更好地理解项目结构和规范。
+如果项目中没有 `AGENTS.md` 文件，可以运行 `/init` 命令让 BugPilot 分析项目并生成该文件，帮助 AI 更好地理解项目结构和规范。
 :::
 
 输入 `/help` 可以查看所有可用的 [斜杠命令](../reference/slash-commands.md) 和使用提示。

@@ -1,6 +1,6 @@
 # Changelog
 
-This page documents the changes in each Kimi Code CLI release.
+This page documents the changes in each BugPilot release.
 
 ## Unreleased
 
@@ -267,7 +267,7 @@ This page documents the changes in each Kimi Code CLI release.
 
 ## 1.25.0 (2026-03-23)
 
-- Core: Add plugin system (Skills + Tools) — plugins extend Kimi Code CLI with custom tools packaged as `plugin.json`; tools are commands that run in isolated subprocesses and return their stdout to the agent; plugins support automatic credential injection via `inject` configuration
+- Core: Add plugin system (Skills + Tools) — plugins extend BugPilot with custom tools packaged as `plugin.json`; tools are commands that run in isolated subprocesses and return their stdout to the agent; plugins support automatic credential injection via `inject` configuration
 - Core: Support multi-plugin repositories — `kimi plugin install` accepts git URLs with subpath to install a specific plugin from a monorepo (e.g., `https://github.com/org/repo.git/plugins/my-plugin`); when no subpath is provided and no root `plugin.json` exists, the CLI lists available plugins in immediate subdirectories
 - Core: Unify plugin credential injection — plugins can declare `inject` fields in `plugin.json` to receive `api_key` and `base_url` from the host's configured LLM provider; works with both OAuth-managed tokens and static API keys
 - Core: Add `Agent` tool for subagent delegation — the agent can now spawn persistent subagent instances with three built-in types (`coder`, `explore`, `plan`) to handle focused subtasks; each instance maintains its own context history within the session and can run in foreground or background with automatic result summarization
@@ -368,7 +368,7 @@ This page documents the changes in each Kimi Code CLI release.
 - Core: Add `--add-dir` CLI option and `/add-dir` slash command to expand the workspace scope with additional directories — added directories are accessible to all file tools (read, write, glob, replace), persisted across sessions, and shown in the system prompt
 - Shell: Add `Ctrl-O` keyboard shortcut to open the current input in an external editor (`$VISUAL`/`$EDITOR`), with auto-detection fallback to VS Code, Vim, Vi, or Nano
 - Shell: Add `/editor` slash command to configure and switch the default external editor, with interactive selection and persistent config storage
-- Shell: Add `/new` slash command to create and switch to a new session without restarting Kimi Code CLI
+- Shell: Add `/new` slash command to create and switch to a new session without restarting BugPilot
 - Wire: Auto-hide `AskUserQuestion` tool when the client does not support the `supports_question` capability, preventing the LLM from invoking unsupported interactions
 - Core: Estimate context token count after compaction so context usage percentage is not reported as 0%
 - Web: Show context usage percentage with one decimal place for better precision
@@ -627,7 +627,7 @@ This page documents the changes in each Kimi Code CLI release.
 ## 0.75 (2026-01-09)
 
 - Tool: Improve `ReadFile` tool description
-- Skills: Add built-in `bugpilot-help` skill to answer Kimi Code CLI usage and configuration questions
+- Skills: Add built-in `bugpilot-help` skill to answer BugPilot usage and configuration questions
 
 ## 0.74 (2026-01-09)
 
@@ -703,7 +703,7 @@ This page documents the changes in each Kimi Code CLI release.
 - Lib: Add `Toolset.load_mcp_tools` method to load MCP tools
 - Lib: Move `MCPTool` from `bugpilot.tools.mcp` to `bugpilot.soul.toolset`
 - Lib: Add `InvalidToolError`, `MCPConfigError` and `MCPRuntimeError`
-- Lib: Make the detailed Kimi Code CLI exception classes extend `ValueError` or `RuntimeError`
+- Lib: Make the detailed BugPilot exception classes extend `ValueError` or `RuntimeError`
 - Lib: Allow passing validated `list[fastmcp.mcp_config.MCPConfig]` as `mcp_configs` for `BugPilotCLI.create` and `load_agent`
 - Lib: Fix exception raising for `BugPilotCLI.create`, `load_agent`, `Toolset.load_tools` and `Toolset.load_mcp_tools`
 - LLM: Add provider type `vertexai` to support Vertex AI

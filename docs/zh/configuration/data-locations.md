@@ -1,6 +1,6 @@
 # 数据路径
 
-Kimi Code CLI 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。本页介绍各类数据文件的位置和用途。
+BugPilot 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。本页介绍各类数据文件的位置和用途。
 
 ::: tip 提示
 可以通过设置 `KIMI_SHARE_DIR` 环境变量来自定义共享目录路径。详见 [环境变量](./env-vars.md#kimi-share-dir)。
@@ -47,12 +47,12 @@ Kimi Code CLI 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中
 
 ### `kimi.json`
 
-元数据文件，存储 Kimi Code CLI 的运行状态，包括：
+元数据文件，存储 BugPilot 的运行状态，包括：
 
 - `work_dirs`: 工作目录列表及其最后使用的会话 ID
 - `thinking`: 上次会话是否启用 thinking 模式
 
-此文件由 Kimi Code CLI 自动管理，通常不需要手动编辑。
+此文件由 BugPilot 自动管理，通常不需要手动编辑。
 
 ### `mcp.json`
 
@@ -92,7 +92,7 @@ MCP 服务器的 OAuth token 单独存储在 `~/.kimi/mcp-oauth/`。通过 `kimi
 
 系统提示词在会话创建时生成并冻结，会话恢复时直接复用而不重新生成。
 
-Kimi Code CLI 使用此文件在 `--continue` 或 `--session` 时恢复会话上下文。
+BugPilot 使用此文件在 `--continue` 或 `--session` 时恢复会话上下文。
 
 ### `wire.jsonl`
 
@@ -110,7 +110,7 @@ Wire 消息记录文件，以 JSONL 格式存储会话中的 Wire 事件。用�
 - `subagent_instances`：子 Agent 实例的状态和元数据
 - `additional_dirs`：通过 `--add-dir` 或 `/add-dir` 添加的额外工作区目录
 
-恢复会话时，Kimi Code CLI 会读取此文件还原会话状态。此文件使用原子写入，防止崩溃时数据损坏。
+恢复会话时，BugPilot 会读取此文件还原会话状态。此文件使用原子写入，防止崩溃时数据损坏。
 
 ### `subagents/<agent_id>/`
 
@@ -144,7 +144,7 @@ Plan 模式的方案文件存储在 `~/.kimi/plans/` 目录下。每个 Plan 会
 
 ## 清理数据
 
-删除共享目录（默认 `~/.kimi/`，或 `KIMI_SHARE_DIR` 指定的路径）可以完全清理 Kimi Code CLI 的所有数据，包括配置、会话和历史。
+删除共享目录（默认 `~/.kimi/`，或 `KIMI_SHARE_DIR` 指定的路径）可以完全清理 BugPilot 的所有数据，包括配置、会话和历史。
 
 如只需清理部分数据：
 

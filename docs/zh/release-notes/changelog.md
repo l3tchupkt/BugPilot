@@ -1,6 +1,6 @@
 # 变更记录
 
-本页面记录 Kimi Code CLI 各版本的变更内容。
+本页面记录 BugPilot 各版本的变更内容。
 
 ## 未发布
 
@@ -267,7 +267,7 @@
 
 ## 1.25.0 (2026-03-23)
 
-- Core：新增插件系统（Skills + Tools）——插件通过 `plugin.json` 为 Kimi Code CLI 扩展自定义工具；工具是在独立子进程中运行的命令，其 stdout 返回给 Agent；插件支持通过 `inject` 配置自动注入凭证
+- Core：新增插件系统（Skills + Tools）——插件通过 `plugin.json` 为 BugPilot 扩展自定义工具；工具是在独立子进程中运行的命令，其 stdout 返回给 Agent；插件支持通过 `inject` 配置自动注入凭证
 - Core：支持多插件仓库——`kimi plugin install` 接受带 subpath 的 Git URL，从 monorepo 中安装特定插件（如 `https://github.com/org/repo.git/plugins/my-plugin`）；当未提供 subpath 且根目录无 `plugin.json` 时，CLI 会列出直接子目录中可用的插件
 - Core：统一插件凭证注入——插件可在 `plugin.json` 中声明 `inject` 字段，从主机的 LLM 提供商配置接收 `api_key` 和 `base_url`；支持 OAuth 托管 token 和静态 API key 两种凭证类型
 - Core：新增 `Agent` 工具支持子 Agent 委派——Agent 现在可以创建持久的子 Agent 实例，内置三种类型（`coder`、`explore`、`plan`）处理聚焦的子任务；每个实例在会话内维护独立的上下文历史，支持前台或后台运行并自动汇总结果
@@ -368,7 +368,7 @@
 - Core：新增 `--add-dir` CLI 选项和 `/add-dir` 斜杠命令，支持将额外目录添加到工作区范围——添加的目录可被所有文件工具（读取、写入、glob、替换）访问，跨会话持久化保存，并在系统提示词中展示
 - Shell：新增 `Ctrl-O` 快捷键，在外部编辑器中编辑当前输入内容（`$VISUAL`/`$EDITOR`），支持自动检测 VS Code、Vim、Vi 或 Nano
 - Shell：新增 `/editor` 斜杠命令，可交互式配置和切换默认外部编辑器，设置持久保存到配置文件
-- Shell：新增 `/new` 斜杠命令，无需重启 Kimi Code CLI 即可创建并切换到新会话
+- Shell：新增 `/new` 斜杠命令，无需重启 BugPilot 即可创建并切换到新会话
 - Wire：当客户端不支持 `supports_question` 能力时，自动隐藏 `AskUserQuestion` 工具，避免 LLM 调用不受支持的交互
 - Core：在压缩后估算上下文 Token 数量，使上下文用量百分比不再显示为 0%
 - Web：上下文用量百分比显示精确到一位小数，提升精度
@@ -627,7 +627,7 @@
 ## 0.75 (2026-01-09)
 
 - Tool：改进 `ReadFile` 工具描述
-- Skills：添加内置 `bugpilot-help` Skill，解答 Kimi Code CLI 使用和配置问题
+- Skills：添加内置 `bugpilot-help` Skill，解答 BugPilot 使用和配置问题
 
 ## 0.74 (2026-01-09)
 
@@ -703,7 +703,7 @@
 - Lib：添加 `Toolset.load_mcp_tools` 方法，加载 MCP 工具
 - Lib：将 `MCPTool` 从 `bugpilot.tools.mcp` 移至 `bugpilot.soul.toolset`
 - Lib：添加 `InvalidToolError`、`MCPConfigError` 和 `MCPRuntimeError` 异常类
-- Lib：使 Kimi Code CLI 详细异常类扩展 `ValueError` 或 `RuntimeError`
+- Lib：使 BugPilot 详细异常类扩展 `ValueError` 或 `RuntimeError`
 - Lib：`BugPilotCLI.create` 和 `load_agent` 的 `mcp_configs` 参数支持传入验证后的 `list[fastmcp.mcp_config.MCPConfig]`
 - Lib：修复 `BugPilotCLI.create`、`load_agent`、`Toolset.load_tools` 和 `Toolset.load_mcp_tools` 的异常抛出
 - LLM：添加 `vertexai` 供应商类型，支持 Vertex AI

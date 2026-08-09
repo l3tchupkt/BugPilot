@@ -1,6 +1,6 @@
 # Data Locations
 
-Kimi Code CLI stores all data in the `~/.kimi/` directory under the user's home directory. This page describes the locations and purposes of various data files.
+BugPilot stores all data in the `~/.kimi/` directory under the user's home directory. This page describes the locations and purposes of various data files.
 
 ::: tip
 You can customize the share directory path by setting the `KIMI_SHARE_DIR` environment variable. See [Environment Variables](./env-vars.md#kimi-share-dir) for details.
@@ -47,12 +47,12 @@ You can specify a configuration file at a different location with the `--config-
 
 ### `kimi.json`
 
-Metadata file, stores Kimi Code CLI's runtime state, including:
+Metadata file, stores BugPilot's runtime state, including:
 
 - `work_dirs`: List of working directories and their last used session IDs
 - `thinking`: Whether thinking mode was enabled in the last session
 
-This file is automatically managed by Kimi Code CLI and typically doesn't need manual editing.
+This file is automatically managed by BugPilot and typically doesn't need manual editing.
 
 ### `mcp.json`
 
@@ -92,7 +92,7 @@ Context history file, stores the session's full context in JSON Lines (JSONL) fo
 
 The system prompt is generated and frozen at session creation time, and reused on session restore instead of being regenerated.
 
-Kimi Code CLI uses this file to restore session context when using `--continue` or `--session`.
+BugPilot uses this file to restore session context when using `--continue` or `--session`.
 
 ### `wire.jsonl`
 
@@ -110,7 +110,7 @@ Session state file, stores the session's runtime state, including:
 - `subagent_instances`: Subagent instance state and metadata
 - `additional_dirs`: Additional workspace directories added via `--add-dir` or `/add-dir`
 
-When resuming a session, Kimi Code CLI reads this file to restore the session state. This file uses atomic writes to prevent data corruption on crash.
+When resuming a session, BugPilot reads this file to restore the session state. This file uses atomic writes to prevent data corruption on crash.
 
 ### `subagents/<agent_id>/`
 
@@ -144,7 +144,7 @@ Log files are used for troubleshooting. When reporting bugs, please include rele
 
 ## Cleaning data
 
-Deleting the share directory (default `~/.kimi/`, or the path specified by `KIMI_SHARE_DIR`) completely clears all Kimi Code CLI data, including configuration, sessions, and history.
+Deleting the share directory (default `~/.kimi/`, or the path specified by `KIMI_SHARE_DIR`) completely clears all BugPilot data, including configuration, sessions, and history.
 
 To clean only specific data:
 

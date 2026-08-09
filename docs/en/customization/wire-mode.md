@@ -1,12 +1,12 @@
 # Wire mode
 
-Wire mode is Kimi Code CLI's low-level communication protocol for structured bidirectional communication with external programs.
+Wire mode is BugPilot's low-level communication protocol for structured bidirectional communication with external programs.
 
 ## What is Wire
 
-Wire is the message-passing layer used internally by Kimi Code CLI. When you interact via terminal, the Shell UI receives AI output through Wire and displays it; when you integrate with IDEs via ACP, the ACP server also communicates with the agent core through Wire.
+Wire is the message-passing layer used internally by BugPilot. When you interact via terminal, the Shell UI receives AI output through Wire and displays it; when you integrate with IDEs via ACP, the ACP server also communicates with the agent core through Wire.
 
-Wire mode (`--wire`) exposes this communication protocol, allowing external programs to interact directly with Kimi Code CLI. This is suitable for building custom UIs or embedding Kimi Code CLI into other applications.
+Wire mode (`--wire`) exposes this communication protocol, allowing external programs to interact directly with BugPilot. This is suitable for building custom UIs or embedding BugPilot into other applications.
 
 ```sh
 kimi --wire
@@ -16,8 +16,8 @@ kimi --wire
 
 Wire mode is mainly used for:
 
-- **Custom UI**: Build web, desktop, or mobile frontends for Kimi Code CLI
-- **Application integration**: Embed Kimi Code CLI into other applications
+- **Custom UI**: Build web, desktop, or mobile frontends for BugPilot
+- **Application integration**: Embed BugPilot into other applications
 - **Automated testing**: Programmatic testing of agent behavior
 
 ::: tip
@@ -181,7 +181,7 @@ interface ExternalToolsResult {
 **Success response example**
 
 ```json
-{"jsonrpc": "2.0", "id": "550e8400-e29b-41d4-a716-446655440000", "result": {"protocol_version": "1.7", "server": {"name": "Kimi Code CLI", "version": "1.14.0"}, "slash_commands": [{"name": "init", "description": "Analyze the codebase ...", "aliases": []}], "capabilities": {"supports_question": true}, "external_tools": {"accepted": ["open_in_ide"], "rejected": []}}}
+{"jsonrpc": "2.0", "id": "550e8400-e29b-41d4-a716-446655440000", "result": {"protocol_version": "1.7", "server": {"name": "BugPilot", "version": "1.14.0"}, "slash_commands": [{"name": "init", "description": "Analyze the codebase ...", "aliases": []}], "capabilities": {"supports_question": true}, "external_tools": {"accepted": ["open_in_ide"], "rejected": []}}}
 ```
 
 If the server does not support the `initialize` method, the client will receive a `-32601 method not found` error and should automatically fall back to no-handshake mode.
@@ -1139,7 +1139,7 @@ interface ShellDisplayBlock {
 Kimi Agent is currently experimental. APIs and behavior may change in future releases.
 :::
 
-Kimi Agent (Rust) is the Rust implementation of the Kimi Code CLI kernel, designed specifically for Wire mode. If you only need the Wire protocol service, Kimi Agent (Rust) offers a more lightweight alternative. The Rust implementation lives in [`l3tchupkt/kimi-agent-rs`](https://github.com/l3tchupkt/kimi-agent-rs).
+Kimi Agent (Rust) is the Rust implementation of the BugPilot kernel, designed specifically for Wire mode. If you only need the Wire protocol service, Kimi Agent (Rust) offers a more lightweight alternative. The Rust implementation lives in [`l3tchupkt/kimi-agent-rs`](https://github.com/l3tchupkt/kimi-agent-rs).
 
 ### Features
 
@@ -1212,4 +1212,4 @@ kimi-agent mcp remove <name>
 
 ### Version synchronization
 
-Kimi Agent is released independently from Kimi Code CLI. See `l3tchupkt/kimi-agent-rs` release notes for compatibility and sync status.
+Kimi Agent is released independently from BugPilot. See `l3tchupkt/kimi-agent-rs` release notes for compatibility and sync status.

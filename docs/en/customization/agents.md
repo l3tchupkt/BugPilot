@@ -4,7 +4,7 @@ An agent defines the AI's behavior, including system prompts, available tools, a
 
 ## Built-in agents
 
-Kimi Code CLI provides two built-in agents. You can select one at startup with the `--agent` flag:
+BugPilot provides two built-in agents. You can select one at startup with the `--agent` flag:
 
 ```sh
 kimi --agent okabe
@@ -156,7 +156,7 @@ Subagents launched via the `Agent` tool run in an isolated context and return re
 
 ## Built-in tools list
 
-The following are all built-in tools in Kimi Code CLI.
+The following are all built-in tools in BugPilot.
 
 ### `Agent`
 

@@ -4,7 +4,7 @@ Agent 定义了 AI 的行为方式，包括系统提示词、可用工具和子 
 
 ## 内置 Agent
 
-Kimi Code CLI 提供两个内置 Agent。启动时可以通过 `--agent` 参数选择：
+BugPilot 提供两个内置 Agent。启动时可以通过 `--agent` 参数选择：
 
 ```sh
 kimi --agent okabe
@@ -156,7 +156,7 @@ agent:
 
 ## 内置工具列表
 
-以下是 Kimi Code CLI 内置的所有工具。
+以下是 BugPilot 内置的所有工具。
 
 ### `Agent`
 

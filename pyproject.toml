@@ -56,7 +56,7 @@ source-exclude = ["examples/**/*", "tests/**/*", "src/bugpilot/deps/**/*"]
 members = [
     "packages/kosong",
     "packages/kaos",
-    "sdks/kimi-sdk",
+    "sdks/bugpilot-sdk",
 ]
 
 [tool.uv.sources]

@@ -1,6 +1,6 @@
-# Example: Kimi Code CLI Stream JSON
+# Example: BugPilot Stream JSON
 
-This example demonstrates how to run Kimi Code CLI in a subprocess and interact with it using JSON messages over standard input and output.
+This example demonstrates how to run BugPilot in a subprocess and interact with it using JSON messages over standard input and output.
 
 ```sh
 cd examples/bugpilot-stream-json

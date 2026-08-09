@@ -1,16 +1,16 @@
 # Agent Skills
 
-[Agent Skills](https://agentskills.io/) is an open format for adding specialized knowledge and workflows to AI agents. Kimi Code CLI supports loading Agent Skills to extend AI capabilities.
+[Agent Skills](https://agentskills.io/) is an open format for adding specialized knowledge and workflows to AI agents. BugPilot supports loading Agent Skills to extend AI capabilities.
 
 ## What are Agent Skills
 
-A skill is a directory containing a `SKILL.md` file. When Kimi Code CLI starts, it discovers all skills and injects their names, paths, and descriptions into the system prompt. The AI will decide on its own whether to read the specific `SKILL.md` file to get detailed guidance based on the current task's needs.
+A skill is a directory containing a `SKILL.md` file. When BugPilot starts, it discovers all skills and injects their names, paths, and descriptions into the system prompt. The AI will decide on its own whether to read the specific `SKILL.md` file to get detailed guidance based on the current task's needs.
 
 For example, you can create a "code style" skill to tell the AI your project's naming conventions, comment styles, etc.; or create a "security audit" skill to have the AI focus on specific security issues when reviewing code.
 
 **Skills vs plugins**
 
-Kimi Code CLI supports two extension mechanisms:
+BugPilot supports two extension mechanisms:
 
 - **Skills**: Provide knowledge-based guidance through `SKILL.md`; the AI reads and follows the specifications. Suitable for defining code styles, workflows, and best practices.
 - **Plugins**: Declare executable tools through `plugin.json`; the AI can directly invoke tools to get results. Suitable for wrapping scripts, API calls, and database queries.
@@ -19,7 +19,7 @@ For details about plugins, see the [Plugins](./plugins.md) documentation.
 
 ## Skill discovery
 
-Kimi Code CLI uses a layered loading mechanism to discover skills. Roots are scanned in priority order — when a skill name is defined in more than one scope, the more specific scope wins:
+BugPilot uses a layered loading mechanism to discover skills. Roots are scanned in priority order — when a skill name is defined in more than one scope, the more specific scope wins:
 
 **Project > User > Extra > Built-in**
 
@@ -117,9 +117,9 @@ Skills paths are independent of [`KIMI_SHARE_DIR`](../configuration/env-vars.md#
 
 ## Built-in skills
 
-Kimi Code CLI includes the following built-in skills:
+BugPilot includes the following built-in skills:
 
-- **bugpilot-help**: Kimi Code CLI help. Answers questions about Kimi Code CLI installation, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, and more.
+- **bugpilot-help**: BugPilot help. Answers questions about BugPilot installation, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, and more.
 - **skill-creator**: Guide for creating skills. When you need to create a new skill (or update an existing skill) to extend Kimi's capabilities, you can use this skill to get detailed creation guidance and best practices.
 
 ## Creating a skill
@@ -251,7 +251,7 @@ Examples:
 
 ## Using slash commands to load a skill
 
-The `/skill:<name>` slash command lets you save commonly used prompt templates as skills and quickly invoke them when needed. When you enter the command, Kimi Code CLI reads the corresponding `SKILL.md` file content and sends it to the Agent as a prompt.
+The `/skill:<name>` slash command lets you save commonly used prompt templates as skills and quickly invoke them when needed. When you enter the command, BugPilot reads the corresponding `SKILL.md` file content and sends it to the Agent as a prompt.
 
 For example:
 

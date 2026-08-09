@@ -1,6 +1,6 @@
 # Breaking changes and migration
 
-This page documents breaking changes in Kimi Code CLI releases and provides migration guidance.
+This page documents breaking changes in BugPilot releases and provides migration guidance.
 
 ## Unreleased
 
@@ -17,7 +17,7 @@ Kimi thinking configuration now uses `thinking.type` exclusively. `Kimi.with_thi
 
 ### MCP OAuth token cache moved to `~/.kimi/mcp-oauth/`
 
-Kimi Code CLI now uses FastMCP 3's persistent OAuth storage API for MCP servers and stores MCP OAuth tokens under `~/.kimi/mcp-oauth/`. Tokens from the old FastMCP 2.x cache location are not migrated automatically.
+BugPilot now uses FastMCP 3's persistent OAuth storage API for MCP servers and stores MCP OAuth tokens under `~/.kimi/mcp-oauth/`. Tokens from the old FastMCP 2.x cache location are not migrated automatically.
 
 - **Affected**: Users who authorized OAuth MCP servers before upgrading
 - **Migration**: If `kimi mcp list` shows an OAuth server as requiring authorization, run `kimi mcp auth <name>` once to create a new token in `~/.kimi/mcp-oauth/`. Use `kimi mcp reset-auth <name>` before re-authorizing if the stored token becomes invalid or corrupted
@@ -140,7 +140,7 @@ The `--acp` option has been deprecated. Use the `kimi acp` subcommand instead.
 The config file format has been migrated from JSON to TOML.
 
 - **Affected**: Users with `~/.kimi/config.json`
-- **Migration**: Kimi Code CLI will automatically read the old JSON config, but manual migration to TOML is recommended
+- **Migration**: BugPilot will automatically read the old JSON config, but manual migration to TOML is recommended
 - **New location**: `~/.kimi/config.toml`
 
 JSON config example:

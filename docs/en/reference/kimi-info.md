@@ -1,6 +1,6 @@
 # `kimi info` Subcommand
 
-`kimi info` displays version and protocol information for Kimi Code CLI.
+`kimi info` displays version and protocol information for BugPilot.
 
 ```sh
 kimi info [--json]
@@ -16,7 +16,7 @@ kimi info [--json]
 
 | Field | Description |
 |-------|-------------|
-| `bugpilot_version` | Kimi Code CLI version number |
+| `bugpilot_version` | BugPilot version number |
 | `agent_spec_versions` | List of supported agent spec versions |
 | `wire_protocol_version` | Wire protocol version |
 | `python_version` | Python runtime version |

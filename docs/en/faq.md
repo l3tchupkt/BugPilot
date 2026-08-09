@@ -25,7 +25,7 @@ If you're using the Kimi Code platform, you can check your current quota and mem
 
 ### `cd` command doesn't work in shell mode
 
-Executing the `cd` command in shell mode won't change Kimi Code CLI's working directory. This is because each shell command executes in an independent subprocess, and directory changes only take effect within that process.
+Executing the `cd` command in shell mode won't change BugPilot's working directory. This is because each shell command executes in an independent subprocess, and directory changes only take effect within that process.
 
 If you need to change working directory:
 
@@ -44,16 +44,16 @@ Solutions:
 
 ### Working directory deleted or removed
 
-If the working directory becomes inaccessible during a session (external drive unplugged, directory deleted, or filesystem unmounted), Kimi Code CLI detects the situation and displays a crash report containing the session ID and work directory path, then exits cleanly. You can recover the session with `kimi -r <session-id>` from the correct directory.
+If the working directory becomes inaccessible during a session (external drive unplugged, directory deleted, or filesystem unmounted), BugPilot detects the situation and displays a crash report containing the session ID and work directory path, then exits cleanly. You can recover the session with `kimi -r <session-id>` from the correct directory.
 
 ## ACP issues
 
-### IDE cannot connect to Kimi Code CLI
+### IDE cannot connect to BugPilot
 
-If your IDE (like Zed or JetBrains IDEs) cannot connect to Kimi Code CLI, check the following:
+If your IDE (like Zed or JetBrains IDEs) cannot connect to BugPilot, check the following:
 
-- **Confirm Kimi Code CLI is installed**: Run `kimi --version` to confirm successful installation.
-- **Check configuration path**: Ensure the Kimi Code CLI path in IDE configuration is correct. You can typically use `kimi acp` as the command.
+- **Confirm BugPilot is installed**: Run `kimi --version` to confirm successful installation.
+- **Check configuration path**: Ensure the BugPilot path in IDE configuration is correct. You can typically use `kimi acp` as the command.
 - **Check uv path**: If installed via uv, ensure `~/.local/bin` is in PATH. You can use an absolute path like `/Users/yourname/.local/bin/kimi acp`.
 - **Check logs**: Examine error messages in `~/.kimi/logs/kimi.log`.
 
@@ -129,7 +129,7 @@ macOS's Gatekeeper security mechanism checks new programs on first run, causing 
 - **Wait for check to complete**: Be patient on first run; subsequent launches will return to normal.
 - **Add to Developer Tools**: Add your terminal application in "System Settings → Privacy & Security → Developer Tools".
 
-### How to upgrade Kimi Code CLI
+### How to upgrade BugPilot
 
 Use uv to upgrade to the latest version:
 
@@ -141,7 +141,7 @@ Adding `--no-cache` ensures you get the latest version.
 
 ### Update prompt on startup
 
-When a newer version is detected by the background check, Kimi Code CLI shows a blocking update prompt before the shell loads, displaying the current and latest version information. You can choose an action with the following keys:
+When a newer version is detected by the background check, BugPilot shows a blocking update prompt before the shell loads, displaying the current and latest version information. You can choose an action with the following keys:
 
 - `Enter`: Upgrade to the latest version immediately
 - `q`: Skip for now; you will be reminded on next startup
@@ -149,7 +149,7 @@ When a newer version is detected by the background check, Kimi Code CLI shows a 
 
 ### How to disable update reminders
 
-If you don't want Kimi Code CLI to check for updates or show update prompts on startup, set the environment variable:
+If you don't want BugPilot to check for updates or show update prompts on startup, set the environment variable:
 
 ```sh
 export KIMI_CLI_NO_AUTO_UPDATE=1

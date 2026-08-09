@@ -1,6 +1,6 @@
 # 破坏性变更与迁移说明
 
-本页面记录 Kimi Code CLI 各版本中的破坏性变更及对应的迁移指引。
+本页面记录 BugPilot 各版本中的破坏性变更及对应的迁移指引。
 
 ## 未发布
 
@@ -17,7 +17,7 @@ Kimi 的 Thinking 配置现在仅使用 `thinking.type`。`Kimi.with_thinking(..
 
 ### MCP OAuth token 缓存迁移到 `~/.kimi/mcp-oauth/`
 
-Kimi Code CLI 现在为 MCP 服务器使用 FastMCP 3 的持久化 OAuth 存储 API，并将 MCP OAuth token 存储在 `~/.kimi/mcp-oauth/`。旧 FastMCP 2.x 缓存位置中的 token 不会自动迁移。
+BugPilot 现在为 MCP 服务器使用 FastMCP 3 的持久化 OAuth 存储 API，并将 MCP OAuth token 存储在 `~/.kimi/mcp-oauth/`。旧 FastMCP 2.x 缓存位置中的 token 不会自动迁移。
 
 - **受影响**：升级前已经授权过 OAuth MCP 服务器的用户
 - **迁移**：如果 `kimi mcp list` 显示某个 OAuth 服务器需要授权，请运行一次 `kimi mcp auth <name>`，在 `~/.kimi/mcp-oauth/` 中创建新的 token。如果已存储的 token 失效或损坏，可先运行 `kimi mcp reset-auth <name>` 再重新授权
@@ -140,7 +140,7 @@ YOLO 不再注入模型指导，因此旧的 `skip_yolo_prompt_injection` 配置
 配置文件格式从 JSON 迁移至 TOML。
 
 - **受影响**：使用 `~/.kimi/config.json` 的用户
-- **迁移**：Kimi Code CLI 会自动读取旧的 JSON 配置，但建议手动迁移到 TOML 格式
+- **迁移**：BugPilot 会自动读取旧的 JSON 配置，但建议手动迁移到 TOML 格式
 - **新位置**：`~/.kimi/config.toml`
 
 JSON 配置示例：

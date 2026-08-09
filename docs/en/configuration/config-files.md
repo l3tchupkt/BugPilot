@@ -1,10 +1,10 @@
 # Config Files
 
-Kimi Code CLI uses configuration files to manage API providers, models, services, and runtime parameters, supporting both TOML and JSON formats.
+BugPilot uses configuration files to manage API providers, models, services, and runtime parameters, supporting both TOML and JSON formats.
 
 ## Config file location
 
-The default configuration file is located at `~/.kimi/config.toml`. On first run, if the configuration file doesn't exist, Kimi Code CLI will automatically create a default configuration file.
+The default configuration file is located at `~/.kimi/config.toml`. On first run, if the configuration file doesn't exist, BugPilot will automatically create a default configuration file.
 
 You can specify a different configuration file (TOML or JSON format) with the `--config-file` flag:
 
@@ -12,7 +12,7 @@ You can specify a different configuration file (TOML or JSON format) with the `-
 kimi --config-file /path/to/config.toml
 ```
 
-When calling Kimi Code CLI programmatically, you can also pass the complete configuration content directly via the `--config` flag:
+When calling BugPilot programmatically, you can also pass the complete configuration content directly via the `--config` flag:
 
 ```sh
 kimi --config '{"default_model": "kimi-for-coding", "providers": {...}, "models": {...}}'
@@ -173,7 +173,7 @@ capabilities = ["thinking"]
 
 ### `services`
 
-`services` configures external services used by Kimi Code CLI.
+`services` configures external services used by BugPilot.
 
 #### `moonshot_search`
 
@@ -235,6 +235,6 @@ command = "prettier --write"
 
 ## JSON configuration migration
 
-If `~/.kimi/config.toml` doesn't exist but `~/.kimi/config.json` exists, Kimi Code CLI will automatically migrate the JSON configuration to TOML format and backup the original file as `config.json.bak`.
+If `~/.kimi/config.toml` doesn't exist but `~/.kimi/config.json` exists, BugPilot will automatically migrate the JSON configuration to TOML format and backup the original file as `config.json.bak`.
 
 `--config-file` specified configuration files are parsed based on file extension. `--config` passed configuration content is first attempted as JSON, then falls back to TOML if that fails.
