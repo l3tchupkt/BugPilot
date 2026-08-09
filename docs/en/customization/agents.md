@@ -36,9 +36,9 @@ agent:
   name: my-agent
   system_prompt_path: ./system.md
   tools:
-    - "kimi_cli.tools.shell:Shell"
-    - "kimi_cli.tools.file:ReadFile"
-    - "kimi_cli.tools.file:WriteFile"
+    - "bugpilot.tools.shell:Shell"
+    - "bugpilot.tools.file:ReadFile"
+    - "bugpilot.tools.file:WriteFile"
 ```
 
 **Inheritance and overrides**
@@ -51,8 +51,8 @@ agent:
   extend: default  # Inherit from default agent
   system_prompt_path: ./my-prompt.md  # Override system prompt
   exclude_tools:  # Exclude certain tools
-    - "kimi_cli.tools.web:SearchWeb"
-    - "kimi_cli.tools.web:FetchURL"
+    - "bugpilot.tools.web:SearchWeb"
+    - "bugpilot.tools.web:FetchURL"
 ```
 
 `extend: default` inherits from the built-in default agent. You can also specify a relative path to inherit from another agent file.
@@ -160,7 +160,7 @@ The following are all built-in tools in Kimi Code CLI.
 
 ### `Agent`
 
-- **Path**: `kimi_cli.tools.agent:Agent`
+- **Path**: `bugpilot.tools.agent:Agent`
 - **Description**: Start or resume a subagent instance for a focused task. Three built-in subagent types are available: `coder` (general software engineering), `explore` (fast read-only codebase exploration), and `plan` (implementation planning and architecture design). Each instance maintains its own context history and supports foreground or background execution.
 
 | Parameter | Type | Description |
@@ -175,7 +175,7 @@ The following are all built-in tools in Kimi Code CLI.
 
 ### `AskUserQuestion`
 
-- **Path**: `kimi_cli.tools.ask_user:AskUserQuestion`
+- **Path**: `bugpilot.tools.ask_user:AskUserQuestion`
 - **Description**: Present structured questions and options to the user during execution, collecting preferences or decisions. Suitable for scenarios where the user needs to choose between approaches, resolve ambiguous instructions, or provide requirements. Should not be overused — only call when the user's choice genuinely affects subsequent actions.
 
 | Parameter | Type | Description |
@@ -190,7 +190,7 @@ The following are all built-in tools in Kimi Code CLI.
 
 ### `SetTodoList`
 
-- **Path**: `kimi_cli.tools.todo:SetTodoList`
+- **Path**: `bugpilot.tools.todo:SetTodoList`
 - **Description**: Manage todo list, track task progress. Supports three usage modes: update mode (pass `todos` array to replace the entire list), query mode (omit `todos` to return the current list), and clear mode (pass an empty array `[]` to clear the list). Todo items are persisted to session state.
 
 | Parameter | Type | Description |
@@ -201,7 +201,7 @@ The following are all built-in tools in Kimi Code CLI.
 
 ### `Shell`
 
-- **Path**: `kimi_cli.tools.shell:Shell`
+- **Path**: `bugpilot.tools.shell:Shell`
 - **Description**: Execute shell commands. Requires user approval. Uses the configured shell for the OS (bash/sh on Unix-like platforms, Git Bash `bash.exe` on Windows).
 
 | Parameter | Type | Description |
@@ -215,7 +215,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `ReadFile`
 
-- **Path**: `kimi_cli.tools.file:ReadFile`
+- **Path**: `bugpilot.tools.file:ReadFile`
 - **Description**: Read text file content. Max 1000 lines per read, max 2000 characters per line. Files outside working directory require absolute paths. Every read returns the total number of lines in the file. Sensitive files (such as `.env`, SSH private keys, and cloud credentials) are rejected.
 
 | Parameter | Type | Description |
@@ -226,7 +226,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `ReadMediaFile`
 
-- **Path**: `kimi_cli.tools.file:ReadMediaFile`
+- **Path**: `bugpilot.tools.file:ReadMediaFile`
 - **Description**: Read image or video files. Max file size 100MB. Only available when the model supports image/video input. Files outside working directory require absolute paths.
 
 | Parameter | Type | Description |
@@ -235,7 +235,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `Glob`
 
-- **Path**: `kimi_cli.tools.file:Glob`
+- **Path**: `bugpilot.tools.file:Glob`
 - **Description**: Match files and directories by pattern. Returns max 1000 matches, patterns starting with `**` not allowed. Can also search within discovered skill roots, and `~` in paths is expanded to the user's home directory.
 
 | Parameter | Type | Description |
@@ -246,7 +246,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `Grep`
 
-- **Path**: `kimi_cli.tools.file:Grep`
+- **Path**: `bugpilot.tools.file:Grep`
 - **Description**: Search file content with regular expressions, based on ripgrep. Hidden files (dotfiles) are searched by default, but files excluded by `.gitignore` are not. Sensitive files (such as `.env`, SSH private keys, and cloud credentials) are always filtered out, even when `include_ignored` is set.
 
 | Parameter | Type | Description |
@@ -268,7 +268,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `WriteFile`
 
-- **Path**: `kimi_cli.tools.file:WriteFile`
+- **Path**: `bugpilot.tools.file:WriteFile`
 - **Description**: Write files. Requires user approval. Absolute paths are required when writing files outside the working directory.
 
 | Parameter | Type | Description |
@@ -279,7 +279,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `StrReplaceFile`
 
-- **Path**: `kimi_cli.tools.file:StrReplaceFile`
+- **Path**: `bugpilot.tools.file:StrReplaceFile`
 - **Description**: Edit files using string replacement. Requires user approval. Absolute paths are required when editing files outside the working directory.
 
 | Parameter | Type | Description |
@@ -292,7 +292,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `SearchWeb`
 
-- **Path**: `kimi_cli.tools.web:SearchWeb`
+- **Path**: `bugpilot.tools.web:SearchWeb`
 - **Description**: Search the web. Requires search service configuration (auto-configured on Kimi Code platform).
 
 | Parameter | Type | Description |
@@ -303,7 +303,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `FetchURL`
 
-- **Path**: `kimi_cli.tools.web:FetchURL`
+- **Path**: `bugpilot.tools.web:FetchURL`
 - **Description**: Fetch webpage content, returns extracted main text. Uses fetch service if configured, otherwise uses local HTTP request.
 
 | Parameter | Type | Description |
@@ -312,7 +312,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `Think`
 
-- **Path**: `kimi_cli.tools.think:Think`
+- **Path**: `bugpilot.tools.think:Think`
 - **Description**: Let the agent record thinking process, suitable for complex reasoning scenarios
 
 | Parameter | Type | Description |
@@ -321,7 +321,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `SendDMail`
 
-- **Path**: `kimi_cli.tools.dmail:SendDMail`
+- **Path**: `bugpilot.tools.dmail:SendDMail`
 - **Description**: Send delayed message (D-Mail), for checkpoint rollback scenarios
 
 | Parameter | Type | Description |
@@ -331,14 +331,14 @@ When `run_in_background=true`, the command is launched as a background task and 
 
 ### `EnterPlanMode`
 
-- **Path**: `kimi_cli.tools.plan.enter:EnterPlanMode`
+- **Path**: `bugpilot.tools.plan.enter:EnterPlanMode`
 - **Description**: Request to enter plan mode. After calling, an approval request is presented to the user unless the session is in YOLO or AFK mode; YOLO auto-approves entering plan mode, but `ExitPlanMode` still presents the final plan for user approval. Use this only when the user explicitly requests planning or when there is significant architectural ambiguity. See [Plan mode](../guides/interaction.md#plan-mode).
 
 This tool takes no parameters.
 
 ### `ExitPlanMode`
 
-- **Path**: `kimi_cli.tools.plan:ExitPlanMode`
+- **Path**: `bugpilot.tools.plan:ExitPlanMode`
 - **Description**: Submit a plan for user approval while in plan mode. Before calling, the plan must be written to the plan file. This tool reads the plan file content and presents it to the user for approval. The user can select an implementation path (exit plan mode and start execution), reject (stay in plan mode and wait for feedback), or provide revision comments. See [Plan mode](../guides/interaction.md#plan-mode).
 
 | Parameter | Type | Description |
@@ -347,7 +347,7 @@ This tool takes no parameters.
 
 ### `TaskList`
 
-- **Path**: `kimi_cli.tools.background:TaskList`
+- **Path**: `bugpilot.tools.background:TaskList`
 - **Description**: List background tasks in the current session. Useful for re-enumerating task IDs after context compaction or checking which tasks are still running.
 
 | Parameter | Type | Description |
@@ -357,7 +357,7 @@ This tool takes no parameters.
 
 ### `TaskOutput`
 
-- **Path**: `kimi_cli.tools.background:TaskOutput`
+- **Path**: `bugpilot.tools.background:TaskOutput`
 - **Description**: Retrieve output and status of a background task. Returns a non-blocking status/output snapshot by default; use `ReadFile` with the returned `output_path` to read the full log if output is truncated.
 
 | Parameter | Type | Description |
@@ -368,7 +368,7 @@ This tool takes no parameters.
 
 ### `TaskStop`
 
-- **Path**: `kimi_cli.tools.background:TaskStop`
+- **Path**: `bugpilot.tools.background:TaskStop`
 - **Description**: Stop a running background task. Requires user approval. Use only when a task must be cancelled; for normal completion, wait for the automatic notification. Not available in plan mode.
 
 | Parameter | Type | Description |

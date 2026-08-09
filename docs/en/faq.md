@@ -15,7 +15,7 @@ Possible reasons for an invalid API key:
 
 - **Key input error**: Check for extra spaces or missing characters.
 - **Key expired or revoked**: Confirm the key status in the platform console.
-- **Environment variable override**: Check if `KIMI_API_KEY` or `OPENAI_API_KEY` environment variables are overriding the key in the config file. You can run `echo $KIMI_API_KEY` to check.
+- **Environment variable override**: Check if `BUGPILOT_API_KEY` or `OPENAI_API_KEY` environment variables are overriding the key in the config file. You can run `echo $BUGPILOT_API_KEY` to check.
 
 ### Membership expired or quota exhausted
 
@@ -134,7 +134,7 @@ macOS's Gatekeeper security mechanism checks new programs on first run, causing 
 Use uv to upgrade to the latest version:
 
 ```sh
-uv tool upgrade kimi-cli --no-cache
+uv tool upgrade bugpilot --no-cache
 ```
 
 Adding `--no-cache` ensures you get the latest version.

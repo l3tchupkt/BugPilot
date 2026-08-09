@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from kimi_cli.soul.toolset import KimiToolset
-from kimi_cli.tools.plan import ExitPlanMode
-from kimi_cli.tools.plan.enter import EnterPlanMode
-from kimi_cli.wire.jsonrpc import ClientCapabilities
+from bugpilot.soul.toolset import Toolset
+from bugpilot.tools.plan import ExitPlanMode
+from bugpilot.tools.plan.enter import EnterPlanMode
+from bugpilot.wire.jsonrpc import ClientCapabilities
 
 
 class TestClientCapabilities:
@@ -21,15 +21,15 @@ class TestClientCapabilities:
 
 
 class TestSyncPlanModeToolVisibility:
-    def _make_toolset_with_plan_tools(self) -> KimiToolset:
-        ts = KimiToolset()
+    def _make_toolset_with_plan_tools(self) -> Toolset:
+        ts = Toolset()
         ts.add(ExitPlanMode())
         ts.add(EnterPlanMode())
         return ts
 
     def _make_server(self, supports_plan_mode: bool):
         """Create a minimal WireServer-like object with _sync_plan_mode_tool_visibility."""
-        from kimi_cli.wire.server import WireServer
+        from bugpilot.wire.server import WireServer
 
         # We need to construct WireServer with minimal mocking
         soul = MagicMock()

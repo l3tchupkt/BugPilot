@@ -9,8 +9,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kimi_cli.soul import Soul
-from kimi_cli.ui.shell import Shell, _BackgroundCompletionWatcher, _PromptEvent
+from bugpilot.soul import Soul
+from bugpilot.ui.shell import Shell, _BackgroundCompletionWatcher, _PromptEvent
 
 
 def _make_watcher(
@@ -160,13 +160,13 @@ async def test_user_input_wins_over_simultaneous_bg_event():
 
 
 # -------------------------------------------------------------------
-# Disabled watcher: non-KimiSoul path
+# Disabled watcher: non-Agent path
 # -------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
 async def test_disabled_watcher_just_awaits_idle():
-    """When watcher is disabled (no KimiSoul), it behaves as plain get()."""
+    """When watcher is disabled (no Agent), it behaves as plain get()."""
     watcher = _BackgroundCompletionWatcher.__new__(_BackgroundCompletionWatcher)
     watcher._event = None
     watcher._notifications = None

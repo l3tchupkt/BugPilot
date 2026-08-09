@@ -6,8 +6,8 @@ from kosong.chat_provider.kimi import Kimi
 from kosong.contrib.chat_provider.openai_responses import OpenAIResponses
 from pydantic import SecretStr
 
-from kimi_cli.config import Config, LLMModel, LLMProvider
-from kimi_cli.llm import (
+from bugpilot.config import Config, LLMModel, LLMProvider
+from bugpilot.llm import (
     augment_provider_with_env_vars,
     clone_llm_with_model_alias,
     compute_max_completion_tokens,
@@ -17,36 +17,36 @@ from kimi_cli.llm import (
 
 def test_augment_provider_with_env_vars_kimi(monkeypatch):
     provider = LLMProvider(
-        type="kimi",
+        type="bugpilot",
         base_url="https://original.test/v1",
         api_key=SecretStr("orig-key"),
     )
     model = LLMModel(
-        provider="kimi",
-        model="kimi-base",
+        provider="bugpilot",
+        model="bugpilot-base",
         max_context_size=4096,
         capabilities=None,
     )
 
-    monkeypatch.setenv("KIMI_BASE_URL", "https://env.test/v1")
-    monkeypatch.setenv("KIMI_API_KEY", "env-key")
-    monkeypatch.setenv("KIMI_MODEL_NAME", "kimi-env-model")
-    monkeypatch.setenv("KIMI_MODEL_MAX_CONTEXT_SIZE", "8192")
-    monkeypatch.setenv("KIMI_MODEL_CAPABILITIES", "Image_In,THINKING,unknown")
+    monkeypatch.setenv("BUGPILOT_BASE_URL", "https://env.test/v1")
+    monkeypatch.setenv("BUGPILOT_API_KEY", "env-key")
+    monkeypatch.setenv("BUGPILOT_MODEL_NAME", "bugpilot-env-model")
+    monkeypatch.setenv("BUGPILOT_MODEL_MAX_CONTEXT_SIZE", "8192")
+    monkeypatch.setenv("BUGPILOT_MODEL_CAPABILITIES", "Image_In,THINKING,unknown")
 
     augment_provider_with_env_vars(provider, model)
 
     assert provider == snapshot(
         LLMProvider(
-            type="kimi",
+            type="bugpilot",
             base_url="https://env.test/v1",
             api_key=SecretStr("env-key"),
         )
     )
     assert model == snapshot(
         LLMModel(
-            provider="kimi",
-            model="kimi-env-model",
+            provider="bugpilot",
+            model="bugpilot-env-model",
             max_context_size=8192,
             capabilities={"image_in", "thinking"},
         )
@@ -55,20 +55,20 @@ def test_augment_provider_with_env_vars_kimi(monkeypatch):
 
 def test_create_llm_kimi_model_parameters(monkeypatch):
     provider = LLMProvider(
-        type="kimi",
+        type="bugpilot",
         base_url="https://api.test/v1",
         api_key=SecretStr("test-key"),
     )
     model = LLMModel(
-        provider="kimi",
-        model="kimi-base",
+        provider="bugpilot",
+        model="bugpilot-base",
         max_context_size=4096,
         capabilities=None,
     )
 
-    monkeypatch.setenv("KIMI_MODEL_TEMPERATURE", "0.2")
-    monkeypatch.setenv("KIMI_MODEL_TOP_P", "0.8")
-    monkeypatch.setenv("KIMI_MODEL_MAX_TOKENS", "1234")
+    monkeypatch.setenv("BUGPILOT_MODEL_TEMPERATURE", "0.2")
+    monkeypatch.setenv("BUGPILOT_MODEL_TOP_P", "0.8")
+    monkeypatch.setenv("BUGPILOT_MODEL_MAX_TOKENS", "1234")
 
     llm = create_llm(provider, model)
     assert llm is not None
@@ -86,19 +86,19 @@ def test_create_llm_kimi_model_parameters(monkeypatch):
 
 def test_create_llm_kimi_prefers_max_completion_tokens_env(monkeypatch):
     provider = LLMProvider(
-        type="kimi",
+        type="bugpilot",
         base_url="https://api.test/v1",
         api_key=SecretStr("test-key"),
     )
     model = LLMModel(
-        provider="kimi",
-        model="kimi-base",
+        provider="bugpilot",
+        model="bugpilot-base",
         max_context_size=4096,
         capabilities=None,
     )
 
-    monkeypatch.setenv("KIMI_MODEL_MAX_TOKENS", "1234")
-    monkeypatch.setenv("KIMI_MODEL_MAX_COMPLETION_TOKENS", "5678")
+    monkeypatch.setenv("BUGPILOT_MODEL_MAX_TOKENS", "1234")
+    monkeypatch.setenv("BUGPILOT_MODEL_MAX_COMPLETION_TOKENS", "5678")
 
     llm = create_llm(provider, model)
     assert llm is not None
@@ -154,12 +154,12 @@ def test_compute_max_completion_tokens_uses_fallback_for_unknown_context():
 
 def test_create_llm_kimi_non_positive_completion_cap_disables_clamping(monkeypatch):
     provider = LLMProvider(
-        type="kimi",
+        type="bugpilot",
         base_url="https://api.test/v1",
         api_key=SecretStr("test-key"),
     )
-    model = LLMModel(provider="kimi", model="kimi-base", max_context_size=4096)
-    monkeypatch.setenv("KIMI_MODEL_MAX_COMPLETION_TOKENS", "0")
+    model = LLMModel(provider="bugpilot", model="bugpilot-base", max_context_size=4096)
+    monkeypatch.setenv("BUGPILOT_MODEL_MAX_COMPLETION_TOKENS", "0")
 
     llm = create_llm(provider, model)
 
@@ -219,8 +219,8 @@ def test_create_llm_anthropic_without_session_id():
 
 
 def test_create_llm_requires_base_url_for_kimi():
-    provider = LLMProvider(type="kimi", base_url="", api_key=SecretStr("test-key"))
-    model = LLMModel(provider="kimi", model="kimi-base", max_context_size=4096)
+    provider = LLMProvider(type="bugpilot", base_url="", api_key=SecretStr("test-key"))
+    model = LLMModel(provider="bugpilot", model="bugpilot-base", max_context_size=4096)
 
     assert create_llm(provider, model) is None
 
@@ -483,15 +483,15 @@ def test_create_llm_openai_responses_thinking_false_no_reasoning_in_params():
 
 
 def _make_kimi_thinking_model() -> tuple[LLMProvider, LLMModel]:
-    """Helper: build a kimi provider + always-thinking model pair."""
+    """Helper: build a bugpilot provider + always-thinking model pair."""
     provider = LLMProvider(
-        type="kimi",
+        type="bugpilot",
         base_url="https://api.test/v1",
         api_key=SecretStr("test-key"),
     )
     model = LLMModel(
-        provider="kimi",
-        model="kimi-k2-thinking-turbo",
+        provider="bugpilot",
+        model="bugpilot-k2-thinking-turbo",
         max_context_size=4096,
         capabilities=None,
     )
@@ -499,15 +499,15 @@ def _make_kimi_thinking_model() -> tuple[LLMProvider, LLMModel]:
 
 
 def _make_kimi_plain_model() -> tuple[LLMProvider, LLMModel]:
-    """Helper: build a kimi provider + non-thinking model pair."""
+    """Helper: build a bugpilot provider + non-thinking model pair."""
     provider = LLMProvider(
-        type="kimi",
+        type="bugpilot",
         base_url="https://api.test/v1",
         api_key=SecretStr("test-key"),
     )
     model = LLMModel(
-        provider="kimi",
-        model="kimi-k2-turbo-preview",
+        provider="bugpilot",
+        model="bugpilot-k2-turbo-preview",
         max_context_size=4096,
         capabilities=None,
     )
@@ -515,9 +515,9 @@ def _make_kimi_plain_model() -> tuple[LLMProvider, LLMModel]:
 
 
 def test_create_llm_kimi_thinking_keep_not_set_omits_field(monkeypatch):
-    """When KIMI_MODEL_THINKING_KEEP is unset, extra_body.thinking must not
+    """When BUGPILOT_MODEL_THINKING_KEEP is unset, extra_body.thinking must not
     contain a ``keep`` key, even for always-thinking models."""
-    monkeypatch.delenv("KIMI_MODEL_THINKING_KEEP", raising=False)
+    monkeypatch.delenv("BUGPILOT_MODEL_THINKING_KEEP", raising=False)
     provider, model = _make_kimi_thinking_model()
 
     llm = create_llm(provider, model)
@@ -534,8 +534,8 @@ def test_create_llm_kimi_thinking_keep_not_set_omits_field(monkeypatch):
 
 def test_create_llm_kimi_thinking_keep_empty_string_omits_field(monkeypatch):
     """An empty-string env value must be treated as unset (consistent with
-    other KIMI_MODEL_* envs that use walrus-truthy reads)."""
-    monkeypatch.setenv("KIMI_MODEL_THINKING_KEEP", "")
+    other BUGPILOT_MODEL_* envs that use walrus-truthy reads)."""
+    monkeypatch.setenv("BUGPILOT_MODEL_THINKING_KEEP", "")
     provider, model = _make_kimi_thinking_model()
 
     llm = create_llm(provider, model)
@@ -548,10 +548,10 @@ def test_create_llm_kimi_thinking_keep_empty_string_omits_field(monkeypatch):
 
 
 def test_create_llm_kimi_thinking_keep_all_injects_field(monkeypatch):
-    """With a thinking-capable model and KIMI_MODEL_THINKING_KEEP=all, the
+    """With a thinking-capable model and BUGPILOT_MODEL_THINKING_KEEP=all, the
     provider's extra_body.thinking must carry both ``type`` (set by
     with_thinking) and ``keep`` (set by the env)."""
-    monkeypatch.setenv("KIMI_MODEL_THINKING_KEEP", "all")
+    monkeypatch.setenv("BUGPILOT_MODEL_THINKING_KEEP", "all")
     provider, model = _make_kimi_thinking_model()
 
     llm = create_llm(provider, model)
@@ -565,8 +565,8 @@ def test_create_llm_kimi_thinking_keep_all_injects_field(monkeypatch):
 
 def test_create_llm_kimi_thinking_keep_arbitrary_value_passes_through(monkeypatch):
     """Non-'all' values must be forwarded unchanged — no casing normalization,
-    no validation. The Moonshot API is the source of truth."""
-    monkeypatch.setenv("KIMI_MODEL_THINKING_KEEP", "xYz")
+    no validation. The Kimi API is the source of truth."""
+    monkeypatch.setenv("BUGPILOT_MODEL_THINKING_KEEP", "xYz")
     provider, model = _make_kimi_thinking_model()
 
     llm = create_llm(provider, model)
@@ -581,7 +581,7 @@ def test_create_llm_kimi_thinking_keep_skipped_when_thinking_off(monkeypatch):
     """When thinking=False (with_thinking("off")), keep must NOT be injected,
     even if the env is set. Avoids sending a `thinking.keep` without an
     accompanying `thinking.type` that the API actually honors."""
-    monkeypatch.setenv("KIMI_MODEL_THINKING_KEEP", "all")
+    monkeypatch.setenv("BUGPILOT_MODEL_THINKING_KEEP", "all")
     provider, model = _make_kimi_plain_model()
     # capabilities is None and model name has no "thinking"/"reason" marker, so
     # derive_model_capabilities returns an empty set. thinking=False then drives
@@ -601,7 +601,7 @@ def test_create_llm_kimi_thinking_keep_skipped_when_thinking_off(monkeypatch):
 def test_create_llm_kimi_thinking_keep_skipped_when_no_thinking_branch(monkeypatch):
     """When the model has no thinking capability and thinking is None, neither
     with_thinking branch runs — keep must also NOT be injected."""
-    monkeypatch.setenv("KIMI_MODEL_THINKING_KEEP", "all")
+    monkeypatch.setenv("BUGPILOT_MODEL_THINKING_KEEP", "all")
     provider, model = _make_kimi_plain_model()
 
     llm = create_llm(provider, model, thinking=None)
@@ -623,7 +623,7 @@ def test_create_llm_kimi_thinking_keep_injected_on_explicit_thinking_true(monkey
     ``thinking=True``. This exercises a different branch of
     ``"always_thinking" in capabilities or (thinking is True and "thinking" in capabilities)``
     than the always-thinking-name-based tests above."""
-    monkeypatch.setenv("KIMI_MODEL_THINKING_KEEP", "all")
+    monkeypatch.setenv("BUGPILOT_MODEL_THINKING_KEEP", "all")
     provider, model = _make_kimi_plain_model()
     # Model name has no "thinking"/"reason" marker, so derive_model_capabilities
     # returns an empty set; manually granting only the "thinking" capability
@@ -648,10 +648,10 @@ def test_clone_llm_with_model_alias_preserves_kimi_thinking_off():
     llm = create_llm(provider, model, thinking=False)
     assert llm is not None
 
-    target_model = model.model_copy(update={"model": "kimi-code"})
+    target_model = model.model_copy(update={"model": "bugpilot-code"})
     config = Config(
         models={"target": target_model},
-        providers={"kimi": provider},
+        providers={"bugpilot": provider},
     )
     cloned = clone_llm_with_model_alias(
         llm,

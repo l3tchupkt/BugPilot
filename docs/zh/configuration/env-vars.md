@@ -10,8 +10,8 @@ Kimi Code CLI 支持通过环境变量覆盖配置或控制运行行为。本页
 
 | 环境变量 | 说明 |
 | --- | --- |
-| `KIMI_BASE_URL` | API 基础 URL |
-| `KIMI_API_KEY` | API 密钥 |
+| `BUGPILOT_BASE_URL` | API 基础 URL |
+| `BUGPILOT_API_KEY` | API 密钥 |
 | `KIMI_MODEL_NAME` | 模型标识符 |
 | `KIMI_MODEL_MAX_CONTEXT_SIZE` | 最大上下文长度（token 数） |
 | `KIMI_MODEL_CAPABILITIES` | 模型能力，逗号分隔（如 `thinking,image_in`） |
@@ -21,20 +21,20 @@ Kimi Code CLI 支持通过环境变量覆盖配置或控制运行行为。本页
 | `KIMI_MODEL_MAX_TOKENS` | `KIMI_MODEL_MAX_COMPLETION_TOKENS` 的兼容别名 |
 | `KIMI_MODEL_THINKING_KEEP` | Moonshot `thinking.keep` 开关（Preserved Thinking），仅在 Thinking 模式下生效 |
 
-### `KIMI_BASE_URL`
+### `BUGPILOT_BASE_URL`
 
 覆盖配置文件中供应商的 `base_url` 字段。
 
 ```sh
-export KIMI_BASE_URL="https://api.moonshot.cn/v1"
+export BUGPILOT_BASE_URL="https://api.moonshot.cn/v1"
 ```
 
-### `KIMI_API_KEY`
+### `BUGPILOT_API_KEY`
 
 覆盖配置文件中供应商的 `api_key` 字段。用于在不修改配置文件的情况下注入 API 密钥，适合 CI/CD 环境。
 
 ```sh
-export KIMI_API_KEY="sk-xxx"
+export BUGPILOT_API_KEY="sk-xxx"
 ```
 
 ### `KIMI_MODEL_NAME`

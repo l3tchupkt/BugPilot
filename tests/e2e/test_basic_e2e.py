@@ -13,7 +13,7 @@ def _repo_root() -> Path:
 
 
 def _print_trace(label: str, text: str) -> None:
-    if os.getenv("KIMI_TEST_TRACE") == "1":
+    if os.getenv("BUGPILOT_TEST_TRACE") == "1":
         print("-----")
         print(f"{label}: {text}")
 
@@ -32,7 +32,7 @@ def _run_print_mode(config_path: Path, work_dir: Path, user_prompt: str) -> tupl
     cmd = [
         "uv",
         "run",
-        "kimi",
+        "bugpilot",
         "--print",
         "--yolo",
         "--input-format",
@@ -64,7 +64,7 @@ def _run_shell_mode(config_path: Path, work_dir: Path, user_prompt: str) -> tupl
     cmd = [
         "uv",
         "run",
-        "kimi",
+        "bugpilot",
         "--yolo",
         "--prompt",
         user_prompt,
@@ -145,7 +145,7 @@ def _run_wire_mode(
     cmd = [
         "uv",
         "run",
-        "kimi",
+        "bugpilot",
         "--wire",
         "--yolo",
         "--config-file",
@@ -193,7 +193,7 @@ def _run_wire_mode(
 
 
 @pytest.mark.parametrize("mode", ["print", "wire", "shell"])
-async def test_scripted_echo_kimi_cli_agent_e2e(
+async def test_scripted_echo_bugpilot_agent_e2e(
     temp_work_dir: KaosPath, tmp_path: Path, mode: str
 ) -> None:
     sample_js = "\n".join(
@@ -267,7 +267,7 @@ async def test_scripted_echo_kimi_cli_agent_e2e(
     scripts_path.write_text(json.dumps(scripts), encoding="utf-8")
 
     config_path = tmp_path / "config.json"
-    trace_env = os.getenv("KIMI_SCRIPTED_ECHO_TRACE", "0")
+    trace_env = os.getenv("BUGPILOT_SCRIPTED_ECHO_TRACE", "0")
     config_data = {
         "default_model": "scripted",
         "models": {
@@ -283,8 +283,8 @@ async def test_scripted_echo_kimi_cli_agent_e2e(
                 "base_url": "",
                 "api_key": "",
                 "env": {
-                    "KIMI_SCRIPTED_ECHO_SCRIPTS": str(scripts_path),
-                    "KIMI_SCRIPTED_ECHO_TRACE": trace_env,
+                    "BUGPILOT_SCRIPTED_ECHO_SCRIPTS": str(scripts_path),
+                    "BUGPILOT_SCRIPTED_ECHO_TRACE": trace_env,
                 },
             }
         },

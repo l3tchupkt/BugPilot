@@ -4,22 +4,21 @@ from pathlib import Path
 from typing import override
 
 from kaos.path import KaosPath
+from bugpilot.auth.oauth import OAuthManager
+from bugpilot.config import LLMModel, LLMProvider, get_default_config
+from bugpilot.llm import LLM, create_llm
+from bugpilot.session import Session
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.kimisoul import Agent
+from bugpilot.ui.shell import Shell
+from bugpilot.wire.types import ContentPart, ToolReturnValue
 from kosong.tooling import CallableTool2, ToolError, ToolOk, Toolset
 from kosong.tooling.simple import SimpleToolset
 from pydantic import BaseModel, Field, SecretStr
 
-from kimi_cli.auth.oauth import OAuthManager
-from kimi_cli.config import LLMModel, LLMProvider, get_default_config
-from kimi_cli.llm import LLM, create_llm
-from kimi_cli.session import Session
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.ui.shell import Shell
-from kimi_cli.wire.types import ContentPart, ToolReturnValue
 
-
-class HakimiSoul(KimiSoul):
+class HakimiSoul(Agent):
     @staticmethod
     async def create(
         llm: LLM | None,
@@ -94,8 +93,8 @@ async def main():
         llm=create_llm(
             LLMProvider(
                 type="kimi",
-                base_url=os.getenv("KIMI_BASE_URL") or "https://api.moonshot.ai/v1",
-                api_key=SecretStr(os.getenv("KIMI_API_KEY") or ""),
+                base_url=os.getenv("BUGPILOT_BASE_URL") or "https://api.moonshot.ai/v1",
+                api_key=SecretStr(os.getenv("BUGPILOT_API_KEY") or ""),
             ),
             LLMModel(
                 provider="kimi",

@@ -7,11 +7,11 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_mcp_oauth_storage_persists_tokens_in_share_dir(tmp_path, monkeypatch):
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path))
 
     from mcp.shared.auth import OAuthToken
 
-    from kimi_cli.mcp_oauth import create_mcp_oauth_token_storage, has_mcp_oauth_tokens
+    from bugpilot.mcp_oauth import create_mcp_oauth_token_storage, has_mcp_oauth_tokens
 
     server_url = "https://mcp.example.test/mcp/"
 
@@ -36,20 +36,20 @@ async def test_mcp_oauth_storage_persists_tokens_in_share_dir(tmp_path, monkeypa
 
 @pytest.mark.asyncio
 async def test_has_mcp_oauth_tokens_treats_unreadable_storage_as_missing(tmp_path, monkeypatch):
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path))
     (tmp_path / "mcp-oauth").write_text("not a directory", encoding="utf-8")
 
-    from kimi_cli.mcp_oauth import has_mcp_oauth_tokens
+    from bugpilot.mcp_oauth import has_mcp_oauth_tokens
 
     assert not await has_mcp_oauth_tokens("https://mcp.example.test/mcp")
 
 
 def test_create_mcp_oauth_uses_persistent_storage_without_warning(tmp_path, monkeypatch):
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path))
 
     from fastmcp.client.auth.oauth import OAuth, TokenStorageAdapter
 
-    from kimi_cli.mcp_oauth import create_mcp_oauth
+    from bugpilot.mcp_oauth import create_mcp_oauth
 
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -61,11 +61,11 @@ def test_create_mcp_oauth_uses_persistent_storage_without_warning(tmp_path, monk
 
 
 def test_prepare_mcp_server_config_replaces_oauth_literal_without_mutating(tmp_path, monkeypatch):
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path))
 
     from fastmcp.client.auth.oauth import OAuth
 
-    from kimi_cli.mcp_oauth import prepare_mcp_server_config
+    from bugpilot.mcp_oauth import prepare_mcp_server_config
 
     server = {
         "url": "https://mcp.example.test/mcp",
@@ -85,14 +85,14 @@ def test_prepare_mcp_server_config_replaces_oauth_literal_without_mutating(tmp_p
 async def test_load_mcp_tools_treats_unreadable_oauth_storage_as_unauthorized(
     tmp_path, monkeypatch, runtime
 ):
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path))
     (tmp_path / "mcp-oauth").write_text("not a directory", encoding="utf-8")
 
     from fastmcp.mcp_config import MCPConfig
 
-    from kimi_cli.soul.toolset import KimiToolset
+    from bugpilot.soul.toolset import Toolset
 
-    toolset = KimiToolset()
+    toolset = Toolset()
     mcp_config = MCPConfig.model_validate(
         {
             "mcpServers": {

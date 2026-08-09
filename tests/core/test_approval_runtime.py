@@ -6,7 +6,7 @@ import contextlib
 import pytest
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.approval_runtime import (
+from bugpilot.approval_runtime import (
     ApprovalCancelledError,
     ApprovalRuntime,
     ApprovalSource,
@@ -14,14 +14,14 @@ from kimi_cli.approval_runtime import (
     reset_current_approval_source,
     set_current_approval_source,
 )
-from kimi_cli.soul import RunCancelled, run_soul
-from kimi_cli.soul.agent import Agent as SoulAgent
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.utils.aioqueue import QueueShutDown
-from kimi_cli.wire import Wire
-from kimi_cli.wire.root_hub import RootWireHub
-from kimi_cli.wire.types import ApprovalRequest, ApprovalResponse
+from bugpilot.soul import RunCancelled, run_soul
+from bugpilot.soul.agent import Agent as SoulAgent
+from bugpilot.soul.context import Context
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.utils.aioqueue import QueueShutDown
+from bugpilot.wire import Wire
+from bugpilot.wire.root_hub import RootWireHub
+from bugpilot.wire.types import ApprovalRequest, ApprovalResponse
 
 
 @pytest.mark.asyncio
@@ -299,7 +299,7 @@ async def _drain_ui_messages(wire: Wire) -> None:
 
 
 @pytest.mark.asyncio
-async def test_kimisoul_run_preserves_existing_approval_source(
+async def test_agent_loop_run_preserves_existing_approval_source(
     runtime, tmp_path, monkeypatch
 ) -> None:
     seen_sources: list[ApprovalSource | None] = []
@@ -311,10 +311,10 @@ async def test_kimisoul_run_preserves_existing_approval_source(
     async def fake_ensure_fresh(_runtime):
         return None
 
-    monkeypatch.setattr(KimiSoul, "_turn", fake_turn)
-    monkeypatch.setattr(runtime.oauth, "ensure_fresh", fake_ensure_fresh)
+    monkeypatch.setattr(Agent, "_turn", fake_turn)
+    pass
 
-    soul = KimiSoul(
+    soul = Agent(
         SoulAgent(
             name="test",
             system_prompt="test prompt",
@@ -341,7 +341,7 @@ async def test_kimisoul_run_preserves_existing_approval_source(
 
 
 @pytest.mark.asyncio
-async def test_kimisoul_run_cancels_own_foreground_approvals_on_cancel(
+async def test_agent_loop_run_cancels_own_foreground_approvals_on_cancel(
     runtime, tmp_path, monkeypatch
 ) -> None:
     assert runtime.approval_runtime is not None
@@ -375,10 +375,10 @@ async def test_kimisoul_run_cancels_own_foreground_approvals_on_cancel(
     async def fake_ensure_fresh(_runtime):
         return None
 
-    monkeypatch.setattr(KimiSoul, "_turn", fake_turn)
-    monkeypatch.setattr(runtime.oauth, "ensure_fresh", fake_ensure_fresh)
+    monkeypatch.setattr(Agent, "_turn", fake_turn)
+    pass
 
-    soul = KimiSoul(
+    soul = Agent(
         SoulAgent(
             name="test",
             system_prompt="test prompt",

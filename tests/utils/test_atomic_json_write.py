@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from kimi_cli.utils.io import atomic_json_write
+from bugpilot.utils.io import atomic_json_write
 
 
 class TestAtomicJsonWrite:

@@ -8,13 +8,13 @@ from inline_snapshot import snapshot
 
 
 def test_pyinstaller_datas():
-    from kimi_cli.utils.pyinstaller import datas
+    from bugpilot.utils.pyinstaller import datas
 
     project_root = Path(__file__).parent.parent.parent
     python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
     site_packages = f".venv/lib/python{python_version}/site-packages"
     rg_binary = "rg.exe" if platform.system() == "Windows" else "rg"
-    has_rg_binary = (project_root / "src/kimi_cli/deps/bin" / rg_binary).exists()
+    has_rg_binary = (project_root / "src/bugpilot/deps/bin" / rg_binary).exists()
     datas = [
         (
             Path(path)
@@ -62,130 +62,130 @@ def test_pyinstaller_datas():
             "fastmcp/../fastmcp-3.2.4.dist-info/licenses",
         ),
         (
-            "src/kimi_cli/CHANGELOG.md",
-            "kimi_cli",
+            "src/bugpilot/CHANGELOG.md",
+            "bugpilot",
         ),
-        ("src/kimi_cli/agents/default/agent.yaml", "kimi_cli/agents/default"),
-        ("src/kimi_cli/agents/default/coder.yaml", "kimi_cli/agents/default"),
-        ("src/kimi_cli/agents/default/explore.yaml", "kimi_cli/agents/default"),
-        ("src/kimi_cli/agents/default/plan.yaml", "kimi_cli/agents/default"),
-        ("src/kimi_cli/agents/default/system.md", "kimi_cli/agents/default"),
-        ("src/kimi_cli/agents/okabe/agent.yaml", "kimi_cli/agents/okabe"),
-        ("src/kimi_cli/prompts/compact.md", "kimi_cli/prompts"),
-        ("src/kimi_cli/prompts/init.md", "kimi_cli/prompts"),
+        ("src/bugpilot/agents/default/agent.yaml", "bugpilot/agents/default"),
+        ("src/bugpilot/agents/default/coder.yaml", "bugpilot/agents/default"),
+        ("src/bugpilot/agents/default/explore.yaml", "bugpilot/agents/default"),
+        ("src/bugpilot/agents/default/plan.yaml", "bugpilot/agents/default"),
+        ("src/bugpilot/agents/default/system.md", "bugpilot/agents/default"),
+        ("src/bugpilot/agents/okabe/agent.yaml", "bugpilot/agents/okabe"),
+        ("src/bugpilot/prompts/compact.md", "bugpilot/prompts"),
+        ("src/bugpilot/prompts/init.md", "bugpilot/prompts"),
         (
-            "src/kimi_cli/skills/kimi-cli-help/SKILL.md",
-            "kimi_cli/skills/kimi-cli-help",
-        ),
-        (
-            "src/kimi_cli/skills/skill-creator/SKILL.md",
-            "kimi_cli/skills/skill-creator",
-        ),
-        ("src/kimi_cli/tools/agent/description.md", "kimi_cli/tools/agent"),
-        ("src/kimi_cli/tools/ask_user/description.md", "kimi_cli/tools/ask_user"),
-        (
-            "src/kimi_cli/tools/dmail/dmail.md",
-            "kimi_cli/tools/dmail",
-        ),
-        ("src/kimi_cli/tools/background/list.md", "kimi_cli/tools/background"),
-        ("src/kimi_cli/tools/background/output.md", "kimi_cli/tools/background"),
-        ("src/kimi_cli/tools/background/stop.md", "kimi_cli/tools/background"),
-        (
-            "src/kimi_cli/tools/file/glob.md",
-            "kimi_cli/tools/file",
+            "src/bugpilot/skills/bugpilot-help/SKILL.md",
+            "bugpilot/skills/bugpilot-help",
         ),
         (
-            "src/kimi_cli/tools/file/grep.md",
-            "kimi_cli/tools/file",
+            "src/bugpilot/skills/skill-creator/SKILL.md",
+            "bugpilot/skills/skill-creator",
+        ),
+        ("src/bugpilot/tools/agent/description.md", "bugpilot/tools/agent"),
+        ("src/bugpilot/tools/ask_user/description.md", "bugpilot/tools/ask_user"),
+        (
+            "src/bugpilot/tools/dmail/dmail.md",
+            "bugpilot/tools/dmail",
+        ),
+        ("src/bugpilot/tools/background/list.md", "bugpilot/tools/background"),
+        ("src/bugpilot/tools/background/output.md", "bugpilot/tools/background"),
+        ("src/bugpilot/tools/background/stop.md", "bugpilot/tools/background"),
+        (
+            "src/bugpilot/tools/file/glob.md",
+            "bugpilot/tools/file",
         ),
         (
-            "src/kimi_cli/tools/file/read.md",
-            "kimi_cli/tools/file",
+            "src/bugpilot/tools/file/grep.md",
+            "bugpilot/tools/file",
         ),
         (
-            "src/kimi_cli/tools/file/read_media.md",
-            "kimi_cli/tools/file",
+            "src/bugpilot/tools/file/read.md",
+            "bugpilot/tools/file",
         ),
         (
-            "src/kimi_cli/tools/file/replace.md",
-            "kimi_cli/tools/file",
+            "src/bugpilot/tools/file/read_media.md",
+            "bugpilot/tools/file",
         ),
         (
-            "src/kimi_cli/tools/file/write.md",
-            "kimi_cli/tools/file",
-        ),
-        ("src/kimi_cli/tools/plan/description.md", "kimi_cli/tools/plan"),
-        ("src/kimi_cli/tools/plan/enter_description.md", "kimi_cli/tools/plan"),
-        ("src/kimi_cli/tools/shell/bash.md", "kimi_cli/tools/shell"),
-        (
-            "src/kimi_cli/tools/think/think.md",
-            "kimi_cli/tools/think",
+            "src/bugpilot/tools/file/replace.md",
+            "bugpilot/tools/file",
         ),
         (
-            "src/kimi_cli/tools/todo/set_todo_list.md",
-            "kimi_cli/tools/todo",
+            "src/bugpilot/tools/file/write.md",
+            "bugpilot/tools/file",
+        ),
+        ("src/bugpilot/tools/plan/description.md", "bugpilot/tools/plan"),
+        ("src/bugpilot/tools/plan/enter_description.md", "bugpilot/tools/plan"),
+        ("src/bugpilot/tools/shell/bash.md", "bugpilot/tools/shell"),
+        (
+            "src/bugpilot/tools/think/think.md",
+            "bugpilot/tools/think",
         ),
         (
-            "src/kimi_cli/tools/web/fetch.md",
-            "kimi_cli/tools/web",
+            "src/bugpilot/tools/todo/set_todo_list.md",
+            "bugpilot/tools/todo",
         ),
         (
-            "src/kimi_cli/tools/web/search.md",
-            "kimi_cli/tools/web",
+            "src/bugpilot/tools/web/fetch.md",
+            "bugpilot/tools/web",
+        ),
+        (
+            "src/bugpilot/tools/web/search.md",
+            "bugpilot/tools/web",
         ),
     ]
     if has_rg_binary:
-        expected_datas.append((f"src/kimi_cli/deps/bin/{rg_binary}", "kimi_cli/deps/bin"))
+        expected_datas.append((f"src/bugpilot/deps/bin/{rg_binary}", "bugpilot/deps/bin"))
 
     assert sorted(datas) == sorted(expected_datas)
 
 
 def test_pyinstaller_hiddenimports():
-    from kimi_cli.utils.pyinstaller import hiddenimports
+    from bugpilot.utils.pyinstaller import hiddenimports
 
     assert sorted(hiddenimports) == snapshot(
         [
-            "kimi_cli._build_info",
-            "kimi_cli.cli.export",
-            "kimi_cli.cli.info",
-            "kimi_cli.cli.mcp",
-            "kimi_cli.cli.plugin",
-            "kimi_cli.cli.vis",
-            "kimi_cli.cli.web",
-            "kimi_cli.tools",
-            "kimi_cli.tools.agent",
-            "kimi_cli.tools.ask_user",
-            "kimi_cli.tools.background",
-            "kimi_cli.tools.display",
-            "kimi_cli.tools.dmail",
-            "kimi_cli.tools.file",
-            "kimi_cli.tools.file.glob",
-            "kimi_cli.tools.file.grep_local",
-            "kimi_cli.tools.file.plan_mode",
-            "kimi_cli.tools.file.read",
-            "kimi_cli.tools.file.read_media",
-            "kimi_cli.tools.file.replace",
-            "kimi_cli.tools.file.utils",
-            "kimi_cli.tools.file.write",
-            "kimi_cli.tools.plan",
-            "kimi_cli.tools.plan.enter",
-            "kimi_cli.tools.plan.heroes",
-            "kimi_cli.tools.shell",
-            "kimi_cli.tools.test",
-            "kimi_cli.tools.think",
-            "kimi_cli.tools.todo",
-            "kimi_cli.tools.utils",
-            "kimi_cli.tools.web",
-            "kimi_cli.tools.web.fetch",
-            "kimi_cli.tools.web.search",
+            "bugpilot._build_info",
+            "bugpilot.cli.export",
+            "bugpilot.cli.info",
+            "bugpilot.cli.mcp",
+            "bugpilot.cli.plugin",
+            "bugpilot.cli.vis",
+            "bugpilot.cli.web",
+            "bugpilot.tools",
+            "bugpilot.tools.agent",
+            "bugpilot.tools.ask_user",
+            "bugpilot.tools.background",
+            "bugpilot.tools.display",
+            "bugpilot.tools.dmail",
+            "bugpilot.tools.file",
+            "bugpilot.tools.file.glob",
+            "bugpilot.tools.file.grep_local",
+            "bugpilot.tools.file.plan_mode",
+            "bugpilot.tools.file.read",
+            "bugpilot.tools.file.read_media",
+            "bugpilot.tools.file.replace",
+            "bugpilot.tools.file.utils",
+            "bugpilot.tools.file.write",
+            "bugpilot.tools.plan",
+            "bugpilot.tools.plan.enter",
+            "bugpilot.tools.plan.heroes",
+            "bugpilot.tools.shell",
+            "bugpilot.tools.test",
+            "bugpilot.tools.think",
+            "bugpilot.tools.todo",
+            "bugpilot.tools.utils",
+            "bugpilot.tools.web",
+            "bugpilot.tools.web.fetch",
+            "bugpilot.tools.web.search",
             "setproctitle",
         ]
     )
 
 
 def test_pyinstaller_hiddenimports_include_lazy_cli_subcommands():
-    from kimi_cli.cli._lazy_group import LazySubcommandGroup
-    from kimi_cli.utils.pyinstaller import hiddenimports
+    from bugpilot.cli._lazy_group import LazySubcommandGroup
+    from bugpilot.utils.pyinstaller import hiddenimports
 
     expected_hiddenimports = {
         module_name

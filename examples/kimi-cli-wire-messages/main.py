@@ -1,16 +1,15 @@
 import asyncio
 
 from kaos.path import KaosPath
+from bugpilot.app import BugPilotCLI, enable_logging
+from bugpilot.session import Session
 from rich import print
-
-from kimi_cli.app import KimiCLI, enable_logging
-from kimi_cli.session import Session
 
 
 async def main():
     enable_logging()
     session = await Session.create(KaosPath.cwd())
-    instance = await KimiCLI.create(session)
+    instance = await BugPilotCLI.create(session)
     user_input = "Hello!"
 
     async for msg in instance.run(

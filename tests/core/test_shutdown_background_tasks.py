@@ -1,4 +1,4 @@
-"""Tests for ``KimiCLI.shutdown_background_tasks``.
+"""Tests for ``BugPilotCLI.shutdown_background_tasks``.
 
 On CLI exit (``/exit``, Ctrl+D, end of ``-p`` run), the user should see:
 
@@ -18,7 +18,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from kimi_cli.app import KimiCLI
+from bugpilot.app import BugPilotCLI
 
 
 def _fake_view(
@@ -42,8 +42,8 @@ def _make_cli(
     views: list[MagicMock],
     kill_grace_ms: int = 2000,
     kill_leaves_alive: bool = False,
-) -> tuple[KimiCLI, MagicMock, dict]:
-    """Build a KimiCLI stub exposing only what shutdown_background_tasks needs.
+) -> tuple[BugPilotCLI, MagicMock, dict]:
+    """Build a BugPilotCLI stub exposing only what shutdown_background_tasks needs.
 
     ``kill_leaves_alive=True`` simulates workers that do not terminate inside
     the grace window — their status stays ``running`` after ``kill``.
@@ -84,7 +84,7 @@ def _make_cli(
     runtime.config.background.kill_grace_period_ms = kill_grace_ms
     runtime.background_tasks = manager
 
-    cli = KimiCLI.__new__(KimiCLI)
+    cli = BugPilotCLI.__new__(BugPilotCLI)
     cli._soul = MagicMock()
     cli._runtime = runtime
     cli._env_overrides = {}
@@ -106,7 +106,7 @@ async def test_shutdown_prints_notice_and_kills_when_active(capsys) -> None:
     async def fake_sleep(duration):
         sleep_calls.append(duration)
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     # Each fresh active task was kill-requested once.
@@ -136,7 +136,7 @@ async def test_shutdown_skipped_when_keep_alive_on_exit(capsys) -> None:
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     # keep_alive_on_exit=True → complete no-op
@@ -164,7 +164,7 @@ async def test_shutdown_reports_survivors_after_grace(capsys) -> None:
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     captured = capsys.readouterr()
@@ -181,7 +181,7 @@ async def test_shutdown_reports_survivors_after_grace(capsys) -> None:
 async def test_shutdown_writes_to_original_stderr_when_redirected(monkeypatch) -> None:
     """When stderr has been redirected to the logger via ``redirect_stderr_to_logger``,
     the kill notice must still reach the user's terminal.  ``sys.stderr.write``
-    alone would silently send the notice into ``kimi.log`` (where fd=2 now
+    alone would silently send the notice into ``bugpilot.log`` (where fd=2 now
     points), leaving the user with zero feedback about what was killed.
 
     The fix uses ``open_original_stderr`` (same pattern as ``_emit_fatal_error``
@@ -206,12 +206,12 @@ async def test_shutdown_writes_to_original_stderr_when_redirected(monkeypatch) -
     def fake_open_original_stderr():
         yield _FakeOriginalStream()
 
-    monkeypatch.setattr("kimi_cli.app.open_original_stderr", fake_open_original_stderr)
+    monkeypatch.setattr("bugpilot.app.open_original_stderr", fake_open_original_stderr)
 
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     output = captured.getvalue().decode("utf-8")
@@ -238,7 +238,7 @@ async def test_shutdown_swallows_manager_exception(capsys) -> None:
         pass
 
     # Must NOT raise.
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
 
@@ -267,7 +267,7 @@ async def test_shutdown_skips_already_kill_requested_tasks(capsys) -> None:
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     # Only the fresh task (b-002) was kill-requested by shutdown.
@@ -300,7 +300,7 @@ async def test_shutdown_survivors_from_print_timeout_labelled_terminating(capsys
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     captured = capsys.readouterr()
@@ -328,7 +328,7 @@ async def test_shutdown_survivors_from_failed_kill_labelled_alive(capsys) -> Non
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     captured = capsys.readouterr()
@@ -351,7 +351,7 @@ async def test_shutdown_with_only_already_killed_tasks_stays_quiet(capsys) -> No
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     # No kill calls, no stderr "Killing" header (user already saw the
@@ -371,7 +371,7 @@ async def test_shutdown_no_notice_when_no_active_tasks(capsys) -> None:
     async def fake_sleep(duration):
         pass
 
-    with patch("kimi_cli.app.asyncio.sleep", side_effect=fake_sleep):
+    with patch("bugpilot.app.asyncio.sleep", side_effect=fake_sleep):
         await cli.shutdown_background_tasks()
 
     # No active tasks means no kill call (early return) and nothing on stderr.

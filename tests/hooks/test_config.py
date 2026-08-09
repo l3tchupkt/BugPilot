@@ -2,8 +2,8 @@ import pytest
 import tomlkit
 from pydantic import ValidationError
 
-from kimi_cli.config import Config
-from kimi_cli.hooks.config import HOOK_EVENT_TYPES, HookDef
+from bugpilot.config import Config
+from bugpilot.hooks.config import HOOK_EVENT_TYPES, HookDef
 
 
 def test_parse_hook_def():

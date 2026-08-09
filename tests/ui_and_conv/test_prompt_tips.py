@@ -9,9 +9,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kimi_cli.soul import StatusSnapshot
-from kimi_cli.ui.shell import prompt as shell_prompt
-from kimi_cli.ui.shell.prompt import (
+from bugpilot.soul import StatusSnapshot
+from bugpilot.ui.shell import prompt as shell_prompt
+from bugpilot.ui.shell.prompt import (
     _GIT_STATUS_TTL,
     PROMPT_SYMBOL,
     BgTaskCounts,
@@ -330,7 +330,7 @@ def test_bottom_toolbar_narrow_terminal_with_full_decoration(width: int, monkeyp
     # (dirty + ahead + behind), an active bg bash task, and a model name must never
     # push line 1 past the terminal width. The toolbar must degrade gracefully.
     prompt_session = _make_toolbar_session(
-        model_name="kimi-latest",
+        model_name="bugpilot-latest",
         tips=["ctrl-x: toggle mode"],
     )
     prompt_session._background_task_count_provider = lambda: BgTaskCounts(bash=2, agent=0)

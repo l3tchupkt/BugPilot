@@ -9,12 +9,12 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from kimi_cli.ui.shell import Shell
-from kimi_cli.ui.shell import slash as shell_slash
-from kimi_cli.ui.shell.slash import registry as shell_slash_registry
+from bugpilot.ui.shell import Shell
+from bugpilot.ui.shell import slash as shell_slash
+from bugpilot.ui.shell.slash import registry as shell_slash_registry
 
 UPGRADE = shell_slash_registry.find_command("upgrade")
-INSTALL_SH = "curl -fsSL https://code.kimi.com/kimi-code/install.sh | bash"
+INSTALL_SH = "curl -fsSL https://code.bugpilot.com/bugpilot-code/install.sh | bash"
 
 
 def _mock_choice(monkeypatch, value: str):
@@ -60,9 +60,9 @@ async def test_upgrade_yes_runs_powershell_wrapped_installer_on_windows(monkeypa
     # not cmd.exe; the displayed command stays the bare PowerShell one-liner.
     run_cmd = app._run_shell_command.await_args.args[0]
     assert run_cmd.startswith("powershell ")
-    assert "irm https://code.kimi.com/kimi-code/install.ps1 | iex" in run_cmd
+    assert "irm https://code.bugpilot.com/bugpilot-code/install.ps1 | iex" in run_cmd
     printed = " ".join(str(c.args[0]) for c in print_mock.call_args_list if c.args)
-    assert "irm https://code.kimi.com/kimi-code/install.ps1 | iex" in printed
+    assert "irm https://code.bugpilot.com/bugpilot-code/install.ps1 | iex" in printed
 
 
 @pytest.mark.asyncio

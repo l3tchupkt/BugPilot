@@ -22,6 +22,16 @@ from typing import LiteralString, cast
 import psycopg
 import typer
 from kaos.path import KaosPath
+from bugpilot.auth.oauth import OAuthManager
+from bugpilot.config import LLMModel, LLMProvider
+from bugpilot.llm import LLM, create_llm
+from bugpilot.session import Session
+from bugpilot.soul import LLMNotSet, LLMNotSupported, MaxStepsReached, RunCancelled, run_soul
+from bugpilot.soul.agent import Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.kimisoul import Agent
+from bugpilot.ui.shell.visualize import visualize
+from bugpilot.wire.types import StatusUpdate
 from kosong.tooling import CallableTool2, ToolError, ToolOk, ToolReturnValue
 from prompt_toolkit import PromptSession
 from prompt_toolkit.formatted_text import FormattedText
@@ -31,17 +41,6 @@ from pydantic import BaseModel, Field, SecretStr
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
-
-from kimi_cli.auth.oauth import OAuthManager
-from kimi_cli.config import LLMModel, LLMProvider
-from kimi_cli.llm import LLM, create_llm
-from kimi_cli.session import Session
-from kimi_cli.soul import LLMNotSet, LLMNotSupported, MaxStepsReached, RunCancelled, run_soul
-from kimi_cli.soul.agent import Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.ui.shell.visualize import visualize
-from kimi_cli.wire.types import StatusUpdate
 
 
 class ExecuteSqlParams(BaseModel):
@@ -260,14 +259,14 @@ class PsqlMode(Enum):
 # ============================================================================
 
 
-async def create_psql_soul(llm: LLM | None, conninfo: str) -> KimiSoul:
-    """Create a KimiSoul configured for PostgreSQL with ExecuteSql tool
-    and standard kimi-cli tools."""
+async def create_psql_soul(llm: LLM | None, conninfo: str) -> Agent:
+    """Create a Agent configured for PostgreSQL with ExecuteSql tool
+    and standard bugpilot tools."""
     from typing import cast
 
-    from kimi_cli.config import load_config
-    from kimi_cli.soul.agent import load_agent
-    from kimi_cli.soul.toolset import KimiToolset
+    from bugpilot.config import load_config
+    from bugpilot.soul.agent import load_agent
+    from bugpilot.soul.toolset import Toolset
 
     config = load_config()
     kaos_work_dir = KaosPath.cwd()
@@ -285,10 +284,10 @@ async def create_psql_soul(llm: LLM | None, conninfo: str) -> KimiSoul:
     agent = await load_agent(agent_file, runtime, mcp_configs=[])
 
     # Add custom ExecuteSql tool to the loaded agent
-    cast(KimiToolset, agent.toolset).add(ExecuteSql(conninfo))
+    cast(Toolset, agent.toolset).add(ExecuteSql(conninfo))
 
     context = Context(session.context_file)
-    return KimiSoul(agent, context=context)
+    return Agent(agent, context=context)
 
 
 # ============================================================================
@@ -302,7 +301,7 @@ class PsqlShell:
     PROMPT_SYMBOL_AI = "✨"
     PROMPT_SYMBOL_PSQL = "$"
 
-    def __init__(self, soul: KimiSoul, psql_process: PsqlProcess):
+    def __init__(self, soul: Agent, psql_process: PsqlProcess):
         self.soul = soul
         self._psql_process = psql_process
         self._mode = PsqlMode.AI
@@ -403,7 +402,7 @@ class PsqlShell:
         if user_input.lower() in ["exit", "quit", "\\q"]:
             raise KeyboardInterrupt
 
-        # Run soul with visualize (same as kimi-cli shell)
+        # Run soul with visualize (same as bugpilot shell)
         cancel_event = asyncio.Event()
 
         try:
@@ -551,8 +550,8 @@ async def _run_async(
     config_file: Path | None = None,
 ) -> None:
     """Async entry point."""
-    from kimi_cli.config import load_config
-    from kimi_cli.llm import augment_provider_with_env_vars
+    from bugpilot.config import load_config
+    from bugpilot.llm import augment_provider_with_env_vars
 
     # If conninfo URL is provided, use it directly
     if conninfo:
@@ -584,7 +583,7 @@ async def _run_async(
             conninfo_parts.append(f"dbname={dbname}")
         conninfo_str = " ".join(conninfo_parts)
 
-    # Load config (same as kimi-cli)
+    # Load config (same as bugpilot)
     config = load_config(config_file)
 
     model: LLMModel | None = None

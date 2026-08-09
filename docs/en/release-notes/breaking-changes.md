@@ -31,10 +31,10 @@ The Shell tool on Windows now runs commands through `bash.exe` (POSIX semantics)
 - **Affected**: All Windows users; integrations, agent specs, or saved snippets that rely on PowerShell-specific syntax (`Get-ChildItem`, `Where-Object`, `cmdlet -Foo Bar` argument style, `;`-only command chaining, `NUL` redirects, etc.) reaching the Shell tool
 - **Migration**:
   1. Install [Git for Windows](https://git-scm.com/downloads/win) if not already installed; the bundled `bash.exe` (typically `C:\Program Files\Git\bin\bash.exe`) is auto-discovered via `where.exe git` or the standard install location
-  2. If `bash.exe` lives in a non-standard location, set the `KIMI_CLI_GIT_BASH_PATH` environment variable to its absolute path before launching kimi-cli
+  2. If `bash.exe` lives in a non-standard location, set the `KIMI_CLI_GIT_BASH_PATH` environment variable to its absolute path before launching bugpilot
   3. Update any custom prompts, agent specs, or snippets that hard-code PowerShell syntax to use Unix shell syntax instead (forward slashes inside Shell commands, `/dev/null` instead of `NUL`, `&&` and `||` for control flow, `grep`/`sed`/`awk` instead of PowerShell cmdlets)
   4. Note that `python.exe`, `node.exe`, and other native Windows binaries called from inside bash still need native Windows paths (e.g. `python C:\path\to\script.py`); only POSIX-aware tools (cat, ls, grep, etc.) understand the `/c/path/...` form
-  5. If kimi-cli cannot find `bash.exe`, it now exits with an install hint at startup instead of falling back to PowerShell
+  5. If bugpilot cannot find `bash.exe`, it now exits with an install hint at startup instead of falling back to PowerShell
 
 ## 1.40.0
 
@@ -56,7 +56,7 @@ YOLO no longer injects model guidance, so the old `skip_yolo_prompt_injection` c
 
 ### `merge_all_available_skills` default flipped to `true`
 
-The `merge_all_available_skills` config option default has changed from `false` to `true`. kimi-cli now merges all existing user- and project-level brand skill directories (`.kimi/skills`, `.claude/skills`, `.codex/skills`) by default instead of only using the first one found. Users who keep skills in multiple brand directories — for example both `~/.kimi/skills` and `~/.claude/skills` — will see every skill out of the box after upgrading.
+The `merge_all_available_skills` config option default has changed from `false` to `true`. bugpilot now merges all existing user- and project-level brand skill directories (`.kimi/skills`, `.claude/skills`, `.codex/skills`) by default instead of only using the first one found. Users who keep skills in multiple brand directories — for example both `~/.kimi/skills` and `~/.claude/skills` — will see every skill out of the box after upgrading.
 
 - **Affected**: Users who maintain multiple brand skill directories and relied on the first-match behavior to hide duplicates
 - **Migration**: Set `merge_all_available_skills = false` in your config to restore the previous first-match behavior
@@ -72,10 +72,10 @@ The `SubagentEvent` field `task_tool_call_id` has been renamed to `parent_tool_c
 
 ### `CreateSubagent` and `Task` (multiagent) tools removed
 
-The `CreateSubagent` and `Task` tools under `kimi_cli.tools.multiagent` have been removed. Use the new `Agent` tool instead.
+The `CreateSubagent` and `Task` tools under `bugpilot.tools.multiagent` have been removed. Use the new `Agent` tool instead.
 
-- **Affected**: Custom agent configurations referencing `kimi_cli.tools.multiagent:Task` or `kimi_cli.tools.multiagent:CreateSubagent`
-- **Migration**: Replace with `kimi_cli.tools.agent:Agent` in your agent YAML `allowed_tools`
+- **Affected**: Custom agent configurations referencing `bugpilot.tools.multiagent:Task` or `bugpilot.tools.multiagent:CreateSubagent`
+- **Migration**: Replace with `bugpilot.tools.agent:Agent` in your agent YAML `allowed_tools`
 
 ### `TaskOutput` `block` parameter default changed
 
@@ -188,10 +188,10 @@ The `Bash` tool (or `CMD` on Windows) has been unified and renamed to `Shell`.
 
 ### `Task` tool moved to `multiagent` module
 
-The `Task` tool has been moved from `kimi_cli.tools.task` to `kimi_cli.tools.multiagent`.
+The `Task` tool has been moved from `bugpilot.tools.task` to `bugpilot.tools.multiagent`.
 
 - **Affected**: Custom tools importing the `Task` tool
-- **Migration**: Change import path to `from kimi_cli.tools.multiagent import Task`
+- **Migration**: Change import path to `from bugpilot.tools.multiagent import Task`
 
 ### `PatchFile` tool removed
 
@@ -233,11 +233,11 @@ The `--agent` option has been renamed to `--agent-file`.
 
 ## 0.25 - Package name change
 
-### Package renamed from `ensoul` to `kimi-cli`
+### Package renamed from `ensoul` to `bugpilot`
 
 - **Affected**: Code or scripts using the `ensoul` package name
 - **Migration**:
-  - Installation: `pip install ensoul` → `pip install kimi-cli` or `uv tool install kimi-cli`
+  - Installation: `pip install ensoul` → `pip install bugpilot` or `uv tool install bugpilot`
   - Command: `ensoul` → `kimi`
 
 ### `ENSOUL_*` parameter prefix changed

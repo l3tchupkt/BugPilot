@@ -1,10 +1,10 @@
-"""Tests for kimi_cli.utils.server shared utilities."""
+"""Tests for bugpilot.utils.server shared utilities."""
 
 from __future__ import annotations
 
 import pytest
 
-from kimi_cli.utils.server import (
+from bugpilot.utils.server import (
     find_available_port,
     format_url,
     get_address_family,

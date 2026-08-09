@@ -85,7 +85,7 @@ SMOKE_DIR="$(mktemp -d /tmp/kimi-smoke-XXXXXX)"
 绝大多数场景使用这个模式：
 
 ```sh
-uv run python -m kimi_cli.cli \
+uv run python -m bugpilot.cli \
   --print \
   --prompt "你的测试 prompt" \
   --work-dir "$SMOKE_DIR"
@@ -100,7 +100,7 @@ echo "exit_code=$?"
 
 当默认方式不满足需求时，按需选用：
 
-- **长 prompt**：通过 stdin 传入——`cat <<'PROMPT' | uv run python -m kimi_cli.cli --print --input-format text --work-dir "$SMOKE_DIR"`
+- **长 prompt**：通过 stdin 传入——`cat <<'PROMPT' | uv run python -m bugpilot.cli --print --input-format text --work-dir "$SMOKE_DIR"`
 - **结构化输出**：加 `--output-format stream-json`，输出逐行 JSON，便于程序化解析
 - **只看最终结果**：用 `--quiet`，等价于 `--print --output-format text --final-message-only`
 

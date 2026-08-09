@@ -16,12 +16,12 @@ def _repo_root() -> Path:
 
 def _run_kimi(args: list[str], *, share_dir: Path) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
-    env["KIMI_SHARE_DIR"] = str(share_dir)
+    env["BUGPILOT_SHARE_DIR"] = str(share_dir)
     # Stabilize rich/Click formatting across environments for snapshot tests.
     env["COLUMNS"] = "120"
     env["LINES"] = "40"
-    # Run via `python -m` to avoid `uv run kimi` build/progress output interfering with snapshots.
-    cmd = [sys.executable, "-m", "kimi_cli.cli", *args]
+    # Run via `python -m` to avoid `uv run bugpilot` build/progress output interfering with snapshots.
+    cmd = [sys.executable, "-m", "bugpilot.cli", *args]
     return subprocess.run(
         cmd,
         cwd=_repo_root(),
@@ -78,8 +78,8 @@ def test_config_option_help_value_is_reported(tmp_path: Path) -> None:
     normalized = _normalize_cli_error_output(result.stderr)
     assert normalized.startswith(
         """\
-Usage: python -m kimi_cli.cli [OPTIONS] COMMAND [ARGS]...
-Try 'python -m kimi_cli.cli -h' for help.
+Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
+Try 'python -m bugpilot.cli -h' for help.
 Error:
 """
     )
@@ -100,14 +100,14 @@ def test_invalid_config_toml_is_reported(tmp_path: Path) -> None:
         share_dir=share_dir,
     )
 
-    log_path = share_dir / "logs" / "kimi.log"
+    log_path = share_dir / "logs" / "bugpilot.log"
     assert result.returncode == snapshot(1)
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
         f"""\
 Invalid TOML in configuration file {config_path}: Invalid key "this is not toml" at line 1 col 17
 See logs: {log_path}
-Run with --debug for full traceback, or run kimi export to share diagnostics.
+Run with --debug for full traceback, or run bugpilot export to share diagnostics.
 """
     )
 
@@ -119,8 +119,8 @@ def test_session_and_continue_conflict_is_reported(tmp_path: Path) -> None:
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
         """\
-Usage: python -m kimi_cli.cli [OPTIONS] COMMAND [ARGS]...
-Try 'python -m kimi_cli.cli -h' for help.
+Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
+Try 'python -m bugpilot.cli -h' for help.
 Error:
 Invalid value for --continue: Cannot combine --continue, --session.
 """
@@ -134,8 +134,8 @@ def test_session_picker_with_print_mode_is_reported(tmp_path: Path) -> None:
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
         """\
-Usage: python -m kimi_cli.cli [OPTIONS] COMMAND [ARGS]...
-Try 'python -m kimi_cli.cli -h' for help.
+Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
+Try 'python -m bugpilot.cli -h' for help.
 Error:
 Invalid value for --session: --session without a session ID is only supported for shell UI
 """
@@ -149,8 +149,8 @@ def test_resume_alias_and_continue_conflict_is_reported(tmp_path: Path) -> None:
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
         """\
-Usage: python -m kimi_cli.cli [OPTIONS] COMMAND [ARGS]...
-Try 'python -m kimi_cli.cli -h' for help.
+Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
+Try 'python -m bugpilot.cli -h' for help.
 Error:
 Invalid value for --continue: Cannot combine --continue, --session.
 """
@@ -185,8 +185,8 @@ def test_continue_without_previous_session_is_reported(tmp_path: Path) -> None:
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
         """\
-Usage: python -m kimi_cli.cli [OPTIONS] COMMAND [ARGS]...
-Try 'python -m kimi_cli.cli -h' for help.
+Usage: python -m bugpilot.cli [OPTIONS] COMMAND [ARGS]...
+Try 'python -m bugpilot.cli -h' for help.
 Error:
 Invalid value for --continue: No previous session found for the working directory
 """

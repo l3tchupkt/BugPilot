@@ -16,7 +16,7 @@ kimi info [--json]
 
 | 字段 | 说明 |
 |------|------|
-| `kimi_cli_version` | Kimi Code CLI 版本号 |
+| `bugpilot_version` | Kimi Code CLI 版本号 |
 | `agent_spec_versions` | 支持的 Agent 规格版本列表 |
 | `wire_protocol_version` | Wire 协议版本 |
 | `python_version` | Python 运行时版本 |
@@ -27,7 +27,7 @@ kimi info [--json]
 
 ```sh
 $ kimi info
-kimi-cli version: 1.20.0
+bugpilot version: 1.20.0
 agent spec versions: 1
 wire protocol: 1.10
 python version: 3.13.1
@@ -37,5 +37,5 @@ python version: 3.13.1
 
 ```sh
 $ kimi info --json
-{"kimi_cli_version": "1.20.0", "agent_spec_versions": ["1"], "wire_protocol_version": "1.10", "python_version": "3.13.1"}
+{"bugpilot_version": "1.20.0", "agent_spec_versions": ["1"], "wire_protocol_version": "1.10", "python_version": "3.13.1"}
 ```

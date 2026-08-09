@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inject build SHA into src/kimi_cli/_build_info.py for telemetry provenance.
+"""Inject build SHA into src/bugpilot/_build_info.py for telemetry provenance.
 
 Called before wheel builds and PyInstaller builds to hardcode the git commit
 SHA (with remote origin) into the package so telemetry can reliably distinguish
@@ -65,7 +65,7 @@ def _detect_remote() -> str:
 
 def _detect_sha() -> str:
     """Return the build SHA from env or git, empty string if unavailable."""
-    if sha := os.environ.get("KIMI_BUILD_SHA", "").strip():
+    if sha := os.environ.get("BUGPILOT_BUILD_SHA", "").strip():
         return sha
 
     try:
@@ -96,7 +96,7 @@ def main() -> int:
     sha = _detect_sha()
     build_id = _assemble(remote, sha)
 
-    target = _resolve_project_root() / "src" / "kimi_cli" / "_build_info.py"
+    target = _resolve_project_root() / "src" / "bugpilot" / "_build_info.py"
     target.write_text(f'BUILD_SHA = "{build_id}"\n')
     print(f"Injected build_sha={build_id!r} into {target}")
     return 0

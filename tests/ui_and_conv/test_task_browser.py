@@ -6,22 +6,22 @@ from pathlib import Path
 
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.background import TaskRuntime, TaskSpec, TaskStatus
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.ui.shell import task_browser as task_browser_module
-from kimi_cli.ui.shell.task_browser import TaskBrowserApp, TaskBrowserModel
+from bugpilot.background import TaskRuntime, TaskSpec, TaskStatus
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.ui.shell import task_browser as task_browser_module
+from bugpilot.ui.shell.task_browser import TaskBrowserApp, TaskBrowserModel
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> KimiSoul:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
     agent = Agent(
         name="Test Agent",
         system_prompt="Test system prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return KimiSoul(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
 def _write_task(

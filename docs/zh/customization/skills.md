@@ -56,7 +56,7 @@ merge_all_available_skills = false
 
 **项目级 Skills**
 
-存放在项目目录中，在该项目内生效。候选路径以**项目根**为起点（即工作目录向上最近的包含 `.git` 的祖先目录；找不到时回退到工作目录本身），这样即使从 monorepo 的某个子 package 内启动 kimi-cli，仓库根目录下的 Skills 也能被正确识别。同样分为两组独立查找：
+存放在项目目录中，在该项目内生效。候选路径以**项目根**为起点（即工作目录向上最近的包含 `.git` 的祖先目录；找不到时回退到工作目录本身），这样即使从 monorepo 的某个子 package 内启动 bugpilot，仓库根目录下的 Skills 也能被正确识别。同样分为两组独立查找：
 
 - **品牌组**（互斥选一）：
   1. `.kimi/skills/`
@@ -119,7 +119,7 @@ Skills 路径独立于 [`KIMI_SHARE_DIR`](../configuration/env-vars.md#kimi-shar
 
 Kimi Code CLI 内置了以下 Skills：
 
-- **kimi-cli-help**：Kimi Code CLI 帮助。解答关于 Kimi Code CLI 安装、配置、斜杠命令、键盘快捷键、MCP 集成、供应商、环境变量等问题。
+- **bugpilot-help**：Kimi Code CLI 帮助。解答关于 Kimi Code CLI 安装、配置、斜杠命令、键盘快捷键、MCP 集成、供应商、环境变量等问题。
 - **skill-creator**：Skill 创建指南。当你需要创建新的 Skill（或更新现有 Skill）来扩展 Kimi 的能力时，可以使用此 Skill 获取详细的创建指导和最佳实践。
 
 ## 创建 Skill

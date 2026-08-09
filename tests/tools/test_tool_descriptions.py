@@ -7,20 +7,19 @@ import platform
 import pytest
 from inline_snapshot import snapshot
 
-from kimi_cli.tools.agent import Agent as AgentTool
-from kimi_cli.tools.background import TaskList, TaskOutput, TaskStop
-from kimi_cli.tools.dmail import SendDMail
-from kimi_cli.tools.file.glob import Glob
-from kimi_cli.tools.file.grep_local import Grep
-from kimi_cli.tools.file.read import ReadFile
-from kimi_cli.tools.file.read_media import ReadMediaFile
-from kimi_cli.tools.file.replace import StrReplaceFile
-from kimi_cli.tools.file.write import WriteFile
-from kimi_cli.tools.shell import Shell
-from kimi_cli.tools.think import Think
-from kimi_cli.tools.todo import SetTodoList
-from kimi_cli.tools.web.fetch import FetchURL
-from kimi_cli.tools.web.search import SearchWeb
+from bugpilot.tools.agent import Agent as AgentTool
+from bugpilot.tools.background import TaskList, TaskOutput, TaskStop
+from bugpilot.tools.dmail import SendDMail
+from bugpilot.tools.file.glob import Glob
+from bugpilot.tools.file.grep_local import Grep
+from bugpilot.tools.file.read import ReadFile
+from bugpilot.tools.file.read_media import ReadMediaFile
+from bugpilot.tools.file.replace import StrReplaceFile
+from bugpilot.tools.file.write import WriteFile
+from bugpilot.tools.shell import Shell
+from bugpilot.tools.think import Think
+from bugpilot.tools.todo import SetTodoList
+from bugpilot.tools.todo import SetTodoList
 
 
 def test_agent_description(agent_tool: AgentTool):

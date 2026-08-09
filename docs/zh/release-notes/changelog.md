@@ -47,7 +47,7 @@
 
 ## 1.42.0 (2026-05-11)
 
-- Shell：把 Windows 上的 Shell 后端从 PowerShell 切换到 Git Bash——Shell 工具现在通过 `bash.exe`（POSIX 语义）执行命令，而不再使用 `powershell.exe`。Windows 用户能使用与 Linux/macOS 一致的 Unix 风格语法（`&&`、`||`、`|`、`/dev/null`、`grep`、`sed` 等）。**需要先安装 Git for Windows**：kimi-cli 按以下顺序查找 `bash.exe`：环境变量 `KIMI_CLI_GIT_BASH_PATH` → `where.exe git` → 标准安装路径（`C:\Program Files\Git\bin\bash.exe`）；如果都找不到，启动时打印安装提示并退出
+- Shell：把 Windows 上的 Shell 后端从 PowerShell 切换到 Git Bash——Shell 工具现在通过 `bash.exe`（POSIX 语义）执行命令，而不再使用 `powershell.exe`。Windows 用户能使用与 Linux/macOS 一致的 Unix 风格语法（`&&`、`||`、`|`、`/dev/null`、`grep`、`sed` 等）。**需要先安装 Git for Windows**：bugpilot 按以下顺序查找 `bash.exe`：环境变量 `KIMI_CLI_GIT_BASH_PATH` → `where.exe git` → 标准安装路径（`C:\Program Files\Git\bin\bash.exe`）；如果都找不到，启动时打印安装提示并退出
 - Shell：防御 Windows 上模型偶尔幻觉出的 CMD 风格 `2>nul` 重定向——在命令进入 git-bash 前自动改写为 `2>/dev/null`；如果不防御，git-bash 会真的创建一个名为 `nul` 的文件（Windows 保留设备名），破坏 `git add .` 和 `git clone`。该改写仅在 Windows 上生效；Linux/macOS 上 `>nul` 是合法的写入到名为 `nul` 文件的重定向，保持原样
 - File：`ReadFile`、`WriteFile`、`StrReplaceFile`、`Glob`、`Grep` 在 Windows 上接受 POSIX 形式的路径——除原生 Windows 路径外，这些工具现在能识别 `/c/Users/foo`（Git Bash 形式）、`/cygdrive/c/Users/foo`（Cygwin 形式）和 `\\server\share`（UNC 形式），并在文件系统操作前自动转换为原生形式
 - Shell：在 LLM 步骤重试时清除已流式输出的不完整内容——以前，如果某个步骤在流式输出中途失败（例如触发速率限制或服务器错误），被中断尝试所产生的未完成文本和未结束的工具调用块会留在屏幕上，并与新尝试的输出混在一起。现在 Shell 界面会丢弃这部分不完整状态，并打印一条重试横幅，显示失败原因、尝试次数和等待时间；Print 模式也会在重试时丢弃已缓冲的 Assistant 消息
@@ -84,18 +84,18 @@
 - Skill：新增 `extra_skill_dirs` 配置项，用于在内置 / 用户级 / 项目级自动发现的基础上追加自定义 Skills 目录——每一项可以是绝对路径、`~` 前缀路径（会按 `$HOME` 展开），或相对于项目根的路径（即 `work_dir` 向上第一个包含 `.git` 的目录，不是当前工作目录）；不存在的条目会被静默跳过，同一路径的软链接或带尾部斜杠的写法会被 canonicalize 归并为一条根，避免同一目录在系统提示里重复出现
 - Skill：强化 Skill 发现对 `is_dir` / `iterdir` 抛出 `OSError` 的容错（例如 `extra_skill_dirs` 指向一个权限受限的目录）——受影响的条目会被记录并跳过，不会让整轮 Skill 发现失败中断
 - Core：修复 DeepSeek V4（以及其它走 `openai_legacy` 的 OpenAI 兼容 Thinking 模式后端）在思考轮次后紧跟工具调用时，被 API 以 400 `The reasoning_content in the thinking mode must be passed back to the API` 拒绝的问题——`openai_legacy` 供应商现在默认 `reasoning_key = "reasoning_content"`，模型响应中的推理内容会被正确存入历史，并在后续轮次自动回传给 API。同时给 `LLMProvider` 新增可选字段 `reasoning_key`，便于覆盖字段名（例如非标网关使用的 `"reasoning"`）或设置为 `""` 完全关闭推理内容回传
-- Core：新增 `skip_yolo_prompt_injection` 配置项，用于抑制 yolo 模式下注入的系统提示词——基于 `KimiSoul` 构建自定义应用且不需要该提示时很有用
+- Core：新增 `skip_yolo_prompt_injection` 配置项，用于抑制 yolo 模式下注入的系统提示词——基于 `Agent` 构建自定义应用且不需要该提示时很有用
 - Kimi：新增环境变量 `KIMI_MODEL_THINKING_KEEP`，将其值原样作为 `thinking.keep` 字段发送给 Moonshot API，用于启用 Preserved Thinking（例如 `export KIMI_MODEL_THINKING_KEEP=all` 可让模型在多轮之间保留历史 `reasoning_content`）；仅对支持 Preserved Thinking 的 Moonshot 模型（如 `kimi-k2.6` / `kimi-k2-thinking`）生效，未设置或空字符串时请求体不携带该字段、等同当前默认行为，且仅在当前模型真正处于 Thinking 模式时才注入，以避免 API 收到只有 `thinking.keep` 而缺少 `thinking.type` 的无效请求体。注意 `keep=all` 会因为重新发送历史推理内容而显著增加输入 token 与 API 费用
 - Kosong：修复 `Kimi.with_extra_body` 在后续调用新增其它 `thinking.*` 字段时静默丢掉已有 `thinking.type` 的问题——`thinking` 子对象现在按字段合并，而不是被整体浅覆盖，使得 `with_thinking(...)` 与 `with_extra_body({"thinking": {...}})` 组合使用时两次设置的字段都能保留
 - Kosong：修复 Kimi provider 在 `tool_calls` 旁发送空 `content` 导致 Moonshot API 返回 400 "text content is empty" 错误的问题。当 Assistant 消息带有工具调用且可见内容实际为空（无文本或仅包含空白 / think 部分）时，现在会完全省略 `content` 字段
 - Shell：修复审批请求反馈文本输入的光标渲染问题——光标块现在根据实际光标位置正确渲染，不再始终固定在行尾；当光标位于文本中间时，光标所在字符会以反色显示（模拟终端原生块光标效果）
 - Kosong：修复接入某些 MCP 服务端（如 JetBrains Rider MCP 的 `truncateMode`）时，Moonshot API 以 `400 At path 'properties.X': type is not defined` 拒绝每次请求导致会话完全无法使用的问题——这些 MCP 工具的参数 schema 里有仅声明 `enum`/`const` 或根本没有类型提示的属性，符合 JSON Schema 规范但过不了 Moonshot 的严格校验；现在 Kimi 供应商会在发送前为每个工具 schema 补齐 JSON Schema `type`（尽量从 `enum`/`const` 值推断，否则默认 `"string"`），OpenAI 和 Anthropic 路径不受影响
-- Skill：项目级 Skill 发现现在会先向上查找最近的 `.git` 祖先目录，再查 `.kimi/skills` / `.claude/skills` / `.codex/skills` / `.agents/skills`，这样即使从子目录（例如 monorepo 的某个 package 内部）启动 kimi-cli，也能正确识别仓库根目录下定义的 Skills；找不到 `.git` 标记时，回退到工作目录本身，避免误入无关的上层目录
-- Skill：`merge_all_available_skills` 的默认值从 `false` 改为 `true`。kimi-cli 现在默认会合并用户级和项目级所有已存在的品牌 Skills 目录（`.kimi/skills`、`.claude/skills`、`.codex/skills`），而不是仅使用找到的第一个——让同时拥有多个品牌目录（例如同时保留 `~/.kimi/skills` 和 `~/.claude/skills`）的用户开箱即看到所有 Skills。**行为变更**：依赖旧默认（仅取第一个）的用户可通过在配置中显式设置 `merge_all_available_skills = false` 恢复旧行为。
+- Skill：项目级 Skill 发现现在会先向上查找最近的 `.git` 祖先目录，再查 `.kimi/skills` / `.claude/skills` / `.codex/skills` / `.agents/skills`，这样即使从子目录（例如 monorepo 的某个 package 内部）启动 bugpilot，也能正确识别仓库根目录下定义的 Skills；找不到 `.git` 标记时，回退到工作目录本身，避免误入无关的上层目录
+- Skill：`merge_all_available_skills` 的默认值从 `false` 改为 `true`。bugpilot 现在默认会合并用户级和项目级所有已存在的品牌 Skills 目录（`.kimi/skills`、`.claude/skills`、`.codex/skills`），而不是仅使用找到的第一个——让同时拥有多个品牌目录（例如同时保留 `~/.kimi/skills` 和 `~/.claude/skills`）的用户开箱即看到所有 Skills。**行为变更**：依赖旧默认（仅取第一个）的用户可通过在配置中显式设置 `merge_all_available_skills = false` 恢复旧行为。
 
 ## 1.38.0 (2026-04-22)
 - Shell：修复 approval 弹窗超时后被误报为 `Rejected by user` 的问题——300 秒安全超时后，工具调用会以 `Rejected: approval timed out` 拒绝，让离开电脑一段时间后回来的用户能分辨出这是超时而非自己的手动拒绝。经常长时间离开的话可以加 `--yolo`/`-y` 自动批准工具调用
-- Auth：修复 OAuth 用户因并发实例的 refresh token 轮换竞态被反复要求 `/login` 的问题——当另一个并发运行的 kimi-cli 实例（终端、VS Code 插件或 `kimi -p` 一次性命令）合法地轮换了 refresh token，当前实例手里过期的 refresh 请求会从服务端拿回 401，“别的实例是否刚轮换过”的磁盘检查与 `delete_tokens` 调用之间存在 TOCTOU 竞态，即使磁盘上马上会被写入一份有效的新 token，凭证文件也会被误删，迫使用户重新登录；现在依旧清理内存缓存（真正失效的 token 会在下一次请求时浮现），但保留文件，让并发实例刚写入的新 token 有机会被恢复，最终的 `/login` 仍会原子覆盖该文件
+- Auth：修复 OAuth 用户因并发实例的 refresh token 轮换竞态被反复要求 `/login` 的问题——当另一个并发运行的 bugpilot 实例（终端、VS Code 插件或 `kimi -p` 一次性命令）合法地轮换了 refresh token，当前实例手里过期的 refresh 请求会从服务端拿回 401，“别的实例是否刚轮换过”的磁盘检查与 `delete_tokens` 调用之间存在 TOCTOU 竞态，即使磁盘上马上会被写入一份有效的新 token，凭证文件也会被误删，迫使用户重新登录；现在依旧清理内存缓存（真正失效的 token 会在下一次请求时浮现），但保留文件，让并发实例刚写入的新 token 有机会被恢复，最终的 `/login` 仍会原子覆盖该文件
 - Kosong：修复 Anthropic 供应商将并行工具结果拆分到多个 user message 的问题——现在会将仅包含工具结果的连续 user message 合并为单条消息，以符合 Anthropic Messages API 规范（assistant 一轮中的所有 `tool_use` 必须在同一条 user message 内回答）；修复了严格兼容后端（如 DeepSeek `/anthropic` 接口）返回 400 错误的问题，并避免官方后端静默地引导模型放弃并行工具调用
 
 ## 1.37.0 (2026-04-20)
@@ -155,7 +155,7 @@
 - Core：改进错误诊断——丰富内部日志覆盖，在 `kimi export` 导出的归档中包含相关日志文件和系统信息，并为常见错误（认证、网络、超时、配额）提供可操作的提示消息
 - Shell：当工作目录在会话期间不可访问时优雅退出并显示崩溃报告——检测 CWD 丢失场景（外置硬盘拔出、目录被删除或文件系统卸载），打印包含会话 ID 和工作目录的恢复面板后干净退出
 - Shell：使用 `git ls-files` 进行 `@` 文件引用发现——文件补全器现在优先使用 `git ls-files --recurse-submodules` 查询文件列表（5 秒超时），非 Git 仓库则回退到 `os.walk`；此修复解决了大型仓库（如包含 6.5 万+文件的 apache/superset）中 1000 文件限制导致字母顺序靠后的目录无法访问的问题（修复 #1375）
-- Core：新增共享的 `file_filter` 模块——通过 `src/kimi_cli/utils/file_filter.py` 统一 Shell 和 Web 的文件引用逻辑，提供一致的路径过滤、忽略目录排除和 Git 感知文件发现
+- Core：新增共享的 `file_filter` 模块——通过 `src/bugpilot/utils/file_filter.py` 统一 Shell 和 Web 的文件引用逻辑，提供一致的路径过滤、忽略目录排除和 Git 感知文件发现
 - Shell：防止文件引用 scope 参数的路径遍历——文件补全器请求中的 `scope` 参数现在会经过验证，防止目录遍历攻击
 - Web：恢复文件浏览器 API 中的未过滤目录列表——文件浏览器端点不再应用 Git 感知过滤，确保 Web UI 文件选择器中显示所有文件
 - Todo：重构 `SetTodoList` 工具，支持状态持久化并防止工具调用风暴——待办事项现在会持久化到会话状态（主 Agent）和独立状态文件（子 Agent）；新增查询模式（省略 `todos` 参数可读取当前状态）和清空模式（传 `[]` 清空）；工具描述中增加了防风暴指导，防止在没有实际进展的情况下反复调用（修复 #1710）
@@ -210,7 +210,7 @@
 - Grep：新增 Token 效率优化——默认 `head_limit` 为 250 并支持 `offset` 分页、启用 `--hidden` 搜索同时排除 VCS 目录、`files_with_matches` 按修改时间排序、输出相对路径、非 content 模式限制最大列宽 500
 - Grep：content 模式的 `line_number`（`-n`）现在默认为 `true`——默认包含行号，以便模型引用精确的代码位置
 - Grep：`count_matches` 模式现在在 message 中包含汇总信息——例如 "Found 30 total occurrences across 10 files."
-- ACP：修复通过 `kimi-code` 或 `kimi-cli` 入口启动 ACP 时 `ValueError: list.index(x): x not in list` 崩溃的问题（如 JetBrains AI Assistant 场景）
+- ACP：修复通过 `kimi-code` 或 `bugpilot` 入口启动 ACP 时 `ValueError: list.index(x): x not in list` 崩溃的问题（如 JetBrains AI Assistant 场景）
 - Core：修复 OpenAI 兼容 API（如 One API）在多轮对话中返回 400 错误的问题——当服务端默认返回 `reasoning_content` 时，现在会在历史消息包含思考内容且配置了 `reasoning_key` 的情况下自动设置 `reasoning_effort` 为 `"medium"`
 - Shell：新增 `/theme` 命令和深色/浅色主题支持——使用浅色终端背景的用户可通过 `/theme light` 或在 `config.toml` 中设置 `theme = "light"` 切换到浅色配色方案；diff 高亮、任务浏览器、提示符 UI 和 MCP 状态颜色均会跟随所选主题自动适配
 - Core：修复压缩前上下文溢出问题——工具结果的 Token 数现在会被估算并纳入自动压缩触发检查，防止大量工具输出在 API 调用间隙将上下文推超模型限制时出现"exceeded model token limit"错误
@@ -294,7 +294,7 @@
 - Core：Plan 模式现在支持增量编辑计划文件——Agent 可以使用 `StrReplaceFile` 精准更新计划文件的特定部分，而无需通过 `WriteFile` 重写整个文件；同时非计划文件的编辑现在会被直接阻止，而非弹出审批请求
 - Core：延迟 MCP 启动并展示加载进度——MCP 服务器现在在 Shell UI 启动后异步初始化，并提供实时进度指示器显示连接状态；Shell 在状态区域显示连接中和就绪状态，Web 显示服务器连接状态
 - Core：优化轻量级启动路径——对 CLI 子命令和版本元数据实现延迟加载，显著缩短 `--version` 和 `--help` 等常用命令的启动时间
-- Build：修复 Nix `FileCollisionError` for `bin/kimi`——从 `kimi-code` 包中移除重复的入口点，使 `kimi-cli` 独占 `bin/kimi`
+- Build：修复 Nix `FileCollisionError` for `bin/kimi`——从 `kimi-code` 包中移除重复的入口点，使 `bugpilot` 独占 `bin/kimi`
 - Shell：Agent 运行期间保留用户未提交的输入——在模型运行时在提示符中键入的文本不再在轮次结束时丢失，用户可以按回车键将草稿作为下一条消息提交
 - Shell：修复 Agent 运行结束后 Ctrl-C 和 Ctrl-D 无法正常工作的问题——键盘中断和 EOF 信号被静默吞没，而非显示提示信息或退出 Shell
 
@@ -456,7 +456,7 @@
 - Web：改进聊天中的自动滚动行为，更流畅地跟随新内容
 - Web：会话流开始时更新工作目录的最近会话 ID（`last_session_id`）
 - Shell：移除 `Ctrl-/` 快捷键（此前用于触发 `/help` 命令）
-- Rust：Rust 版实现迁移到 `MoonshotAI/kimi-agent-rs` 并独立发版；二进制更名为 `kimi-agent`
+- Rust：Rust 版实现迁移到 `l3tchupkt/kimi-agent-rs` 并独立发版；二进制更名为 `kimi-agent`
 - Core：重新加载配置时保留会话 ID，确保会话正确恢复
 - Shell：修复会话回放时显示已被 `/clear` 或 `/reset` 清除的消息的问题
 - Web：修复会话中断或取消时审批请求状态未更新的问题
@@ -627,7 +627,7 @@
 ## 0.75 (2026-01-09)
 
 - Tool：改进 `ReadFile` 工具描述
-- Skills：添加内置 `kimi-cli-help` Skill，解答 Kimi Code CLI 使用和配置问题
+- Skills：添加内置 `bugpilot-help` Skill，解答 Kimi Code CLI 使用和配置问题
 
 ## 0.74 (2026-01-09)
 
@@ -643,7 +643,7 @@
 - MCP：确保 MCP 工具加载完成后再开始 Agent 循环
 - Wire：修复 Wire 模式无法接受有效 `cancel` 请求的问题
 - Setup：`/model` 命令现在可以切换所选供应商的所有可用模型
-- Lib：从 `kimi_cli.wire.types` 重新导出所有 Wire 消息类型，作为 `kimi_cli.wire.message` 的替代
+- Lib：从 `bugpilot.wire.types` 重新导出所有 Wire 消息类型，作为 `bugpilot.wire.message` 的替代
 - Loop：添加 `max_ralph_iterations` 循环控制配置，限制额外的 Ralph 迭代次数
 - Config：将循环控制配置中的 `max_steps_per_run` 重命名为 `max_steps_per_turn`（向后兼容）
 - CLI：添加 `--max-steps-per-turn`、`--max-retries-per-step` 和 `--max-ralph-iterations` 选项，覆盖循环控制配置
@@ -672,20 +672,20 @@
 
 - Core：支持在 `~/.kimi/skills` 或 `~/.claude/skills` 中发现 Skills
 - Python：降低最低 Python 版本要求至 3.12
-- Nix：添加 flake 打包支持；可通过 `nix profile install .#kimi-cli` 安装或 `nix run .#kimi-cli` 运行
-- CLI：添加 `kimi-cli` 脚本别名；可通过 `uvx kimi-cli` 运行
+- Nix：添加 flake 打包支持；可通过 `nix profile install .#bugpilot` 安装或 `nix run .#bugpilot` 运行
+- CLI：添加 `bugpilot` 脚本别名；可通过 `uvx bugpilot` 运行
 - Lib：将 LLM 配置验证移入 `create_llm`，配置缺失时返回 `None`
 
 ## 0.68 (2025-12-24)
 
 - CLI：添加 `--config` 和 `--config-file` 选项，支持传入 JSON/TOML 配置
-- Core：`KimiCLI.create` 的 `config` 参数现在除了 `Path` 也支持 `Config` 类型
+- Core：`BugPilotCLI.create` 的 `config` 参数现在除了 `Path` 也支持 `Config` 类型
 - Tool：在 `WriteFile` 和 `StrReplaceFile` 的审批/结果中包含 diff 显示块
 - Wire：在审批请求中添加显示块（包括 diff），保持向后兼容
 - ACP：在工具结果和审批提示中显示文件 diff 预览
 - ACP：连接 ACP 客户端管理的 MCP 服务器
 - ACP：如果支持，在 ACP 客户端终端中运行 Shell 命令
-- Lib：添加 `KimiToolset.find` 方法，按类或名称查找工具
+- Lib：添加 `Toolset.find` 方法，按类或名称查找工具
 - Lib：添加 `ToolResultBuilder.display` 方法，向工具结果追加显示块
 - MCP：添加 `kimi mcp auth` 及相关子命令，管理 MCP 授权
 
@@ -699,19 +699,19 @@
 ## 0.66 (2025-12-19)
 
 - Lib：在 `StatusUpdate` Wire 消息中提供 `token_usage` 和 `message_id`
-- Lib：添加 `KimiToolset.load_tools` 方法，支持依赖注入加载工具
-- Lib：添加 `KimiToolset.load_mcp_tools` 方法，加载 MCP 工具
-- Lib：将 `MCPTool` 从 `kimi_cli.tools.mcp` 移至 `kimi_cli.soul.toolset`
+- Lib：添加 `Toolset.load_tools` 方法，支持依赖注入加载工具
+- Lib：添加 `Toolset.load_mcp_tools` 方法，加载 MCP 工具
+- Lib：将 `MCPTool` 从 `bugpilot.tools.mcp` 移至 `bugpilot.soul.toolset`
 - Lib：添加 `InvalidToolError`、`MCPConfigError` 和 `MCPRuntimeError` 异常类
 - Lib：使 Kimi Code CLI 详细异常类扩展 `ValueError` 或 `RuntimeError`
-- Lib：`KimiCLI.create` 和 `load_agent` 的 `mcp_configs` 参数支持传入验证后的 `list[fastmcp.mcp_config.MCPConfig]`
-- Lib：修复 `KimiCLI.create`、`load_agent`、`KimiToolset.load_tools` 和 `KimiToolset.load_mcp_tools` 的异常抛出
+- Lib：`BugPilotCLI.create` 和 `load_agent` 的 `mcp_configs` 参数支持传入验证后的 `list[fastmcp.mcp_config.MCPConfig]`
+- Lib：修复 `BugPilotCLI.create`、`load_agent`、`Toolset.load_tools` 和 `Toolset.load_mcp_tools` 的异常抛出
 - LLM：添加 `vertexai` 供应商类型，支持 Vertex AI
 - LLM：将 Gemini Developer API 的供应商类型从 `google_genai` 重命名为 `gemini`
 - Config：配置文件从 JSON 迁移至 TOML
 - MCP：后台并行连接 MCP 服务器，减少启动时间
 - MCP：连接 MCP 服务器时添加 `mcp-session-id` HTTP 头
-- Lib：将斜杠命令（原"元命令"）拆分为两组：Shell 级和 KimiSoul 级
+- Lib：将斜杠命令（原"元命令"）拆分为两组：Shell 级和 Agent 级
 - Lib：在 `Soul` 协议中添加 `available_slash_commands` 属性
 - ACP：向 ACP 客户端广播 `/init`、`/compact` 和 `/yolo` 斜杠命令
 - SlashCmd：添加 `/mcp` 斜杠命令，显示 MCP 服务器和工具状态
@@ -765,11 +765,11 @@
 ## 0.59 (2025-11-28)
 
 - Core：将上下文文件位置移至 `.kimi/sessions/{workdir_md5}/{session_id}/context.jsonl`
-- Lib：将 `WireMessage` 类型别名移至 `kimi_cli.wire.message`
-- Lib：添加 `kimi_cli.wire.message.Request` 类型别名，用于请求消息（目前仅包含 `ApprovalRequest`）
-- Lib：添加 `kimi_cli.wire.message.is_event`、`is_request` 和 `is_wire_message` 工具函数，检查 Wire 消息类型
-- Lib：添加 `kimi_cli.wire.serde` 模块，用于 Wire 消息的序列化和反序列化
-- Lib：修改 `StatusUpdate` Wire 消息，不再使用 `kimi_cli.soul.StatusSnapshot`
+- Lib：将 `WireMessage` 类型别名移至 `bugpilot.wire.message`
+- Lib：添加 `bugpilot.wire.message.Request` 类型别名，用于请求消息（目前仅包含 `ApprovalRequest`）
+- Lib：添加 `bugpilot.wire.message.is_event`、`is_request` 和 `is_wire_message` 工具函数，检查 Wire 消息类型
+- Lib：添加 `bugpilot.wire.serde` 模块，用于 Wire 消息的序列化和反序列化
+- Lib：修改 `StatusUpdate` Wire 消息，不再使用 `bugpilot.soul.StatusSnapshot`
 - Core：在会话目录中记录 Wire 消息到 JSONL 文件
 - Core：引入 `TurnBegin` Wire 消息，标记每个 Agent 轮次的开始
 - UI：Shell 模式下用面板重新打印用户输入
@@ -777,8 +777,8 @@
 - UI：改进多个并行子代理时的"本会话批准"体验
 - Wire：重新实现 Wire 服务器模式（通过 `--wire` 选项启用）
 - Lib：重命名类以保持一致性：`ShellApp` → `Shell`，`PrintApp` → `Print`，`ACPServer` → `ACP`，`WireServer` → `WireOverStdio`
-- Lib：重命名方法以保持一致性：`KimiCLI.run_shell_mode` → `run_shell`，`run_print_mode` → `run_print`，`run_acp_server` → `run_acp`，`run_wire_server` → `run_wire_stdio`
-- Lib：添加 `KimiCLI.run` 方法，使用给定用户输入运行一轮并产生 Wire 消息
+- Lib：重命名方法以保持一致性：`BugPilotCLI.run_shell_mode` → `run_shell`，`run_print_mode` → `run_print`，`run_acp_server` → `run_acp`，`run_wire_server` → `run_wire_stdio`
+- Lib：添加 `BugPilotCLI.run` 方法，使用给定用户输入运行一轮并产生 Wire 消息
 - Print：修复 stream-json 打印模式输出刷新不正确的问题
 - LLM：改进与部分 OpenAI 和 Anthropic API 供应商的兼容性
 - Core：修复使用 Anthropic API 时压缩后的聊天供应商错误
@@ -797,7 +797,7 @@
 - UI：改进审批请求措辞
 - Tool：移除 `PatchFile` 工具
 - Tool：将 `Bash`/`CMD` 工具重命名为 `Shell` 工具
-- Tool：将 `Task` 工具移至 `kimi_cli.tools.multiagent` 模块
+- Tool：将 `Task` 工具移至 `bugpilot.tools.multiagent` 模块
 
 ## 0.56 (2025-11-19)
 
@@ -805,7 +805,7 @@
 
 ## 0.55 (2025-11-18)
 
-- Lib：添加 `kimi_cli.app.enable_logging` 函数，直接使用 `KimiCLI` 类时启用日志
+- Lib：添加 `bugpilot.app.enable_logging` 函数，直接使用 `BugPilotCLI` 类时启用日志
 - Core：修复 Agent 规格文件中的相对路径解析
 - Core：防止 LLM API 连接失败时 panic
 - Tool：优化 `FetchURL` 工具，改进内容提取
@@ -816,9 +816,9 @@
 
 ## 0.54 (2025-11-13)
 
-- Lib：将 `WireMessage` 从 `kimi_cli.wire.message` 移至 `kimi_cli.wire`
+- Lib：将 `WireMessage` 从 `bugpilot.wire.message` 移至 `bugpilot.wire`
 - Print：修复 `stream-json` 输出格式缺少最后一条助手消息的问题
-- UI：当 API 密钥被 `KIMI_API_KEY` 环境变量覆盖时添加警告
+- UI：当 API 密钥被 `BUGPILOT_API_KEY` 环境变量覆盖时添加警告
 - UI：审批请求时发出提示音
 - Core：修复 Windows 上的上下文压缩和清除问题
 
@@ -844,12 +844,12 @@
 ## 0.51 (2025-11-08)
 
 - Lib：将 `Soul.model` 重命名为 `Soul.model_name`
-- Lib：将 `LLMModelCapability` 重命名为 `ModelCapability` 并移至 `kimi_cli.llm`
+- Lib：将 `LLMModelCapability` 重命名为 `ModelCapability` 并移至 `bugpilot.llm`
 - Lib：在 `ModelCapability` 中添加 `"thinking"`
 - Lib：移除 `LLM.supports_image_in` 属性
 - Lib：添加必需的 `Soul.model_capabilities` 属性
-- Lib：将 `KimiSoul.set_thinking_mode` 重命名为 `KimiSoul.set_thinking`
-- Lib：添加 `KimiSoul.thinking` 属性
+- Lib：将 `Agent.set_thinking_mode` 重命名为 `Agent.set_thinking`
+- Lib：添加 `Agent.thinking` 属性
 - UI：改进 LLM 模型能力检查和提示
 - UI：`/clear` 元命令时清屏
 - Tool：支持 Windows 上自动下载 ripgrep
@@ -1020,10 +1020,10 @@
 
 ## 0.25 (2025-10-11)
 
-- 将包名从 `ensoul` 重命名为 `kimi-cli`
+- 将包名从 `ensoul` 重命名为 `bugpilot`
 - 将 `ENSOUL_*` 内置系统提示词参数重命名为 `KIMI_*`
 - 进一步解耦 `App` 与 `Soul`
-- 拆分 `Soul` 协议和 `KimiSoul` 实现以提高模块化
+- 拆分 `Soul` 协议和 `Agent` 实现以提高模块化
 
 ## 0.24 (2025-10-10)
 
@@ -1044,7 +1044,7 @@
 
 - 添加 `--print` 选项作为 `--ui print` 的快捷方式，`--acp` 选项作为 `--ui acp` 的快捷方式
 - 支持 `--output-format stream-json` 以 JSON 格式输出
-- 添加 `SearchWeb` 工具，使用 `services.moonshot_search` 配置。需要在配置文件中配置 `"services": {"moonshot_search": {"api_key": "your-search-api-key"}}`
+- 添加 `SearchWeb` 工具，使用 `services.moonshot_search` 配置。需要在配置文件中配置 `"services": { {"api_key": "your-search-api-key"}}`
 - 添加 `FetchURL` 工具
 - 添加 `Think` 工具
 - 添加 `PatchFile` 工具，Kimi Koder Agent 中未启用

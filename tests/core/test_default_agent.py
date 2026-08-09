@@ -7,18 +7,18 @@ import platform
 import pytest
 from inline_snapshot import snapshot
 
-from kimi_cli.agentspec import DEFAULT_AGENT_FILE
-from kimi_cli.soul.agent import Runtime, load_agent
+from bugpilot.agentspec import DEFAULT_AGENT_FILE
+from bugpilot.soul.agent import Runtime, load_agent
 
 
 @pytest.mark.skipif(platform.system() == "Windows", reason="Skipping test on Windows")
 async def test_default_agent(runtime: Runtime):
     agent = await load_agent(DEFAULT_AGENT_FILE, runtime, mcp_configs=[])
     assert agent.system_prompt.replace(
-        f"{runtime.builtin_args.KIMI_WORK_DIR}", "/path/to/work/dir"
+        f"{runtime.builtin_args.BUGPILOT_WORK_DIR}", "/path/to/work/dir"
     ) == snapshot(
         """\
-You are Kimi Code CLI, an interactive general AI agent running on a user's computer.
+You are BugPilot, an interactive general AI agent running on a user's computer.
 
 Your primary goal is to help users with software engineering tasks by taking action — use the tools available to you to make real changes on the user's system. You should also answer questions when asked. Always adhere strictly to the following system instructions and the user's requirements.
 
@@ -128,7 +128,7 @@ The `AGENTS.md` instructions (merged from all applicable directories):
 Test agents content
 `````````
 
-`AGENTS.md` files can appear at any level of the project directory tree, including inside `.kimi/` directories. Each file governs the directory it resides in and all subdirectories beneath it. When multiple `AGENTS.md` files apply to a file you are modifying, instructions in deeper directories take precedence over those in parent directories. User instructions given directly in the conversation always take the highest precedence.
+`AGENTS.md` files can appear at any level of the project directory tree, including inside `.bugpilot/` directories. Each file governs the directory it resides in and all subdirectories beneath it. When multiple `AGENTS.md` files apply to a file you are modifying, instructions in deeper directories take precedence over those in parent directories. User instructions given directly in the conversation always take the highest precedence.
 
 When working on files in subdirectories, always check whether those directories contain their own `AGENTS.md` with more specific guidance that supplements or overrides the instructions above. You may also check `README`/`README.md` files for more information about the project.
 
@@ -201,15 +201,15 @@ At any time, you should be HELPFUL, CONCISE, and ACCURATE. Be thorough in your a
                 None,
                 "allowlist",
                 (
-                    "kimi_cli.tools.shell:Shell",
-                    "kimi_cli.tools.file:ReadFile",
-                    "kimi_cli.tools.file:ReadMediaFile",
-                    "kimi_cli.tools.file:Glob",
-                    "kimi_cli.tools.file:Grep",
-                    "kimi_cli.tools.file:WriteFile",
-                    "kimi_cli.tools.file:StrReplaceFile",
-                    "kimi_cli.tools.web:SearchWeb",
-                    "kimi_cli.tools.web:FetchURL",
+                    "bugpilot.tools.shell:Shell",
+                    "bugpilot.tools.file:ReadFile",
+                    "bugpilot.tools.file:ReadMediaFile",
+                    "bugpilot.tools.file:Glob",
+                    "bugpilot.tools.file:Grep",
+                    "bugpilot.tools.file:WriteFile",
+                    "bugpilot.tools.file:StrReplaceFile",
+                    "bugpilot.tools.web:SearchWeb",
+                    "bugpilot.tools.web:FetchURL",
                 ),
             ),
             (
@@ -219,13 +219,13 @@ At any time, you should be HELPFUL, CONCISE, and ACCURATE. Be thorough in your a
                 None,
                 "allowlist",
                 (
-                    "kimi_cli.tools.shell:Shell",
-                    "kimi_cli.tools.file:ReadFile",
-                    "kimi_cli.tools.file:ReadMediaFile",
-                    "kimi_cli.tools.file:Glob",
-                    "kimi_cli.tools.file:Grep",
-                    "kimi_cli.tools.web:SearchWeb",
-                    "kimi_cli.tools.web:FetchURL",
+                    "bugpilot.tools.shell:Shell",
+                    "bugpilot.tools.file:ReadFile",
+                    "bugpilot.tools.file:ReadMediaFile",
+                    "bugpilot.tools.file:Glob",
+                    "bugpilot.tools.file:Grep",
+                    "bugpilot.tools.web:SearchWeb",
+                    "bugpilot.tools.web:FetchURL",
                 ),
             ),
             (
@@ -235,12 +235,12 @@ At any time, you should be HELPFUL, CONCISE, and ACCURATE. Be thorough in your a
                 None,
                 "allowlist",
                 (
-                    "kimi_cli.tools.file:ReadFile",
-                    "kimi_cli.tools.file:ReadMediaFile",
-                    "kimi_cli.tools.file:Glob",
-                    "kimi_cli.tools.file:Grep",
-                    "kimi_cli.tools.web:SearchWeb",
-                    "kimi_cli.tools.web:FetchURL",
+                    "bugpilot.tools.file:ReadFile",
+                    "bugpilot.tools.file:ReadMediaFile",
+                    "bugpilot.tools.file:Glob",
+                    "bugpilot.tools.file:Grep",
+                    "bugpilot.tools.web:SearchWeb",
+                    "bugpilot.tools.web:FetchURL",
                 ),
             ),
         ]

@@ -15,12 +15,12 @@ from unittest.mock import AsyncMock
 from kaos.path import KaosPath
 from kosong.tooling import ToolError, ToolReturnValue
 
-from kimi_cli.soul.agent import Runtime
-from kimi_cli.soul.approval import Approval
-from kimi_cli.tools.file.write import Params, WriteFile
-from kimi_cli.tools.shell import Params as ShellParams
-from kimi_cli.tools.shell import Shell
-from kimi_cli.utils.environment import Environment
+from bugpilot.soul.agent import Runtime
+from bugpilot.soul.approval import Approval
+from bugpilot.tools.file.write import Params, WriteFile
+from bugpilot.tools.shell import Params as ShellParams
+from bugpilot.tools.shell import Shell
+from bugpilot.utils.environment import Environment
 from tests.conftest import tool_call_context
 
 

@@ -11,18 +11,18 @@ from kosong.chat_provider import StreamedMessagePart, ThinkingEffort, TokenUsage
 from kosong.message import Message, TextPart
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.app import KimiCLI
-from kimi_cli.approval_runtime import ApprovalSource, get_current_approval_source_or_none
-from kimi_cli.background import TaskRuntime, TaskSpec
-from kimi_cli.llm import LLM
-from kimi_cli.notifications import NotificationEvent
-from kimi_cli.soul import RunCancelled, StatusSnapshot, _current_wire, run_soul
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.utils.aioqueue import QueueShutDown
-from kimi_cli.wire import Wire
-from kimi_cli.wire.types import ApprovalRequest, ApprovalResponse, Notification
+from bugpilot.app import BugPilotCLI
+from bugpilot.approval_runtime import ApprovalSource, get_current_approval_source_or_none
+from bugpilot.background import TaskRuntime, TaskSpec
+from bugpilot.llm import LLM
+from bugpilot.notifications import NotificationEvent
+from bugpilot.soul import RunCancelled, StatusSnapshot, _current_wire, run_soul
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.utils.aioqueue import QueueShutDown
+from bugpilot.wire import Wire
+from bugpilot.wire.types import ApprovalRequest, ApprovalResponse, Notification
 
 
 class _SequenceStream:
@@ -96,7 +96,7 @@ def _runtime_with_llm(runtime: Runtime, llm: LLM) -> Runtime:
     )
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> tuple[KimiSoul, Context]:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> tuple[Agent, Context]:
     llm = LLM(
         chat_provider=_SequenceProvider([TextPart(text="done")]),
         max_context_size=100_000,
@@ -109,7 +109,7 @@ def _make_soul(runtime: Runtime, tmp_path: Path) -> tuple[KimiSoul, Context]:
         runtime=_runtime_with_llm(runtime, llm),
     )
     context = Context(file_backend=tmp_path / "history.jsonl")
-    return KimiSoul(agent, context=context), context
+    return Agent(agent, context=context), context
 
 
 def _write_completed_task(runtime: Runtime, task_id: str) -> None:
@@ -141,7 +141,7 @@ def _write_completed_task(runtime: Runtime, task_id: str) -> None:
 
 
 @pytest.mark.asyncio
-async def test_kimisoul_appends_notification_message(runtime: Runtime, tmp_path: Path) -> None:
+async def test_agent_loop_appends_notification_message(runtime: Runtime, tmp_path: Path) -> None:
     _write_completed_task(runtime, "b3333333")
     runtime.background_tasks.publish_terminal_notifications()
 
@@ -202,7 +202,7 @@ async def test_run_soul_emits_wire_notifications(runtime: Runtime, tmp_path: Pat
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_run_yields_root_hub_approvals(runtime: Runtime) -> None:
+async def test_bugpilot_run_yields_root_hub_approvals(runtime: Runtime) -> None:
     class _ApprovalOnlySoul:
         def __init__(self, runtime: Runtime) -> None:
             self.runtime = runtime
@@ -243,7 +243,7 @@ async def test_kimi_cli_run_yields_root_hub_approvals(runtime: Runtime) -> None:
                 source=ApprovalSource(kind="foreground_turn", id="turn-run-1"),
             )
 
-    cli = KimiCLI(_ApprovalOnlySoul(runtime), runtime, {})  # type: ignore[arg-type]
+    cli = BugPilotCLI(_ApprovalOnlySoul(runtime), runtime, {})  # type: ignore[arg-type]
 
     seen: list[ApprovalRequest] = []
     async for msg in cli.run("ping", asyncio.Event()):
@@ -257,7 +257,7 @@ async def test_kimi_cli_run_yields_root_hub_approvals(runtime: Runtime) -> None:
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_run_bridges_approval_resolution_back_to_runtime(runtime: Runtime) -> None:
+async def test_bugpilot_run_bridges_approval_resolution_back_to_runtime(runtime: Runtime) -> None:
     class _ApprovalRoundTripSoul:
         def __init__(self, runtime: Runtime) -> None:
             self.runtime = runtime
@@ -304,7 +304,7 @@ async def test_kimi_cli_run_bridges_approval_resolution_back_to_runtime(runtime:
             )
 
     soul = _ApprovalRoundTripSoul(runtime)
-    cli = KimiCLI(soul, runtime, {})  # type: ignore[arg-type]
+    cli = BugPilotCLI(soul, runtime, {})  # type: ignore[arg-type]
 
     seen_responses: list[ApprovalResponse] = []
 
@@ -328,7 +328,7 @@ async def test_kimi_cli_run_bridges_approval_resolution_back_to_runtime(runtime:
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_run_cancels_abandoned_approval_stream(
+async def test_bugpilot_run_cancels_abandoned_approval_stream(
     runtime: Runtime,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -353,10 +353,10 @@ async def test_kimi_cli_run_cancels_abandoned_approval_stream(
     async def fake_ensure_fresh(_runtime):
         return None
 
-    monkeypatch.setattr(KimiSoul, "_turn", fake_turn)
+    monkeypatch.setattr(Agent, "_turn", fake_turn)
     monkeypatch.setattr(runtime.oauth, "ensure_fresh", fake_ensure_fresh)
 
-    soul = KimiSoul(
+    soul = Agent(
         Agent(
             name="Approval Stream Agent",
             system_prompt="System prompt.",
@@ -365,7 +365,7 @@ async def test_kimi_cli_run_cancels_abandoned_approval_stream(
         ),
         context=Context(file_backend=tmp_path / "history.jsonl"),
     )
-    cli = KimiCLI(soul, runtime, {})
+    cli = BugPilotCLI(soul, runtime, {})
     cancel_event = asyncio.Event()
     stream = cli.run("ping", cancel_event)
 
@@ -388,7 +388,7 @@ async def test_kimi_cli_run_cancels_abandoned_approval_stream(
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_run_propagates_external_cancel_event(
+async def test_bugpilot_run_propagates_external_cancel_event(
     runtime: Runtime,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -413,10 +413,10 @@ async def test_kimi_cli_run_propagates_external_cancel_event(
     async def fake_ensure_fresh(_runtime):
         return None
 
-    monkeypatch.setattr(KimiSoul, "_turn", fake_turn)
+    monkeypatch.setattr(Agent, "_turn", fake_turn)
     monkeypatch.setattr(runtime.oauth, "ensure_fresh", fake_ensure_fresh)
 
-    soul = KimiSoul(
+    soul = Agent(
         Agent(
             name="Approval Stream Agent",
             system_prompt="System prompt.",
@@ -425,7 +425,7 @@ async def test_kimi_cli_run_propagates_external_cancel_event(
         ),
         context=Context(file_backend=tmp_path / "history.jsonl"),
     )
-    cli = KimiCLI(soul, runtime, {})
+    cli = BugPilotCLI(soul, runtime, {})
     cancel_event = asyncio.Event()
     stream = cli.run("ping", cancel_event)
 
@@ -448,7 +448,7 @@ async def test_kimi_cli_run_propagates_external_cancel_event(
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_run_replays_pending_approvals_from_previous_turn(runtime: Runtime) -> None:
+async def test_bugpilot_run_replays_pending_approvals_from_previous_turn(runtime: Runtime) -> None:
     assert runtime.approval_runtime is not None
     runtime.approval_runtime.create_request(
         request_id="req-run-replay-1",
@@ -497,7 +497,7 @@ async def test_kimi_cli_run_replays_pending_approvals_from_previous_turn(runtime
             )
 
     soul = _PendingApprovalSoul(runtime)
-    cli = KimiCLI(soul, runtime, {})  # type: ignore[arg-type]
+    cli = BugPilotCLI(soul, runtime, {})  # type: ignore[arg-type]
 
     seen_requests: list[ApprovalRequest] = []
 

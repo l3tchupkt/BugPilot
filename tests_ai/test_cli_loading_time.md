@@ -1,44 +1,44 @@
 # CLI Loading Time
 
-## `src/kimi_cli/__init__.py` be empty
+## `src/bugpilot/__init__.py` be empty
 
 **Scope**
 
-`src/kimi_cli/__init__.py`
+`src/bugpilot/__init__.py`
 
 **Requirements**
 
-The `src/kimi_cli/__init__.py` file must be empty, containing no code or imports.
+The `src/bugpilot/__init__.py` file must be empty, containing no code or imports.
 
-## No unnecessary import in `src/kimi_cli/cli.py`
+## No unnecessary import in `src/bugpilot/cli.py`
 
 **Scope**
 
-`src/kimi_cli/cli.py`
+`src/bugpilot/cli.py`
 
 **Requirements**
 
-The `src/kimi_cli/cli.py` file must not import any modules from `kimi_cli` or `kosong`, except for `kimi_cli.constant`, at the top level.
+The `src/bugpilot/cli.py` file must not import any modules from `bugpilot` or `kosong`, except for `bugpilot.constant`, at the top level.
 
-## As-needed imports in `src/kimi_cli/app.py`
+## As-needed imports in `src/bugpilot/app.py`
 
 **Scope**
 
-`src/kimi_cli/app.py`
+`src/bugpilot/app.py`
 
 **Requirements**
 
-The `src/kimi_cli/app.py` file must not import any modules prefixed with `kimi_cli.ui` at the top level; instead, UI-specific modules should be imported within functions as needed.
+The `src/bugpilot/app.py` file must not import any modules prefixed with `bugpilot.ui` at the top level; instead, UI-specific modules should be imported within functions as needed.
 
 <examples>
 
 ```python
 # top-level
-from kimi_cli.ui.shell import ShellApp  # Incorrect: top-level import of UI module
+from bugpilot.ui.shell import ShellApp  # Incorrect: top-level import of UI module
 
 # inside function
 async def run_shell_app(...):
-    from kimi_cli.ui.shell import ShellApp  # Correct: import as needed
+    from bugpilot.ui.shell import ShellApp  # Correct: import as needed
     app = ShellApp(...)
     await app.run()
 ```

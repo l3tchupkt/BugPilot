@@ -2,7 +2,7 @@
 
 import pytest
 
-from kimi_cli.ui.shell.prompt import sanitize_surrogates
+from bugpilot.ui.shell.prompt import sanitize_surrogates
 
 
 class TestSanitizeSurrogates:
@@ -47,7 +47,7 @@ class TestSanitizeSurrogates:
     def test_mixed_content_with_surrogates(self) -> None:
         """Test text with surrogates mixed with normal content."""
         # Simulating the exact issue from GitHub #420
-        input_text = "CTL Implementation - Kimi Tasks\nAssigned To: \ud83d\udc3a Kimi"
+        input_text = "CTL Implementation - BugPilot Tasks\nAssigned To: \ud83d\udc3a BugPilot"
 
         # Should not raise
         result = sanitize_surrogates(input_text)
@@ -56,4 +56,4 @@ class TestSanitizeSurrogates:
         # Should preserve the rest of the content
         assert "CTL Implementation" in result
         assert "Assigned To:" in result
-        assert "Kimi" in result
+        assert "BugPilot" in result

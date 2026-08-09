@@ -173,7 +173,7 @@ uv run python -m kosong kimi --with-bash
 To set up a development environment, clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/MoonshotAI/kosong.git
+git clone https://github.com/l3tchupkt/kosong.git
 cd kosong
 uv sync --all-extras
 

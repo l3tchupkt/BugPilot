@@ -7,11 +7,11 @@ import json
 
 import pytest
 
-from kimi_cli.soul import _current_wire
-from kimi_cli.soul.toolset import current_tool_call
-from kimi_cli.tools.ask_user import AskUserQuestion, Params, QuestionOptionParam, QuestionParam
-from kimi_cli.wire import Wire
-from kimi_cli.wire.types import QuestionNotSupported, QuestionRequest, ToolCall
+from bugpilot.soul import _current_wire
+from bugpilot.soul.toolset import current_tool_call
+from bugpilot.tools.ask_user import AskUserQuestion, Params, QuestionOptionParam, QuestionParam
+from bugpilot.wire import Wire
+from bugpilot.wire.types import QuestionNotSupported, QuestionRequest, ToolCall
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 [project]
-name = "kimi-cli-stream-json"
+name = "bugpilot-stream-json"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"

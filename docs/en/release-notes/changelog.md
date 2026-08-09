@@ -47,7 +47,7 @@ This page documents the changes in each Kimi Code CLI release.
 
 ## 1.42.0 (2026-05-11)
 
-- Shell: Switch the Windows shell backend from PowerShell to Git Bash, so the Shell tool now runs commands through `bash.exe` (POSIX semantics) instead of `powershell.exe`. Windows users get the same Unix-style command syntax (`&&`, `||`, `|`, `/dev/null`, `grep`, `sed`, etc.) as Linux/macOS. **Requires Git for Windows installed**: kimi-cli locates `bash.exe` via the `KIMI_CLI_GIT_BASH_PATH` env override → `where.exe git` → standard install paths (`C:\Program Files\Git\bin\bash.exe`); if none resolve, kimi-cli prints an install hint and exits at startup
+- Shell: Switch the Windows shell backend from PowerShell to Git Bash, so the Shell tool now runs commands through `bash.exe` (POSIX semantics) instead of `powershell.exe`. Windows users get the same Unix-style command syntax (`&&`, `||`, `|`, `/dev/null`, `grep`, `sed`, etc.) as Linux/macOS. **Requires Git for Windows installed**: bugpilot locates `bash.exe` via the `KIMI_CLI_GIT_BASH_PATH` env override → `where.exe git` → standard install paths (`C:\Program Files\Git\bin\bash.exe`); if none resolve, bugpilot prints an install hint and exits at startup
 - Shell: Defend against hallucinated CMD-style `2>nul` redirects on Windows by rewriting them to `2>/dev/null` before reaching git-bash — without this defense git-bash would create a file literally named `nul` (a Windows reserved device name) that breaks `git add .` and `git clone`; on Linux/macOS, `>nul` is a legitimate redirect to a file named `nul` and is left untouched
 - File: Accept POSIX-form paths on Windows in `ReadFile`, `WriteFile`, `StrReplaceFile`, `Glob`, and `Grep` — these tools now recognize `/c/Users/foo` (Git Bash style), `/cygdrive/c/Users/foo` (Cygwin style), and `\\server\share` (UNC) in addition to native Windows paths, automatically converting to native form for filesystem operations
 - Shell: Clear partial streamed output when an LLM step is retried — previously, if a step failed mid-stream (e.g. rate limit or server error), the incomplete text and unfinished tool-call blocks from the aborted attempt would remain on screen and be mixed with the new attempt's output. The shell UI now discards the partial state and prints a retry banner showing the reason, attempt count, and wait time; print mode also discards buffered assistant messages on retry
@@ -84,18 +84,18 @@ This page documents the changes in each Kimi Code CLI release.
 - Skill: Add `extra_skill_dirs` config field for pulling in custom skill directories on top of the built-in / user / project auto-discovery — each entry may be an absolute path, a `~`-prefixed path (expanded against `$HOME`), or a path relative to the project root (the nearest `.git` ancestor of the work directory, not the current working directory); non-existent entries are silently skipped and symlink/trailing-slash duplicates canonicalize to a single root so a path listed twice or aliased to an already-discovered directory does not render twice in the system prompt
 - Skill: Harden discovery against `OSError` from `is_dir` / `iterdir` (for example when an `extra_skill_dirs` entry points at a directory with restricted permissions) — affected entries are logged and skipped instead of aborting the whole skill-discovery pass
 - Core: Fix DeepSeek V4 (and other OpenAI-compatible thinking-mode backends) returning 400 `The reasoning_content in the thinking mode must be passed back to the API` when a tool call follows a reasoning turn — `openai_legacy` providers now default `reasoning_key` to `"reasoning_content"` so the response's reasoning is stored in history and round-tripped automatically on subsequent turns. An optional `reasoning_key` field is also added to `LLMProvider` to override the field name (e.g. `"reasoning"` for non-standard gateways) or disable round-tripping entirely by setting it to `""`
-- Core: Add `skip_yolo_prompt_injection` config option to suppress the system reminder normally injected when yolo mode is active — useful when building custom applications on top of `KimiSoul` that do not need the non-interactive mode hint
+- Core: Add `skip_yolo_prompt_injection` config option to suppress the system reminder normally injected when yolo mode is active — useful when building custom applications on top of `Agent` that do not need the non-interactive mode hint
 - Kimi: Add `KIMI_MODEL_THINKING_KEEP` environment variable that forwards its value verbatim to the Moonshot API as `thinking.keep`, enabling Preserved Thinking (e.g. `export KIMI_MODEL_THINKING_KEEP=all` to retain historical `reasoning_content` across turns); effective only for Moonshot models supporting Preserved Thinking (e.g. `kimi-k2.6` / `kimi-k2-thinking`), unset or empty string preserves the previous behavior and omits the field, and the override only applies when the current model is actually in thinking mode so the API never receives a `thinking.keep` without the companion `thinking.type`. Note that `keep=all` increases input tokens and API cost because history reasoning is resent
 - Kosong: Fix `Kimi.with_extra_body` silently dropping previously set `thinking.type` when a later call added another `thinking.*` field — the `thinking` sub-dict is now merged field-by-field instead of shallow-replaced, so composing `with_thinking(...)` with `with_extra_body({"thinking": {...}})` preserves both contributions
 - Kosong: Fix Kimi provider sending empty `content` alongside `tool_calls`, which caused 400 "text content is empty" errors from the Moonshot API. When an assistant message has tool calls and its visible content is effectively empty (no text or only whitespace/think parts), the `content` field is now omitted entirely
 - Shell: Fix approval request feedback text cursor rendering — the block cursor now correctly renders at the actual cursor position instead of always being pinned to the end of the line; when the cursor is in the middle of the text, the character under the cursor is drawn with reverse video (mimicking a terminal's native block cursor)
 - Kosong: Fix Moonshot 400 `At path 'properties.X': type is not defined` when an MCP server exposes tools whose parameter schemas have enum-only or otherwise type-less properties (seen with the JetBrains Rider MCP's `truncateMode`) — the Kimi provider now patches each tool's schema in-flight to fill in a JSON Schema `type` (inferred from `enum`/`const` values when possible, else defaulted to `"string"`), so the whole session no longer fails every request with a schema validation error; OpenAI and Anthropic paths are unaffected
-- Skill: Project-scope skill discovery now walks up to the nearest `.git` ancestor before looking for `.kimi/skills` / `.claude/skills` / `.codex/skills` / `.agents/skills`, so skills defined at the repository root are picked up even when kimi-cli is launched from a subdirectory (for example inside a monorepo package). Falls back to the work directory itself when no `.git` marker is found, so we never walk up into an unrelated parent tree.
-- Skill: Change the default of `merge_all_available_skills` from `false` to `true`. kimi-cli now merges all existing user- and project-level brand skill directories (`.kimi/skills`, `.claude/skills`, `.codex/skills`) by default instead of only using the first one found, so users who keep skills in multiple brand directories — for example both `~/.kimi/skills` and `~/.claude/skills` — see every skill out of the box. **Behavior change**: users who previously relied on the first-match default can restore it by setting `merge_all_available_skills = false` in their config.
+- Skill: Project-scope skill discovery now walks up to the nearest `.git` ancestor before looking for `.kimi/skills` / `.claude/skills` / `.codex/skills` / `.agents/skills`, so skills defined at the repository root are picked up even when bugpilot is launched from a subdirectory (for example inside a monorepo package). Falls back to the work directory itself when no `.git` marker is found, so we never walk up into an unrelated parent tree.
+- Skill: Change the default of `merge_all_available_skills` from `false` to `true`. bugpilot now merges all existing user- and project-level brand skill directories (`.kimi/skills`, `.claude/skills`, `.codex/skills`) by default instead of only using the first one found, so users who keep skills in multiple brand directories — for example both `~/.kimi/skills` and `~/.claude/skills` — see every skill out of the box. **Behavior change**: users who previously relied on the first-match default can restore it by setting `merge_all_available_skills = false` in their config.
 
 ## 1.38.0 (2026-04-22)
 - Shell: Fix `Rejected by user` misleading message when an approval modal times out — after the 300s safety timeout, the tool call now rejects with `Rejected: approval timed out`, so users returning to their session after stepping away can tell the rejection was a timeout rather than a manual rejection. Pass `--yolo`/`-y` to auto-approve tool calls if you regularly leave sessions unattended
-- Auth: Fix OAuth users being forced to `/login` again after an unrelated refresh-token rotation race — when a concurrently-running kimi-cli instance (terminal, VS Code extension, or `kimi -p` one-shot) legitimately rotated the refresh token, the current instance's now-stale refresh request would come back with a 401, and a TOCTOU window between the "did another instance rotate?" disk check and the `delete_tokens` call could wipe the credentials file even though a valid rotated token was about to be written to it; the in-memory cache is still cleared so truly revoked tokens surface on the next request, but the file is preserved so a concurrent instance's freshly-rotated token can be recovered, and an eventual `/login` still overwrites it atomically
+- Auth: Fix OAuth users being forced to `/login` again after an unrelated refresh-token rotation race — when a concurrently-running bugpilot instance (terminal, VS Code extension, or `kimi -p` one-shot) legitimately rotated the refresh token, the current instance's now-stale refresh request would come back with a 401, and a TOCTOU window between the "did another instance rotate?" disk check and the `delete_tokens` call could wipe the credentials file even though a valid rotated token was about to be written to it; the in-memory cache is still cleared so truly revoked tokens surface on the next request, but the file is preserved so a concurrent instance's freshly-rotated token can be recovered, and an eventual `/login` still overwrites it atomically
 - Kosong: Fix parallel tool results being split into multiple user messages in Anthropic provider — consecutive tool-result-only user messages are now merged into a single message, complying with the Anthropic Messages API spec that all `tool_use` blocks in an assistant turn must be answered within one user message; this fixes 400 errors on strict Anthropic-compatible backends (e.g. DeepSeek `/anthropic` endpoint) and prevents the official backend from silently teaching the model to avoid parallel tool calls
 
 ## 1.37.0 (2026-04-20)
@@ -155,7 +155,7 @@ This page documents the changes in each Kimi Code CLI release.
 - Core: Improve error diagnostics — enrich internal logging coverage, include relevant log files and system manifest in `kimi export` archives, and surface actionable error messages for common failures (auth, network, timeout, quota)
 - Shell: Gracefully exit with crash report when working directory becomes inaccessible during session — detects CWD loss (external drive unplugged, directory deleted, or filesystem unmounted) and prints a session recovery panel with session ID and work directory before exiting cleanly
 - Shell: Use `git ls-files` for `@` file mention discovery — file completer now queries `git ls-files --recurse-submodules` with a 5-second timeout as the primary discovery mechanism, falling back to `os.walk` for non-git repositories; this fixes large repositories (e.g., apache/superset with 65k+ files) where the 1000-file limit caused late-alphabetical directories to be unreachable (fixes #1375)
-- Core: Add shared `file_filter` module — unifies file mention logic between shell and web UIs via `src/kimi_cli/utils/file_filter.py`, providing consistent path filtering, ignored directory exclusion, and git-aware file discovery
+- Core: Add shared `file_filter` module — unifies file mention logic between shell and web UIs via `src/bugpilot/utils/file_filter.py`, providing consistent path filtering, ignored directory exclusion, and git-aware file discovery
 - Shell: Prevent path traversal in file mention scope parameter — the `scope` parameter in file completer requests is now validated to prevent directory traversal attacks
 - Web: Restore unfiltered directory listing in file browser API — file browser endpoint no longer applies git-aware filtering, ensuring all files are visible in the web UI file picker
 - Todo: Refactor SetTodoList to persist state and prevent tool call storms — todos are now persisted to session state (root agent) and independent state files (sub-agents); adds query mode (omit `todos` to read current state) and clear mode (pass `[]`); includes anti-storm guidance in tool description to prevent repeated calls without progress (fixes #1710)
@@ -210,7 +210,7 @@ This page documents the changes in each Kimi Code CLI release.
 - Grep: Add token efficiency improvements — default `head_limit` of 250 with `offset` pagination, `--hidden` search with VCS directory exclusion, `files_with_matches` sorted by modification time, relative path output, and `--max-columns 500` for non-content modes
 - Grep: `line_number` (`-n`) now defaults to `true` in content mode — line numbers are included by default so the model can reference precise code locations
 - Grep: `count_matches` mode now includes a summary in the message — e.g. "Found 30 total occurrences across 10 files."
-- ACP: Fix `ValueError: list.index(x): x not in list` crash when ACP is launched via `kimi-code` or `kimi-cli` entry-points (e.g. JetBrains AI Assistant)
+- ACP: Fix `ValueError: list.index(x): x not in list` crash when ACP is launched via `kimi-code` or `bugpilot` entry-points (e.g. JetBrains AI Assistant)
 - Core: Fix OpenAI-compatible APIs (e.g. One API) returning 400 errors in multi-turn conversations when the server returns `reasoning_content` by default — `reasoning_effort` is now auto-set to `"medium"` when history contains thinking content and `reasoning_key` is configured
 - Shell: Add `/theme` command and dark/light theme support — users with light terminal backgrounds can now switch to a light color palette via `/theme light` or `theme = "light"` in `config.toml`; diff highlights, task browser, prompt UI, and MCP status colors all adapt to the selected theme
 - Core: Fix context overflow before compaction — tool result tokens are now estimated and included in the auto-compaction trigger check, preventing "exceeded model token limit" errors when large tool outputs push the context beyond the model limit between API calls
@@ -294,7 +294,7 @@ This page documents the changes in each Kimi Code CLI release.
 - Core: Plan mode now supports incremental plan edits — the agent can use `StrReplaceFile` to surgically update sections of the plan file instead of rewriting the entire file with `WriteFile`, and non-plan file edits are now hard-blocked rather than requiring approval
 - Core: Defer MCP startup and surface loading progress — MCP servers now initialize asynchronously after the shell UI starts, with live progress indicators showing connection status; Shell displays connecting and ready states in the status area, Web shows server connection status
 - Core: Optimize lightweight startup paths — implement lazy-loading for CLI subcommands and version metadata, significantly reducing startup time for common commands like `--version` and `--help`
-- Build: Fix Nix `FileCollisionError` for `bin/kimi` — remove duplicate entry point from `kimi-code` package so `kimi-cli` owns `bin/kimi` exclusively
+- Build: Fix Nix `FileCollisionError` for `bin/kimi` — remove duplicate entry point from `kimi-code` package so `bugpilot` owns `bin/kimi` exclusively
 - Shell: Preserve unsubmitted input across agent turns — text typed in the prompt while the agent is running is no longer lost when the turn ends; the user can press Enter to submit the draft as the next message
 - Shell: Fix Ctrl-C and Ctrl-D not working correctly after an agent run completes — keyboard interrupts and EOF were silently swallowed instead of showing the tip or exiting the shell
 
@@ -456,7 +456,7 @@ This page documents the changes in each Kimi Code CLI release.
 - Web: Improve auto-scroll behavior in chat for smoother following of new content
 - Web: Update `last_session_id` for work directory when session stream starts
 - Shell: Remove `Ctrl-/` keyboard shortcut that triggered `/help` command
-- Rust: Move the Rust implementation to `MoonshotAI/kimi-agent-rs` with independent releases; binary renamed to `kimi-agent`
+- Rust: Move the Rust implementation to `l3tchupkt/kimi-agent-rs` with independent releases; binary renamed to `kimi-agent`
 - Core: Preserve session id when reloading configuration so the session resumes correctly
 - Shell: Fix session replay showing messages that were cleared by `/clear` or `/reset`
 - Web: Fix approval request states not updating when session is interrupted or cancelled
@@ -627,7 +627,7 @@ This page documents the changes in each Kimi Code CLI release.
 ## 0.75 (2026-01-09)
 
 - Tool: Improve `ReadFile` tool description
-- Skills: Add built-in `kimi-cli-help` skill to answer Kimi Code CLI usage and configuration questions
+- Skills: Add built-in `bugpilot-help` skill to answer Kimi Code CLI usage and configuration questions
 
 ## 0.74 (2026-01-09)
 
@@ -643,7 +643,7 @@ This page documents the changes in each Kimi Code CLI release.
 - MCP: Ensure MCP tools finish loading before starting the agent loop
 - Wire: Fix Wire mode failing to accept valid `cancel` requests
 - Setup: Allow `/model` to switch between all available models for the selected provider
-- Lib: Re-export all Wire message types from `kimi_cli.wire.types`, as a replacement of `kimi_cli.wire.message`
+- Lib: Re-export all Wire message types from `bugpilot.wire.types`, as a replacement of `bugpilot.wire.message`
 - Loop: Add `max_ralph_iterations` loop control config to limit extra Ralph iterations
 - Config: Rename `max_steps_per_run` to `max_steps_per_turn` in loop control config (backward-compatible)
 - CLI: Add `--max-steps-per-turn`, `--max-retries-per-step` and `--max-ralph-iterations` options to override loop control config
@@ -672,20 +672,20 @@ This page documents the changes in each Kimi Code CLI release.
 
 - Core: Support discovering skills in `~/.kimi/skills` or `~/.claude/skills`
 - Python: Lower the minimum required Python version to 3.12
-- Nix: Add flake packaging; install with `nix profile install .#kimi-cli` or run `nix run .#kimi-cli`
-- CLI: Add `kimi-cli` script alias for invoking the CLI; can be run via `uvx kimi-cli`
+- Nix: Add flake packaging; install with `nix profile install .#bugpilot` or run `nix run .#bugpilot`
+- CLI: Add `bugpilot` script alias for invoking the CLI; can be run via `uvx bugpilot`
 - Lib: Move LLM config validation into `create_llm` and return `None` when missing config
 
 ## 0.68 (2025-12-24)
 
 - CLI: Add `--config` and `--config-file` options to pass in config JSON/TOML
-- Core: Allow `Config` in addition to `Path` for the `config` parameter of `KimiCLI.create`
+- Core: Allow `Config` in addition to `Path` for the `config` parameter of `BugPilotCLI.create`
 - Tool: Include diff display blocks in `WriteFile` and `StrReplaceFile` approvals/results
 - Wire: Add display blocks to approval requests (including diffs) with backward-compatible defaults
 - ACP: Show file diff previews in tool results and approval prompts
 - ACP: Connect to MCP servers managed by ACP clients
 - ACP: Run shell commands in ACP client terminal if supported
-- Lib: Add `KimiToolset.find` method to find tools by class or name
+- Lib: Add `Toolset.find` method to find tools by class or name
 - Lib: Add `ToolResultBuilder.display` method to append display blocks to tool results
 - MCP: Add `kimi mcp auth` and related subcommands to manage MCP authorization
 
@@ -699,19 +699,19 @@ This page documents the changes in each Kimi Code CLI release.
 ## 0.66 (2025-12-19)
 
 - Lib: Provide `token_usage` and `message_id` in `StatusUpdate` Wire message
-- Lib: Add `KimiToolset.load_tools` method to load tools with dependency injection
-- Lib: Add `KimiToolset.load_mcp_tools` method to load MCP tools
-- Lib: Move `MCPTool` from `kimi_cli.tools.mcp` to `kimi_cli.soul.toolset`
+- Lib: Add `Toolset.load_tools` method to load tools with dependency injection
+- Lib: Add `Toolset.load_mcp_tools` method to load MCP tools
+- Lib: Move `MCPTool` from `bugpilot.tools.mcp` to `bugpilot.soul.toolset`
 - Lib: Add `InvalidToolError`, `MCPConfigError` and `MCPRuntimeError`
 - Lib: Make the detailed Kimi Code CLI exception classes extend `ValueError` or `RuntimeError`
-- Lib: Allow passing validated `list[fastmcp.mcp_config.MCPConfig]` as `mcp_configs` for `KimiCLI.create` and `load_agent`
-- Lib: Fix exception raising for `KimiCLI.create`, `load_agent`, `KimiToolset.load_tools` and `KimiToolset.load_mcp_tools`
+- Lib: Allow passing validated `list[fastmcp.mcp_config.MCPConfig]` as `mcp_configs` for `BugPilotCLI.create` and `load_agent`
+- Lib: Fix exception raising for `BugPilotCLI.create`, `load_agent`, `Toolset.load_tools` and `Toolset.load_mcp_tools`
 - LLM: Add provider type `vertexai` to support Vertex AI
 - LLM: Rename Gemini Developer API provider type from `google_genai` to `gemini`
 - Config: Migrate config file from JSON to TOML
 - MCP: Connect to MCP servers in background and parallel to reduce startup time
 - MCP: Add `mcp-session-id` HTTP header when connecting to MCP servers
-- Lib: Split slash commands (prev "meta commands") into two groups: Shell-level and KimiSoul-level
+- Lib: Split slash commands (prev "meta commands") into two groups: Shell-level and Agent-level
 - Lib: Add `available_slash_commands` property to `Soul` protocol
 - ACP: Advertise slash commands `/init`, `/compact` and `/yolo` to ACP clients
 - SlashCmd: Add `/mcp` slash command to display MCP server and tool status
@@ -765,11 +765,11 @@ This page documents the changes in each Kimi Code CLI release.
 ## 0.59 (2025-11-28)
 
 - Core: Move context file location to `.kimi/sessions/{workdir_md5}/{session_id}/context.jsonl`
-- Lib: Move `WireMessage` type alias to `kimi_cli.wire.message`
-- Lib: Add `kimi_cli.wire.message.Request` type alias request messages (which currently only includes `ApprovalRequest`)
-- Lib: Add `kimi_cli.wire.message.is_event`, `is_request` and `is_wire_message` utility functions to check the type of wire messages
-- Lib: Add `kimi_cli.wire.serde` module for serialization and deserialization of wire messages
-- Lib: Change `StatusUpdate` Wire message to not using `kimi_cli.soul.StatusSnapshot`
+- Lib: Move `WireMessage` type alias to `bugpilot.wire.message`
+- Lib: Add `bugpilot.wire.message.Request` type alias request messages (which currently only includes `ApprovalRequest`)
+- Lib: Add `bugpilot.wire.message.is_event`, `is_request` and `is_wire_message` utility functions to check the type of wire messages
+- Lib: Add `bugpilot.wire.serde` module for serialization and deserialization of wire messages
+- Lib: Change `StatusUpdate` Wire message to not using `bugpilot.soul.StatusSnapshot`
 - Core: Record Wire messages to a JSONL file in session directory
 - Core: Introduce `TurnBegin` Wire message to mark the beginning of each agent turn
 - UI: Print user input again with a panel in shell mode
@@ -777,8 +777,8 @@ This page documents the changes in each Kimi Code CLI release.
 - UI: Improve "Approve for session" experience when there are multiple parallel subagents
 - Wire: Reimplement Wire server mode (which is enabled with `--wire` option)
 - Lib: Rename `ShellApp` to `Shell`, `PrintApp` to `Print`, `ACPServer` to `ACP` and `WireServer` to `WireOverStdio` for better consistency
-- Lib: Rename `KimiCLI.run_shell_mode` to `run_shell`, `run_print_mode` to `run_print`, `run_acp_server` to `run_acp`, and `run_wire_server` to `run_wire_stdio` for better consistency
-- Lib: Add `KimiCLI.run` method to run a turn with given user input and yield Wire messages
+- Lib: Rename `BugPilotCLI.run_shell_mode` to `run_shell`, `run_print_mode` to `run_print`, `run_acp_server` to `run_acp`, and `run_wire_server` to `run_wire_stdio` for better consistency
+- Lib: Add `BugPilotCLI.run` method to run a turn with given user input and yield Wire messages
 - Print: Fix stream-json print mode not flushing output properly
 - LLM: Improve compatibility with some OpenAI and Anthropic API providers
 - Core: Fix chat provider error after compaction when using Anthropic API
@@ -797,7 +797,7 @@ This page documents the changes in each Kimi Code CLI release.
 - UI: Improve approval request wordings
 - Tool: Remove `PatchFile` tool
 - Tool: Rename `Bash`/`CMD` tool to `Shell` tool
-- Tool: Move `Task` tool to `kimi_cli.tools.multiagent` module
+- Tool: Move `Task` tool to `bugpilot.tools.multiagent` module
 
 ## 0.56 (2025-11-19)
 
@@ -805,7 +805,7 @@ This page documents the changes in each Kimi Code CLI release.
 
 ## 0.55 (2025-11-18)
 
-- Lib: Add `kimi_cli.app.enable_logging` function to enable logging when directly using `KimiCLI` class
+- Lib: Add `bugpilot.app.enable_logging` function to enable logging when directly using `BugPilotCLI` class
 - Core: Fix relative path resolution in agent spec files
 - Core: Prevent from panic when LLM API connection failed
 - Tool: Optimize `FetchURL` tool for better content extraction
@@ -816,9 +816,9 @@ This page documents the changes in each Kimi Code CLI release.
 
 ## 0.54 (2025-11-13)
 
-- Lib: Move `WireMessage` from `kimi_cli.wire.message` to `kimi_cli.wire`
+- Lib: Move `WireMessage` from `bugpilot.wire.message` to `bugpilot.wire`
 - Print: Fix `stream-json` output format missing the last assistant message
-- UI: Add warning when API key is overridden by `KIMI_API_KEY` environment variable
+- UI: Add warning when API key is overridden by `BUGPILOT_API_KEY` environment variable
 - UI: Make a bell sound when there's an approval request
 - Core: Fix context compaction and clearing on Windows
 
@@ -844,12 +844,12 @@ This page documents the changes in each Kimi Code CLI release.
 ## 0.51 (2025-11-08)
 
 - Lib: Rename `Soul.model` to `Soul.model_name`
-- Lib: Rename `LLMModelCapability` to `ModelCapability` and move to `kimi_cli.llm`
+- Lib: Rename `LLMModelCapability` to `ModelCapability` and move to `bugpilot.llm`
 - Lib: Add `"thinking"` to `ModelCapability`
 - Lib: Remove `LLM.supports_image_in` property
 - Lib: Add required `Soul.model_capabilities` property
-- Lib: Rename `KimiSoul.set_thinking_mode` to `KimiSoul.set_thinking`
-- Lib: Add `KimiSoul.thinking` property
+- Lib: Rename `Agent.set_thinking_mode` to `Agent.set_thinking`
+- Lib: Add `Agent.thinking` property
 - UI: Better checks and notices for LLM model capabilities
 - UI: Clear the screen for `/clear` meta command
 - Tool: Support auto-downloading ripgrep on Windows
@@ -1020,10 +1020,10 @@ This page documents the changes in each Kimi Code CLI release.
 
 ## 0.25 (2025-10-11)
 
-- Rename package name `ensoul` to `kimi-cli`
+- Rename package name `ensoul` to `bugpilot`
 - Rename `ENSOUL_*` builtin system prompt arguments to `KIMI_*`
 - Further decouple `App` with `Soul`
-- Split `Soul` protocol and `KimiSoul` implementation for better modularity
+- Split `Soul` protocol and `Agent` implementation for better modularity
 
 ## 0.24 (2025-10-10)
 
@@ -1044,7 +1044,7 @@ This page documents the changes in each Kimi Code CLI release.
 
 - Add `--print` option as a shortcut for `--ui print`, `--acp` option as a shortcut for `--ui acp`
 - Support `--output-format stream-json` to print output in JSON format
-- Add `SearchWeb` tool with `services.moonshot_search` configuration. You need to configure it with `"services": {"moonshot_search": {"api_key": "your-search-api-key"}}` in your config file.
+- Add `SearchWeb` tool with `services.moonshot_search` configuration. You need to configure it with `"services": { {"api_key": "your-search-api-key"}}` in your config file.
 - Add `FetchURL` tool
 - Add `Think` tool
 - Add `PatchFile` tool, not enabled in Kimi Koder agent

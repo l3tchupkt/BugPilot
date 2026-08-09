@@ -56,8 +56,8 @@ def _start_tmux_shell(
     env = {
         "HOME": str(home_dir),
         "USERPROFILE": str(home_dir),
-        "KIMI_SHARE_DIR": str(home_dir / ".kimi"),
-        "KIMI_CLI_NO_AUTO_UPDATE": "1",
+        "BUGPILOT_SHARE_DIR": str(home_dir / ".bugpilot"),
+        "BUGPILOT_CLI_NO_AUTO_UPDATE": "1",
         "TERM": "xterm-256color",
         "COLUMNS": str(columns),
         "LINES": str(lines),
@@ -67,7 +67,7 @@ def _start_tmux_shell(
     command_parts = [
         sys.executable,
         "-m",
-        "kimi_cli.cli",
+        "bugpilot.cli",
         "--yolo",
         "--config-file",
         str(config_path),
@@ -99,7 +99,7 @@ def test_slash_completion_single_enter_executes(tmp_path: Path) -> None:
     config_path = write_scripted_config(tmp_path, ["text: Hello!"])
     work_dir = make_work_dir(tmp_path)
     home_dir = make_home_dir(tmp_path)
-    session_name = f"kimi-tmux-slash-{uuid.uuid4().hex[:8]}"
+    session_name = f"bugpilot-tmux-slash-{uuid.uuid4().hex[:8]}"
 
     try:
         _start_tmux_shell(
@@ -108,7 +108,7 @@ def test_slash_completion_single_enter_executes(tmp_path: Path) -> None:
             work_dir=work_dir,
             home_dir=home_dir,
         )
-        _wait_for_pane_text(session_name, "Welcome to Kimi Code CLI!")
+        _wait_for_pane_text(session_name, "Welcome to BugPilot!")
         _wait_for_pane_text(session_name, "── input")
 
         # Type "/session" (partial) to trigger completion menu.

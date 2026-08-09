@@ -186,10 +186,10 @@ def test_llm_not_set(tmp_path) -> None:
         },
         "providers": {
             "bad-provider": {
-                "type": "kimi",
+                "type": "bugpilot",
                 "base_url": "",
                 "api_key": "",
-                "env": {"KIMI_SCRIPTED_ECHO_SCRIPTS": str(scripts_path)},
+                "env": {"BUGPILOT_SCRIPTED_ECHO_SCRIPTS": str(scripts_path)},
             }
         },
     }

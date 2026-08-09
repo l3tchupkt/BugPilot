@@ -7,16 +7,16 @@ from pathlib import Path
 import pytest
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.dynamic_injection import DynamicInjection, DynamicInjectionProvider
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.soul.slash import afk as afk_slash
-from kimi_cli.soul.slash import yolo as yolo_slash
-from kimi_cli.wire.types import TextPart
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.dynamic_injection import DynamicInjection, DynamicInjectionProvider
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.soul.slash import afk as afk_slash
+from bugpilot.soul.slash import yolo as yolo_slash
+from bugpilot.wire.types import TextPart
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> KimiSoul:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
     # The shared `approval` fixture in conftest defaults to yolo=True; reset both
     # flags so each test starts from a clean state.
     runtime.approval.set_yolo(False)
@@ -27,10 +27,10 @@ def _make_soul(runtime: Runtime, tmp_path: Path) -> KimiSoul:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return KimiSoul(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
-async def _run(fn, soul: KimiSoul, args: str = "") -> None:
+async def _run(fn, soul: Agent, args: str = "") -> None:
     result = fn(soul, args)
     if result is not None:
         await result
@@ -41,7 +41,7 @@ async def test_afk_slash_toggles_afk_flag(
 ) -> None:
     soul = _make_soul(runtime, tmp_path)
     sent: list[TextPart] = []
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda msg: sent.append(msg))
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda msg: sent.append(msg))
 
     # Starts off; toggle on.
     assert soul.runtime.approval.is_afk() is False
@@ -75,7 +75,7 @@ async def test_afk_slash_notifies_injection_providers(
     soul = _make_soul(runtime, tmp_path)
     recorder = RecorderProvider()
     soul.add_injection_provider(recorder)
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda _msg: None)
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda _msg: None)
 
     await _run(afk_slash, soul)
     await _run(afk_slash, soul)
@@ -89,7 +89,7 @@ async def test_afk_slash_does_not_touch_yolo_flag(
 ) -> None:
     soul = _make_soul(runtime, tmp_path)
     soul.runtime.approval.set_yolo(True)
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda _msg: None)
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda _msg: None)
 
     await _run(afk_slash, soul)
 
@@ -103,7 +103,7 @@ async def test_afk_slash_off_appends_context_reminder(
 ) -> None:
     soul = _make_soul(runtime, tmp_path)
     soul.runtime.approval.set_afk(True)
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda _msg: None)
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda _msg: None)
 
     await _run(afk_slash, soul)
 
@@ -127,7 +127,7 @@ async def test_afk_slash_off_clears_runtime_afk_overlay(
     soul.runtime.approval.set_runtime_afk(True)
     assert soul.runtime.approval.is_afk() is True
     assert soul.runtime.approval.is_afk_flag() is False
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda _msg: None)
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda _msg: None)
 
     await _run(afk_slash, soul)
 
@@ -149,7 +149,7 @@ async def test_yolo_slash_under_afk_only_toggles_yolo_flag(
     assert soul.runtime.approval.is_yolo_flag() is False
 
     sent: list[TextPart] = []
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda msg: sent.append(msg))
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda msg: sent.append(msg))
 
     await _run(yolo_slash, soul)
 
@@ -176,7 +176,7 @@ async def test_yolo_slash_off_under_afk_does_not_claim_approval_required(
     soul.runtime.approval.set_afk(True)
 
     sent: list[TextPart] = []
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda msg: sent.append(msg))
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda msg: sent.append(msg))
 
     await _run(yolo_slash, soul)
 
@@ -198,7 +198,7 @@ async def test_yolo_slash_with_no_flags_turns_yolo_on(
     """Plain /yolo on a clean state: flag goes True, toast says auto-approve."""
     soul = _make_soul(runtime, tmp_path)
     sent: list[TextPart] = []
-    monkeypatch.setattr("kimi_cli.soul.slash.wire_send", lambda msg: sent.append(msg))
+    monkeypatch.setattr("bugpilot.soul.slash.wire_send", lambda msg: sent.append(msg))
 
     await _run(yolo_slash, soul)
     assert soul.runtime.approval.is_yolo_flag() is True

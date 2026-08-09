@@ -31,10 +31,10 @@ Windows 上的 Shell 工具现在通过 `bash.exe`（POSIX 语义）执行命令
 - **受影响**：所有 Windows 用户；依赖 PowerShell 专属语法（`Get-ChildItem`、`Where-Object`、`cmdlet -Foo Bar` 参数风格、仅 `;` 链式命令、`NUL` 重定向等）经由 Shell 工具执行的集成、agent 规格或保存的代码片段
 - **迁移**：
   1. 如果尚未安装，先安装 [Git for Windows](https://git-scm.com/downloads/win)；其自带的 `bash.exe`（通常位于 `C:\Program Files\Git\bin\bash.exe`）会通过 `where.exe git` 或标准安装位置自动发现
-  2. 如果 `bash.exe` 在非标准位置，启动 kimi-cli 前把 `KIMI_CLI_GIT_BASH_PATH` 环境变量设为它的绝对路径
+  2. 如果 `bash.exe` 在非标准位置，启动 bugpilot 前把 `KIMI_CLI_GIT_BASH_PATH` 环境变量设为它的绝对路径
   3. 把任何硬编码 PowerShell 语法的自定义提示词、agent 规格或代码片段改为 Unix shell 语法（Shell 命令内用正斜杠路径，`/dev/null` 代替 `NUL`，控制流用 `&&` 和 `||`，文本工具用 `grep`/`sed`/`awk` 而非 PowerShell cmdlet）
   4. 注意：从 bash 中调用 `python.exe`、`node.exe` 等原生 Windows 程序时仍需要传入原生 Windows 路径（例如 `python C:\path\to\script.py`）；只有 POSIX-aware 工具（cat、ls、grep 等）才能识别 `/c/path/...` 形式
-  5. 如果 kimi-cli 找不到 `bash.exe`，现在会在启动时打印安装提示并退出，而不是回退到 PowerShell
+  5. 如果 bugpilot 找不到 `bash.exe`，现在会在启动时打印安装提示并退出，而不是回退到 PowerShell
 
 ## 1.40.0
 
@@ -56,7 +56,7 @@ YOLO 不再注入模型指导，因此旧的 `skip_yolo_prompt_injection` 配置
 
 ### `merge_all_available_skills` 默认值翻转为 `true`
 
-`merge_all_available_skills` 配置项的默认值从 `false` 改为 `true`。kimi-cli 现在默认会合并用户级和项目级所有已存在的品牌 Skills 目录（`.kimi/skills`、`.claude/skills`、`.codex/skills`），而不是仅使用找到的第一个。升级后，同时维护多个品牌目录（例如同时保留 `~/.kimi/skills` 和 `~/.claude/skills`）的用户会开箱即看到全部 Skills。
+`merge_all_available_skills` 配置项的默认值从 `false` 改为 `true`。bugpilot 现在默认会合并用户级和项目级所有已存在的品牌 Skills 目录（`.kimi/skills`、`.claude/skills`、`.codex/skills`），而不是仅使用找到的第一个。升级后，同时维护多个品牌目录（例如同时保留 `~/.kimi/skills` 和 `~/.claude/skills`）的用户会开箱即看到全部 Skills。
 
 - **受影响**：同时维护多个品牌 Skills 目录，并依赖旧的"仅取第一个"行为来隐藏重复项的用户
 - **迁移**：在配置中显式设置 `merge_all_available_skills = false` 可恢复旧的仅匹配第一个目录的行为
@@ -72,10 +72,10 @@ YOLO 不再注入模型指导，因此旧的 `skip_yolo_prompt_injection` 配置
 
 ### `CreateSubagent` 和 `Task`（multiagent）工具移除
 
-`kimi_cli.tools.multiagent` 下的 `CreateSubagent` 和 `Task` 工具已移除，由新的 `Agent` 工具替代。
+`bugpilot.tools.multiagent` 下的 `CreateSubagent` 和 `Task` 工具已移除，由新的 `Agent` 工具替代。
 
-- **受影响**：在 Agent YAML 中引用 `kimi_cli.tools.multiagent:Task` 或 `kimi_cli.tools.multiagent:CreateSubagent` 的自定义 Agent 配置
-- **迁移**：在 Agent YAML 的 `allowed_tools` 中替换为 `kimi_cli.tools.agent:Agent`
+- **受影响**：在 Agent YAML 中引用 `bugpilot.tools.multiagent:Task` 或 `bugpilot.tools.multiagent:CreateSubagent` 的自定义 Agent 配置
+- **迁移**：在 Agent YAML 的 `allowed_tools` 中替换为 `bugpilot.tools.agent:Agent`
 
 ### `TaskOutput` `block` 参数默认值变更
 
@@ -188,10 +188,10 @@ Gemini Developer API 的供应商类型从 `google_genai` 重命名为 `gemini`�
 
 ### `Task` 工具移至 `multiagent` 模块
 
-`Task` 工具从 `kimi_cli.tools.task` 移至 `kimi_cli.tools.multiagent` 模块。
+`Task` 工具从 `bugpilot.tools.task` 移至 `bugpilot.tools.multiagent` 模块。
 
 - **受影响**：自定义工具中导入 `Task` 工具的代码
-- **迁移**：将导入路径改为 `from kimi_cli.tools.multiagent import Task`
+- **迁移**：将导入路径改为 `from bugpilot.tools.multiagent import Task`
 
 ### `PatchFile` 工具移除
 
@@ -233,11 +233,11 @@ Agent/Shell 模式切换快捷键从 `Ctrl-K` 改为 `Ctrl-X`。
 
 ## 0.25 - 包名变更
 
-### 包名从 `ensoul` 改为 `kimi-cli`
+### 包名从 `ensoul` 改为 `bugpilot`
 
 - **受影响**：使用 `ensoul` 包名的代码或脚本
 - **迁移**：
-  - 安装：`pip install ensoul` → `pip install kimi-cli` 或 `uv tool install kimi-cli`
+  - 安装：`pip install ensoul` → `pip install bugpilot` 或 `uv tool install bugpilot`
   - 命令：`ensoul` → `kimi`
 
 ### `ENSOUL_*` 参数前缀变更

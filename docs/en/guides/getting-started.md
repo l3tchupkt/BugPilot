@@ -17,7 +17,7 @@ Kimi Code CLI supports the following usage modes:
 - **[Agent integration (`kimi acp`)](../reference/kimi-acp.md)**: Run as a service and integrate with [IDEs](./ides.md) and other local agent clients via the [Agent Client Protocol]
 
 ::: info Tip
-If you encounter issues or have suggestions, please provide feedback on [GitHub Issues](https://github.com/MoonshotAI/kimi-cli/issues).
+If you encounter issues or have suggestions, please provide feedback on [GitHub Issues](https://github.com/l3tchupkt/bugpilot/issues).
 :::
 
 [Agent Client Protocol]: https://agentclientprotocol.com/
@@ -25,7 +25,7 @@ If you encounter issues or have suggestions, please provide feedback on [GitHub 
 ## Installation
 
 ::: tip
-Kimi Code CLI is evolving into [Kimi Code](https://github.com/MoonshotAI/kimi-code). Installing Kimi Code **automatically migrates** your configuration and sessions. New users are encouraged to install Kimi Code directly; the instructions below still work, and existing users don't need to migrate immediately.
+Kimi Code CLI is evolving into [Kimi Code](https://github.com/l3tchupkt/kimi-code). Installing Kimi Code **automatically migrates** your configuration and sessions. New users are encouraged to install Kimi Code directly; the instructions below still work, and existing users don't need to migrate immediately.
 :::
 
 Run the installation script to complete the installation. The script will first install [uv](https://docs.astral.sh/uv/) (a Python package manager), then install Kimi Code CLI via uv:
@@ -53,7 +53,7 @@ Due to macOS security checks, the first run of the `kimi` command may take longe
 If you already have uv installed, you can also run:
 
 ```sh
-uv tool install --python 3.13 kimi-cli
+uv tool install --python 3.13 bugpilot
 ```
 
 ::: tip
@@ -65,13 +65,13 @@ Kimi Code CLI supports Python 3.12–3.14, with Python 3.13 recommended.
 Upgrade to the latest version:
 
 ```sh
-uv tool upgrade kimi-cli --no-cache
+uv tool upgrade bugpilot --no-cache
 ```
 
 Uninstall Kimi Code CLI:
 
 ```sh
-uv tool uninstall kimi-cli
+uv tool uninstall bugpilot
 ```
 
 ## First run

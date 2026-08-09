@@ -1139,7 +1139,7 @@ interface ShellDisplayBlock {
 Kimi Agent is currently experimental. APIs and behavior may change in future releases.
 :::
 
-Kimi Agent (Rust) is the Rust implementation of the Kimi Code CLI kernel, designed specifically for Wire mode. If you only need the Wire protocol service, Kimi Agent (Rust) offers a more lightweight alternative. The Rust implementation lives in [`MoonshotAI/kimi-agent-rs`](https://github.com/MoonshotAI/kimi-agent-rs).
+Kimi Agent (Rust) is the Rust implementation of the Kimi Code CLI kernel, designed specifically for Wire mode. If you only need the Wire protocol service, Kimi Agent (Rust) offers a more lightweight alternative. The Rust implementation lives in [`l3tchupkt/kimi-agent-rs`](https://github.com/l3tchupkt/kimi-agent-rs).
 
 ### Features
 
@@ -1159,15 +1159,15 @@ Kimi Agent (Rust) is the Rust implementation of the Kimi Code CLI kernel, design
 
 ### Installation
 
-Download pre-built binaries from [GitHub Releases](https://github.com/MoonshotAI/kimi-agent-rs/releases):
+Download pre-built binaries from [GitHub Releases](https://github.com/l3tchupkt/kimi-agent-rs/releases):
 
 ```sh
 # macOS (Apple Silicon)
-curl -L https://github.com/MoonshotAI/kimi-agent-rs/releases/latest/download/kimi-agent-aarch64-apple-darwin.tar.gz | tar xz
+curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-aarch64-apple-darwin.tar.gz | tar xz
 sudo mv kimi-agent /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/MoonshotAI/kimi-agent-rs/releases/latest/download/kimi-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
+curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
 sudo mv kimi-agent /usr/local/bin/
 ```
 
@@ -1212,4 +1212,4 @@ kimi-agent mcp remove <name>
 
 ### Version synchronization
 
-Kimi Agent is released independently from Kimi Code CLI. See `MoonshotAI/kimi-agent-rs` release notes for compatibility and sync status.
+Kimi Agent is released independently from Kimi Code CLI. See `l3tchupkt/kimi-agent-rs` release notes for compatibility and sync status.

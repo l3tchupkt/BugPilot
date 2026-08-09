@@ -3,13 +3,13 @@ from __future__ import annotations
 import pytest
 from inline_snapshot import snapshot
 
-from kimi_cli.config import (
+from bugpilot.config import (
     Config,
     get_default_config,
     load_config,
     load_config_from_string,
 )
-from kimi_cli.exception import ConfigError
+from bugpilot.exception import ConfigError
 
 
 def test_default_config():
@@ -53,7 +53,7 @@ def test_default_config_dump():
             "notifications": {
                 "claim_stale_after_ms": 15000,
             },
-            "services": {"moonshot_search": None, "moonshot_fetch": None},
+            "services": {},
             "mcp": {"client": {"tool_call_timeout_ms": 60000}},
             "hooks": [],
             "merge_all_available_skills": True,

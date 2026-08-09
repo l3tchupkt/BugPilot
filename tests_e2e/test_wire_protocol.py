@@ -42,7 +42,7 @@ def test_initialize_handshake(tmp_path) -> None:
             {
                 "result": {
                     "protocol_version": "1.10",
-                    "server": {"name": "Kimi Code CLI", "version": "<VERSION>"},
+                    "server": {"name": "BugPilot", "version": "<VERSION>"},
                     "slash_commands": [
                         {
                             "name": "init",
@@ -86,13 +86,13 @@ def test_initialize_handshake(tmp_path) -> None:
                             "aliases": [],
                         },
                         {
-                            "name": "skill:kimi-cli-help",
-                            "description": "Answer Kimi Code CLI usage, configuration, and troubleshooting questions. Use when user asks about Kimi Code CLI installation, setup, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, how something works internally, or any questions about Kimi Code CLI itself.",
+                            "name": "skill:bugpilot-help",
+                            "description": "Answer BugPilot usage, configuration, and troubleshooting questions. Use when user asks about BugPilot installation, setup, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, how something works internally, or any questions about BugPilot itself.",
                             "aliases": [],
                         },
                         {
                             "name": "skill:skill-creator",
-                            "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Kimi's capabilities with specialized knowledge, workflows, or tool integrations.",
+                            "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends BugPilot's capabilities with specialized knowledge, workflows, or tool integrations.",
                             "aliases": [],
                         },
                     ],
@@ -152,7 +152,7 @@ def test_initialize_external_tool_conflict(tmp_path) -> None:
             {
                 "result": {
                     "protocol_version": "1.10",
-                    "server": {"name": "Kimi Code CLI", "version": "<VERSION>"},
+                    "server": {"name": "BugPilot", "version": "<VERSION>"},
                     "slash_commands": [
                         {
                             "name": "init",
@@ -196,13 +196,13 @@ def test_initialize_external_tool_conflict(tmp_path) -> None:
                             "aliases": [],
                         },
                         {
-                            "name": "skill:kimi-cli-help",
-                            "description": "Answer Kimi Code CLI usage, configuration, and troubleshooting questions. Use when user asks about Kimi Code CLI installation, setup, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, how something works internally, or any questions about Kimi Code CLI itself.",
+                            "name": "skill:bugpilot-help",
+                            "description": "Answer BugPilot usage, configuration, and troubleshooting questions. Use when user asks about BugPilot installation, setup, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, how something works internally, or any questions about BugPilot itself.",
                             "aliases": [],
                         },
                         {
                             "name": "skill:skill-creator",
-                            "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Kimi's capabilities with specialized knowledge, workflows, or tool integrations.",
+                            "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends BugPilot's capabilities with specialized knowledge, workflows, or tool integrations.",
                             "aliases": [],
                         },
                     ],

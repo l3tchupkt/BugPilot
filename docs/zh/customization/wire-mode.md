@@ -1139,7 +1139,7 @@ interface ShellDisplayBlock {
 Kimi Agent 目前为实验性功能，API 和行为可能在后续版本中发生变化。
 :::
 
-Kimi Agent (Rust) 是 Kimi Code CLI 内核的 Rust 实现，专为 Wire 模式设计。如果你只需要 Wire 协议服务，Kimi Agent (Rust) 提供了一个更轻量的选择。Rust 实现位于 [`MoonshotAI/kimi-agent-rs`](https://github.com/MoonshotAI/kimi-agent-rs)。
+Kimi Agent (Rust) 是 Kimi Code CLI 内核的 Rust 实现，专为 Wire 模式设计。如果你只需要 Wire 协议服务，Kimi Agent (Rust) 提供了一个更轻量的选择。Rust 实现位于 [`l3tchupkt/kimi-agent-rs`](https://github.com/l3tchupkt/kimi-agent-rs)。
 
 ### 特点
 
@@ -1159,15 +1159,15 @@ Kimi Agent (Rust) 是 Kimi Code CLI 内核的 Rust 实现，专为 Wire 模式�
 
 ### 安装
 
-从 [GitHub Releases](https://github.com/MoonshotAI/kimi-agent-rs/releases) 下载预编译的二进制文件：
+从 [GitHub Releases](https://github.com/l3tchupkt/kimi-agent-rs/releases) 下载预编译的二进制文件：
 
 ```sh
 # macOS (Apple Silicon)
-curl -L https://github.com/MoonshotAI/kimi-agent-rs/releases/latest/download/kimi-agent-aarch64-apple-darwin.tar.gz | tar xz
+curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-aarch64-apple-darwin.tar.gz | tar xz
 sudo mv kimi-agent /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/MoonshotAI/kimi-agent-rs/releases/latest/download/kimi-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
+curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
 sudo mv kimi-agent /usr/local/bin/
 ```
 
@@ -1212,4 +1212,4 @@ kimi-agent mcp remove <name>
 
 ### 版本同步
 
-Kimi Agent 与 Kimi Code CLI 独立发版。兼容性与同步状态以 `MoonshotAI/kimi-agent-rs` 的发布说明为准。
+Kimi Agent 与 Kimi Code CLI 独立发版。兼容性与同步状态以 `l3tchupkt/kimi-agent-rs` 的发布说明为准。
