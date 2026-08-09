@@ -35,7 +35,7 @@ Plan 模式是一种只读的规划模式，让 AI 在动手编码之前先制�
 
 有四种方式进入 Plan 模式：
 
-- **启动参数**：使用 `kimi --plan` 直接以 Plan 模式启动新会话
+- **启动参数**：使用 `bugpilot --plan` 直接以 Plan 模式启动新会话
 - **快捷键**：按 `Shift-Tab` 切换 Plan 模式的开关
 - **斜杠命令**：输入 `/plan` 或 `/plan on`
 - **AI 主动触发**：面对复杂任务时，AI 可能会通过 `EnterPlanMode` 工具请求进入 Plan 模式，你可以选择同意或拒绝
@@ -74,11 +74,11 @@ Thinking 模式让 AI 在回答前进行更深入的思考，适合处理复杂�
 你可以通过 `/model` 命令切换模型和 Thinking 模式。在选择模型后，如果模型支持 Thinking 模式，系统会询问是否开启。也可以在启动时通过 `--thinking` 参数启用：
 
 ```sh
-kimi --thinking
+bugpilot --thinking
 ```
 
 ::: tip 提示
-Thinking 模式需要当前模型支持。部分模型（如 `kimi-k2-thinking-turbo`）始终使用 Thinking 模式，无法关闭。
+Thinking 模式需要当前模型支持。部分模型（如 `bugpilot-k2-thinking-turbo`）始终使用 Thinking 模式，无法关闭。
 :::
 
 ## 运行中发送消息
@@ -187,7 +187,7 @@ AI 只会在你的选择真正影响后续操作时才使用此工具。对于�
 
 ```sh
 # 启动时启用
-kimi --yolo
+bugpilot --yolo
 
 # 或在运行中切换
 /yolo
@@ -209,7 +209,7 @@ YOLO 模式会跳过所有审批确认，请确保你了解可能的风险。建
 
 ```sh
 # 启动时启用
-kimi --afk
+bugpilot --afk
 
 # 或在运行中切换
 /afk

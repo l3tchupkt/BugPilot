@@ -14,7 +14,6 @@ from kaos import get_current_kaos, reset_current_kaos, set_current_kaos
 from kaos.local import LocalKaos
 from kaos.path import KaosPath
 from kosong.chat_provider.mock import MockChatProvider
-from pydantic import SecretStr
 
 from bugpilot.background import BackgroundTaskManager
 from bugpilot.config import Config, get_default_config
@@ -59,7 +58,7 @@ def config() -> Config:
 def llm() -> LLM:
     """Create a LLM instance."""
     return LLM(
-        chat_provider=MockChatProvider([]),
+        provider=MockChatProvider([]),
         max_context_size=100_000,
         capabilities=ALL_MODEL_CAPABILITIES,
     )
@@ -187,7 +186,7 @@ def runtime(
             notifications=notifications,
         ),
         skills={},
-#         oauth=OAuthManager(config),
+        #         oauth=OAuthManager(config),
         additional_dirs=[],
         skills_dirs=[],
         role="root",
@@ -308,9 +307,6 @@ def str_replace_file_tool(runtime: Runtime, approval: Approval) -> Generator[Str
     """Create a StrReplaceFile tool instance."""
     with tool_call_context("StrReplaceFile"):
         yield StrReplaceFile(runtime, approval)
-
-
-
 
 
 # misc fixtures

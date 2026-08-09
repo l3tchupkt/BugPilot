@@ -131,7 +131,7 @@ class KaosProcess(Protocol):
 
 @runtime_checkable
 class Kaos(Protocol):
-    """Kimi Agent Operating System (KAOS) interface."""
+    """BugPilot Agent Operating System (KAOS) interface."""
 
     name: str
     """The name of the KAOS implementation."""

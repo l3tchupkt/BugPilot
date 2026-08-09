@@ -13,7 +13,7 @@ def main(argv: Sequence[str] | None = None) -> int | str | None:
     from bugpilot.utils.proxy import normalize_proxy_env
 
     # Install excepthook before anything else so startup-phase crashes are captured.
-#     install_crash_handlers()
+    #     install_crash_handlers()
     normalize_proxy_env()
 
     args = list(sys.argv[1:] if argv is None else argv)

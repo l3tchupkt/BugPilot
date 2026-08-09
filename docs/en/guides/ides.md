@@ -17,7 +17,7 @@ Add the following to Zed's configuration file `~/.config/zed/settings.json`:
   "agent_servers": {
     "BugPilot": {
       "type": "custom",
-      "command": "kimi",
+      "command": "bugpilot",
       "args": ["acp"],
       "env": {}
     }
@@ -28,7 +28,7 @@ Add the following to Zed's configuration file `~/.config/zed/settings.json`:
 Configuration notes:
 
 - `type`: Fixed value `"custom"`
-- `command`: Path to the BugPilot command. If `kimi` is not in PATH, use the full path
+- `command`: Path to the BugPilot command. If `bugpilot` is not in PATH, use the full path
 - `args`: Startup arguments. `acp` enables ACP mode
 - `env`: Environment variables, usually left empty
 
@@ -46,7 +46,7 @@ In the AI Chat panel menu, click "Configure ACP agents" and add the following co
 {
   "agent_servers": {
     "BugPilot": {
-      "command": "~/.local/bin/kimi",
+      "command": "~/.local/bin/bugpilot",
       "args": ["acp"],
       "env": {}
     }
@@ -54,4 +54,4 @@ In the AI Chat panel menu, click "Configure ACP agents" and add the following co
 }
 ```
 
-`command` needs to be the full path. You can run `which kimi` in the terminal to get it. After saving, you can select BugPilot in the AI Chat Agent selector.
+`command` needs to be the full path. You can run `which bugpilot` in the terminal to get it. After saving, you can select BugPilot in the AI Chat Agent selector.

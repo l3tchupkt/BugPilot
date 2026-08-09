@@ -38,7 +38,7 @@ def verify_command(platform: str) -> str:
     return "where bugpilot" if platform == "win32" else "which bugpilot"
 
 
-def kimi_code_installed(home: Path | None = None) -> bool:
+def bugpilot_code_installed(home: Path | None = None) -> bool:
     """True if the standalone BugPilot is installed (its data dir ~/.bugpilot-code exists)."""
     home = home or Path.home()
     return (home / ".bugpilot-code").is_dir()
@@ -111,7 +111,7 @@ def print_migration_goodbye(
     to the real values.
     """
     console.print("Bye!")
-    if kimi_code_installed(home):
+    if bugpilot_code_installed(home):
         return
     today = today or date.today().isoformat()
     platform = platform or sys.platform

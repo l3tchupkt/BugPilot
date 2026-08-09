@@ -35,7 +35,7 @@ In plan mode, the AI can only use read-only tools (`Glob`, `Grep`, `ReadFile`) t
 
 There are four ways to enter plan mode:
 
-- **CLI flag**: Use `kimi --plan` to start a new session directly in plan mode
+- **CLI flag**: Use `bugpilot --plan` to start a new session directly in plan mode
 - **Keyboard shortcut**: Press `Shift-Tab` to toggle plan mode
 - **Slash command**: Enter `/plan` or `/plan on`
 - **AI-initiated**: When facing complex tasks, the AI may request to enter plan mode via the `EnterPlanMode` tool — you can accept or decline
@@ -74,11 +74,11 @@ Thinking mode allows the AI to think more deeply before responding, suitable for
 You can use the `/model` command to switch models and thinking mode. After selecting a model, if the model supports thinking mode, the system will ask whether to enable it. You can also enable it at startup with the `--thinking` flag:
 
 ```sh
-kimi --thinking
+bugpilot --thinking
 ```
 
 ::: tip
-Thinking mode requires support from the current model. Some models (like `kimi-k2-thinking-turbo`) always use thinking mode and cannot be disabled.
+Thinking mode requires support from the current model. Some models (like `bugpilot-k2-thinking-turbo`) always use thinking mode and cannot be disabled.
 :::
 
 ## Sending messages while running
@@ -187,7 +187,7 @@ If you trust the AI's operations, or you're running BugPilot in a safe isolated 
 
 ```sh
 # Enable at startup
-kimi --yolo
+bugpilot --yolo
 
 # Or toggle during runtime
 /yolo
@@ -209,7 +209,7 @@ When you're stepping away from the terminal and want the agent to keep running u
 
 ```sh
 # Enable at startup
-kimi --afk
+bugpilot --afk
 
 # Or toggle during runtime
 /afk

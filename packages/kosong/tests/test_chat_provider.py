@@ -1,8 +1,8 @@
 import asyncio
 
 from kosong.chat_provider import APIStatusError, StreamedMessagePart
+from kosong.chat_provider.bugpilot import BugPilot
 from kosong.chat_provider.chaos import ChaosChatProvider, ChaosConfig
-from kosong.chat_provider.kimi import Kimi
 from kosong.chat_provider.mock import MockChatProvider
 from kosong.message import Message, TextPart
 
@@ -24,7 +24,7 @@ def test_mock_chat_provider():
 
 
 async def test_chaos_chat_provider():
-    base = Kimi(model="dummy", api_key="sk-1234567890")
+    base = BugPilot(model="dummy", api_key="sk-1234567890")
     chat_provider = ChaosChatProvider(
         base,
         chaos_config=ChaosConfig(error_probability=1.0),

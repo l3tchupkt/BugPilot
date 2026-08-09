@@ -112,7 +112,7 @@ class WireServer:
     async def serve(self) -> None:
         logger.info("Starting Wire server on stdio")
 
-#         self._reader, self._writer = await acp.stdio_streams(limit=STDIO_BUFFER_LIMIT)
+        #         self._reader, self._writer = await acp.stdio_streams(limit=STDIO_BUFFER_LIMIT)
         self._write_task = asyncio.create_task(self._write_loop())
         if isinstance(self._soul, Agent) and self._soul.runtime.root_wire_hub is not None:
             self._root_hub_queue = self._soul.runtime.root_wire_hub.subscribe()
@@ -614,19 +614,17 @@ class WireServer:
                 ua_suffix += f" {client.version}"
             ua_suffix = f" ({ua_suffix.strip()})"
 
+        from kosong.chat_provider.bugpilot import BugPilot
 
-        from kosong.chat_provider.kimi import Kimi
-
-        if isinstance(llm.chat_provider, Kimi):
-            moonshot_client = llm.chat_provider.client
-            headers = dict(moonshot_client._custom_headers)  # pyright: ignore[reportPrivateUsage]
+        if isinstance(llm.chat_provider, BugPilot):
+            bugpilot_client = llm.chat_provider.client
+            headers = dict(bugpilot_client._custom_headers)  # pyright: ignore[reportPrivateUsage]
             headers["User-Agent"] = f"{USER_AGENT}{ua_suffix}"
-            moonshot_client._custom_headers = headers  # pyright: ignore[reportPrivateUsage]
+            bugpilot_client._custom_headers = headers  # pyright: ignore[reportPrivateUsage]
 
     def _track_session_started(self, client: ClientInfo | None) -> None:
         if not isinstance(self._soul, Agent):
             return
-
 
         pass
 

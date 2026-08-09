@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 import asyncio
 from collections.abc import AsyncIterator, Sequence
 from pathlib import Path
@@ -18,7 +19,6 @@ from bugpilot.soul import run_soul
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.approval import Approval
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.tools.utils import ToolRejectedError
 from bugpilot.utils.aioqueue import QueueShutDown
 from bugpilot.wire import Wire
@@ -107,7 +107,7 @@ def _make_llm(
     capabilities: set[ModelCapability],
 ) -> LLM:
     return LLM(
-        chat_provider=SequenceChatProvider(sequences),
+        provider=SequenceChatProvider(sequences),
         max_context_size=100_000,
         capabilities=capabilities,
     )
@@ -143,11 +143,11 @@ def _make_soul(
         runtime=_runtime_with_llm(runtime, llm),
     )
     context = Context(file_backend=tmp_path / "history.jsonl")
-    return Agent(agent, context=context), context
+    return AgentLoop(agent, context=context), context
 
 
 async def _run_and_collect_turns(
-    soul: Agent, user_input: str | list[ContentPart]
+    soul: AgentLoop, user_input: str | list[ContentPart]
 ) -> list[str | list[ContentPart]]:
     turns: list[str | list[ContentPart]] = []
 

@@ -8,22 +8,22 @@
 
 ## 0.55.0 (2026-07-16)
 
-- Kimi: Stop automatically sending the legacy `reasoning_effort` parameter when configuring thinking — requests now use `thinking.type` exclusively while preserving explicit legacy passthrough
-- Kimi: Preserve empty-string `reasoning_content` as `ThinkPart(think="")` in both streaming and non-streaming responses — previously the truthy check dropped empty deltas, conflating "reasoned but empty" with "no reasoning at all"; the stored (empty) ThinkPart is what makes `_convert_message` emit `reasoning_content` on the next request, so preserved-thinking backends that require the field on every assistant message no longer 400 after a reason-free turn
-- Kimi: Add `GenerationKwargs.max_completion_tokens` and normalize the deprecated `max_tokens` alias to it before requests — the implicit `max_tokens=32000` default is no longer sent when the field is unset, so the server (or a per-request override) decides the budget
-- Kimi: Accept per-request `generation_overrides` in `generate()` — callers such as kimi-cli can now clamp `max_completion_tokens` for a single request without rebuilding the provider; the Chaos provider forwards overrides to the wrapped provider when present
+- BugPilot: Stop automatically sending the legacy `reasoning_effort` parameter when configuring thinking — requests now use `thinking.type` exclusively while preserving explicit legacy passthrough
+- BugPilot: Preserve empty-string `reasoning_content` as `ThinkPart(think="")` in both streaming and non-streaming responses — previously the truthy check dropped empty deltas, conflating "reasoned but empty" with "no reasoning at all"; the stored (empty) ThinkPart is what makes `_convert_message` emit `reasoning_content` on the next request, so preserved-thinking backends that require the field on every assistant message no longer 400 after a reason-free turn
+- BugPilot: Add `GenerationKwargs.max_completion_tokens` and normalize the deprecated `max_tokens` alias to it before requests — the implicit `max_tokens=32000` default is no longer sent when the field is unset, so the server (or a per-request override) decides the budget
+- BugPilot: Accept per-request `generation_overrides` in `generate()` — callers such as bugpilot can now clamp `max_completion_tokens` for a single request without rebuilding the provider; the Chaos provider forwards overrides to the wrapped provider when present
 - Core: Expose the `x-trace-id` response header as `StreamedMessage.trace_id` and fire the new `on_trace_id` callback on `generate()` as soon as the header is available; `APIStatusError` now also carries `trace_id`
 
 ## 0.53.0 (2026-04-28)
 
-- Kimi: Fix stale API key after OAuth token refresh — `on_retryable_error` now reads the current `api_key` from the live client instead of the cached `_api_key`, so that OAuth token refreshes applied via `client.api_key` are preserved when the client is rebuilt after a retryable error
+- BugPilot: Fix stale API key after OAuth token refresh — `on_retryable_error` now reads the current `api_key` from the live client instead of the cached `_api_key`, so that OAuth token refreshes applied via `client.api_key` are preserved when the client is rebuilt after a retryable error
 
 ## 0.52.0 (2026-04-24)
 
-- Kimi: Add `keep` to `ThinkingConfig` (Moonshot `thinking.keep` passthrough for Preserved Thinking); value is typed as `Any` and forwarded unchanged, with case-preservation and no validation — callers choose a value the server accepts (e.g. `"all"`)
-- Kimi: Fix `with_extra_body` silently dropping earlier `thinking.*` fields on subsequent calls — the `thinking` sub-dict is now merged field-by-field so composing `with_thinking(...)` with `with_extra_body({"thinking": {...}})` preserves both contributions; other top-level keys retain last-writer-wins semantics
-- Kimi: Normalize MCP tool parameter schemas before sending to Moonshot — properties that declare `enum`/`const` but no `type` (or have no type hint at all) get an inferred `type` filled in, so MCP servers whose schemas are valid JSON Schema but not strict enough for Moonshot's validator (notably the JetBrains Rider MCP, whose `truncateMode` property is enum-only) no longer make every request fail with `400 At path 'properties.X': type is not defined`; the normalization is Kimi-specific and leaves OpenAI/Anthropic conversions untouched
-- Kimi: Fix sending empty `content` alongside `tool_calls`, which caused 400 "text content is empty" errors from the Moonshot API. When an assistant message has tool calls and its visible content is effectively empty (no text or only whitespace/think parts), the `content` field is now omitted entirely
+- BugPilot: Add `keep` to `ThinkingConfig` (BugPilot `thinking.keep` passthrough for Preserved Thinking); value is typed as `Any` and forwarded unchanged, with case-preservation and no validation — callers choose a value the server accepts (e.g. `"all"`)
+- BugPilot: Fix `with_extra_body` silently dropping earlier `thinking.*` fields on subsequent calls — the `thinking` sub-dict is now merged field-by-field so composing `with_thinking(...)` with `with_extra_body({"thinking": {...}})` preserves both contributions; other top-level keys retain last-writer-wins semantics
+- BugPilot: Normalize MCP tool parameter schemas before sending to BugPilot — properties that declare `enum`/`const` but no `type` (or have no type hint at all) get an inferred `type` filled in, so MCP servers whose schemas are valid JSON Schema but not strict enough for BugPilot's validator (notably the JetBrains Rider MCP, whose `truncateMode` property is enum-only) no longer make every request fail with `400 At path 'properties.X': type is not defined`; the normalization is BugPilot-specific and leaves OpenAI/Anthropic conversions untouched
+- BugPilot: Fix sending empty `content` alongside `tool_calls`, which caused 400 "text content is empty" errors from the BugPilot API. When an assistant message has tool calls and its visible content is effectively empty (no text or only whitespace/think parts), the `content` field is now omitted entirely
 
 ## 0.51.0 (2026-04-22)
 - Anthropic: Fix parallel tool results being split into multiple user messages — consecutive tool-result-only user messages are now merged into a single message, complying with the Anthropic Messages API spec that all `tool_use` blocks in an assistant turn must be answered within one user message; this fixes 400 errors on strict Anthropic-compatible backends (e.g. DeepSeek `/anthropic` endpoint) and prevents the official backend from silently teaching the model to avoid parallel tool calls
@@ -32,7 +32,7 @@
 
 - Anthropic: Add adaptive thinking support for Claude Opus 4.7 — model capability detection now uses regex version extrapolation (covers `opus-4-7`, Bedrock/Vertex name variants such as `aws/claude-opus-4-7` and `anthropic.claude-opus-4-7-v1:0`, `claude-mythos-preview`, and future Claude versions ≥ 4.6) instead of hard-coded substring matching; adaptive requests now set `display: "summarized"` explicitly so thinking content still streams on Opus 4.7 (where the default flipped to `"omitted"`); the legacy `thinking: {type: "enabled", budget_tokens: N}` path is no longer used for Opus 4.7, which rejects it with 400
 - Anthropic: Plumb `output_config.effort` through both adaptive and legacy paths — the user-requested effort was previously dropped in adaptive mode, silently collapsing `low`/`medium` to the model default; effort is now faithfully forwarded, and on legacy paths it is emitted only for models that Anthropic's docs explicitly list as supporting the parameter (Opus 4.5 on top of all adaptive-capable models) to avoid 400 validation errors on Claude 3.x and other models that reject `output_config`
-- Core: Extend `ThinkingEffort` with `xhigh` and `max` — new tiers available on Opus 4.7 (`xhigh`), Opus 4.6 / Sonnet 4.6 / Claude Mythos Preview (`max`), and OpenAI models after `gpt-5.1-codex-max` (`xhigh`); providers clamp unsupported levels down transparently (e.g., `xhigh` → `high` on Opus 4.6, `max` → `xhigh` on OpenAI, `xhigh`/`max` → `high` on Gemini and Kimi)
+- Core: Extend `ThinkingEffort` with `xhigh` and `max` — new tiers available on Opus 4.7 (`xhigh`), Opus 4.6 / Sonnet 4.6 / Claude Mythos Preview (`max`), and OpenAI models after `gpt-5.1-codex-max` (`xhigh`); providers clamp unsupported levels down transparently (e.g., `xhigh` → `high` on Opus 4.6, `max` → `xhigh` on OpenAI, `xhigh`/`max` → `high` on Gemini and BugPilot)
 
 ## 0.49.0 (2026-04-10)
 
@@ -68,7 +68,7 @@
 ## 0.43.0 (2026-02-24)
 
 - Add `RetryableChatProvider` protocol for providers that can recover from retryable transport errors
-- Implement `RetryableChatProvider` in Kimi, OpenAI Legacy, and OpenAI Responses providers
+- Implement `RetryableChatProvider` in BugPilot, OpenAI Legacy, and OpenAI Responses providers
 - Add `create_openai_client` and `close_replaced_openai_client` utilities to `openai_common`
 
 ## 0.42.0 (2026-02-06)
@@ -81,7 +81,7 @@
 
 ## 0.41.0 (2026-01-27)
 
-- Remove default temperature setting in Kimi chat provider based on model name
+- Remove default temperature setting in BugPilot chat provider based on model name
 
 ## 0.40.0 (2026-01-24)
 
@@ -94,8 +94,8 @@
 ## 0.39.0 (2026-01-21)
 
 - Control thinking mode via `extra_body` parameter instead of legacy `reasoning_effort`
-- Add `files` property to `Kimi` provider that returns a `KimiFiles` object
-- Add `KimiFiles.upload_video()` method for uploading videos to Kimi files API, returning `VideoURLPart`
+- Add `files` property to `BugPilot` provider that returns a `BugPilotFiles` object
+- Add `BugPilotFiles.upload_video()` method for uploading videos to BugPilot files API, returning `VideoURLPart`
 
 ## 0.38.0 (2026-01-15)
 
@@ -148,7 +148,7 @@
 ## 0.30.0 (2025-12-03)
 
 - Serialize empty content as an empty list instead of `None`
-- Fix Kimi chat provider panicking when `stream` is `False`
+- Fix BugPilot chat provider panicking when `stream` is `False`
 
 ## 0.29.0 (2025-12-02)
 
@@ -157,7 +157,7 @@
 
 ## 0.28.1 (2025-12-01)
 
-- Fix interleaved thinking for Kimi and OpenAILegacy chat providers
+- Fix interleaved thinking for BugPilot and OpenAILegacy chat providers
 
 ## 0.28.0 (2025-11-28)
 
@@ -193,7 +193,7 @@
 
 ## 0.25.1 (2025-11-18)
 
-- Catch httpx exceptions correctly in Kimi and OpenAI providers
+- Catch httpx exceptions correctly in BugPilot and OpenAI providers
 
 ## 0.25.0 (2025-11-13)
 
@@ -201,7 +201,7 @@
 
 ## 0.24.0 (2025-11-12)
 
-- Set default temperature settings for Kimi models based on model name
+- Set default temperature settings for BugPilot models based on model name
 
 ## 0.23.0 (2025-11-10)
 

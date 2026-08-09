@@ -300,7 +300,7 @@ class _PromptLiveView(_LiveView):
                         return
                 self._queued_messages.append(user_input)
 
-#                 track("input_queue")
+                #                 track("input_queue")
                 # Invalidate directly — _flush_prompt_refresh() is gated by
                 # _need_recompose which may be False between wire events.
                 self._prompt_session.invalidate()
@@ -345,7 +345,7 @@ class _PromptLiveView(_LiveView):
         console.print(render_user_echo_text(user_input.command))
         console.print()
 
-#         track("input_steer")
+        #         track("input_steer")
         # Track that we originated this steer locally (FIFO counter for dedup)
         self._pending_local_steer_count += 1
         self._steer(user_input.content)

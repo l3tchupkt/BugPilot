@@ -13,9 +13,9 @@ from kosong.tooling.empty import EmptyToolset
 from bugpilot.cli import Reload
 from bugpilot.config import Config, get_default_config
 from bugpilot.exception import ConfigError
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.ui.shell import Shell
 from bugpilot.ui.shell import slash as shell_slash
 from bugpilot.ui.theme import (
@@ -48,7 +48,7 @@ def _make_shell_app(runtime: Runtime, tmp_path: Path) -> SimpleNamespace:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     return SimpleNamespace(soul=soul)
 
 
@@ -282,7 +282,7 @@ async def test_shell_startup_initializes_theme_from_config(
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     shell = RealShell(soul)
 
     set_theme_mock = Mock(side_effect=set_active_theme)

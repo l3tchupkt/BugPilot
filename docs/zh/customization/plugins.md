@@ -23,36 +23,36 @@
 
 ## 安装插件
 
-使用 `kimi plugin` 命令管理插件。
+使用 `bugpilot plugin` 命令管理插件。
 
 **从本地目录安装**
 
 ```sh
-kimi plugin install /path/to/my-plugin
+bugpilot plugin install /path/to/my-plugin
 ```
 
 **从 ZIP 文件安装**
 
 ```sh
 # 本地 ZIP 文件
-kimi plugin install my-plugin.zip
+bugpilot plugin install my-plugin.zip
 
 # 远程 ZIP 链接（含 GitHub/GitLab 归档下载链接）
-kimi plugin install https://example.com/my-plugin.zip
-kimi plugin install https://github.com/user/repo/archive/refs/heads/main.zip
+bugpilot plugin install https://example.com/my-plugin.zip
+bugpilot plugin install https://github.com/user/repo/archive/refs/heads/main.zip
 ```
 
 **从 Git 仓库安装**
 
 ```sh
 # 安装根目录的插件
-kimi plugin install https://github.com/user/repo.git
+bugpilot plugin install https://github.com/user/repo.git
 
 # 安装子目录中的插件（多插件仓库）
-kimi plugin install https://github.com/user/repo.git/plugins/my-plugin
+bugpilot plugin install https://github.com/user/repo.git/plugins/my-plugin
 
 # 指定分支（使用浏览器 URL 格式）
-kimi plugin install https://github.com/user/repo/tree/develop/plugins/my-plugin
+bugpilot plugin install https://github.com/user/repo/tree/develop/plugins/my-plugin
 ```
 
 当 Git 仓库根目录没有 `plugin.json` 时，BugPilot 会检查根目录及其直接子目录，并列出可用的插件供你选择。
@@ -60,19 +60,19 @@ kimi plugin install https://github.com/user/repo/tree/develop/plugins/my-plugin
 **列出已安装插件**
 
 ```sh
-kimi plugin list
+bugpilot plugin list
 ```
 
 **查看插件详情**
 
 ```sh
-kimi plugin info my-plugin
+bugpilot plugin info my-plugin
 ```
 
 **移除插件**
 
 ```sh
-kimi plugin remove my-plugin
+bugpilot plugin remove my-plugin
 ```
 
 ## 创建插件
@@ -306,7 +306,7 @@ rl.on("close", () => {
 
 ## 插件安装位置
 
-插件安装在 `~/.kimi/plugins/` 目录下。每个插件是一个独立的子目录，包含完整的 `plugin.json` 和脚本文件。
+插件安装在 `~/.bugpilot/plugins/` 目录下。每个插件是一个独立的子目录，包含完整的 `plugin.json` 和脚本文件。
 
 ::: info 说明
 插件与 MCP 服务器是互补的扩展机制：

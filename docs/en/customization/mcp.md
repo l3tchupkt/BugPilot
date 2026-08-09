@@ -14,7 +14,7 @@ BugPilot has built-in tools (file read/write, shell commands, web fetching, etc.
 
 ## MCP server management
 
-Use the [`kimi mcp`](../reference/kimi-mcp.md) command to manage MCP servers.
+Use the [`bugpilot mcp`](../reference/bugpilot-mcp.md) command to manage MCP servers.
 
 **Add a server**
 
@@ -22,26 +22,26 @@ Add an HTTP server:
 
 ```sh
 # Basic usage
-kimi mcp add --transport http context7 https://mcp.context7.com/mcp
+bugpilot mcp add --transport http context7 https://mcp.context7.com/mcp
 
 # With headers
-kimi mcp add --transport http context7 https://mcp.context7.com/mcp \
+bugpilot mcp add --transport http context7 https://mcp.context7.com/mcp \
   --header "CONTEXT7_API_KEY: your-key"
 
 # Using OAuth authentication
-kimi mcp add --transport http --auth oauth linear https://mcp.linear.app/mcp
+bugpilot mcp add --transport http --auth oauth linear https://mcp.linear.app/mcp
 ```
 
 Add a stdio server (local process):
 
 ```sh
-kimi mcp add --transport stdio chrome-devtools -- npx chrome-devtools-mcp@latest
+bugpilot mcp add --transport stdio chrome-devtools -- npx chrome-devtools-mcp@latest
 ```
 
 **List servers**
 
 ```sh
-kimi mcp list
+bugpilot mcp list
 ```
 
 While BugPilot is running, you can also enter `/mcp` to view connected servers and loaded tools.
@@ -49,7 +49,7 @@ While BugPilot is running, you can also enter `/mcp` to view connected servers a
 **Remove a server**
 
 ```sh
-kimi mcp remove context7
+bugpilot mcp remove context7
 ```
 
 **OAuth authorization**
@@ -57,22 +57,22 @@ kimi mcp remove context7
 For servers using OAuth, you need to complete authorization first:
 
 ```sh
-kimi mcp auth linear
+bugpilot mcp auth linear
 ```
 
 This will open a browser to complete the OAuth flow. After successful authorization, BugPilot will save the token for future use.
 
-MCP OAuth tokens are stored in `~/.kimi/mcp-oauth/`. After upgrading from older versions that used FastMCP 2.x, the old token cache is not migrated automatically; if `kimi mcp list` shows that an OAuth server needs authorization, run `kimi mcp auth <name>` again.
+MCP OAuth tokens are stored in `~/.bugpilot/mcp-oauth/`. After upgrading from older versions that used FastMCP 2.x, the old token cache is not migrated automatically; if `bugpilot mcp list` shows that an OAuth server needs authorization, run `bugpilot mcp auth <name>` again.
 
 **Test a server**
 
 ```sh
-kimi mcp test context7
+bugpilot mcp test context7
 ```
 
 ## MCP configuration file
 
-MCP server configuration is stored in `~/.kimi/mcp.json`, in a format compatible with other MCP clients:
+MCP server configuration is stored in `~/.bugpilot/mcp.json`, in a format compatible with other MCP clients:
 
 ```json
 {
@@ -99,13 +99,13 @@ MCP server configuration is stored in `~/.kimi/mcp.json`, in a format compatible
 Use the `--mcp-config-file` flag to load a configuration file from another location:
 
 ```sh
-kimi --mcp-config-file /path/to/mcp.json
+bugpilot --mcp-config-file /path/to/mcp.json
 ```
 
 Use the `--mcp-config` flag to pass JSON configuration directly:
 
 ```sh
-kimi --mcp-config '{"mcpServers": {"test": {"url": "https://..."}}}'
+bugpilot --mcp-config '{"mcpServers": {"test": {"url": "https://..."}}}'
 ```
 
 ## Loading status

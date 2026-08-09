@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 from kaos.path import KaosPath
+
 from bugpilot.app import BugPilotCLI, enable_logging
 from bugpilot.session import Session
 

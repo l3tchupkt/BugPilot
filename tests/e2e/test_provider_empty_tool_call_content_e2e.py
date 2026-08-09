@@ -192,7 +192,7 @@ async def mock_server() -> AsyncIterator[MockServer]:
         await runner.cleanup()
 
 
-def _write_kimi_config(config_path: Path, *, base_url: str) -> None:
+def _write_bugpilot_config(config_path: Path, *, base_url: str) -> None:
     config_path.write_text(
         json.dumps(
             {
@@ -217,7 +217,7 @@ def _write_kimi_config(config_path: Path, *, base_url: str) -> None:
     )
 
 
-async def _run_kimi_print_json(
+async def _run_bugpilot_print_json(
     *,
     config_path: Path,
     share_dir: Path,
@@ -282,7 +282,7 @@ def _assert_session_artifacts(share_dir: Path) -> None:
     assert wire_files[0].stat().st_size > 0
 
 
-async def test_kimi_compat_endpoint_accepts_tool_call_history_without_empty_content(
+async def test_bugpilot_compat_endpoint_accepts_tool_call_history_without_empty_content(
     tmp_path: Path, mock_server: MockServer
 ) -> None:
     work_dir = tmp_path / "work"
@@ -293,9 +293,9 @@ async def test_kimi_compat_endpoint_accepts_tool_call_history_without_empty_cont
     share_dir.mkdir()
 
     config_path = tmp_path / "config.json"
-    _write_kimi_config(config_path, base_url=f"{mock_server.base_url}/v1")
+    _write_bugpilot_config(config_path, base_url=f"{mock_server.base_url}/v1")
 
-    return_code, stdout, stderr = await _run_kimi_print_json(
+    return_code, stdout, stderr = await _run_bugpilot_print_json(
         config_path=config_path,
         share_dir=share_dir,
         work_dir=work_dir,
@@ -317,7 +317,7 @@ async def test_kimi_compat_endpoint_accepts_tool_call_history_without_empty_cont
     _assert_session_artifacts(share_dir)
 
 
-async def test_kimi_thinking_uses_type_without_legacy_reasoning_effort(
+async def test_bugpilot_thinking_uses_type_without_legacy_reasoning_effort(
     tmp_path: Path, mock_server: MockServer
 ) -> None:
     work_dir = tmp_path / "work"
@@ -328,9 +328,9 @@ async def test_kimi_thinking_uses_type_without_legacy_reasoning_effort(
     share_dir.mkdir()
 
     config_path = tmp_path / "config.json"
-    _write_kimi_config(config_path, base_url=f"{mock_server.base_url}/v1")
+    _write_bugpilot_config(config_path, base_url=f"{mock_server.base_url}/v1")
 
-    return_code, stdout, stderr = await _run_kimi_print_json(
+    return_code, stdout, stderr = await _run_bugpilot_print_json(
         config_path=config_path,
         share_dir=share_dir,
         work_dir=work_dir,

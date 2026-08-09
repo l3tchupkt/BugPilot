@@ -8,10 +8,10 @@ Print 模式让 BugPilot 以非交互方式运行，适合脚本调用和自动�
 
 ```sh
 # 通过 -p 传入指令（或 -c）
-kimi --print -p "列出当前目录的所有 Python 文件"
+bugpilot --print -p "列出当前目录的所有 Python 文件"
 
 # 通过 stdin 传入指令
-echo "解释这段代码的作用" | kimi --print
+echo "解释这段代码的作用" | bugpilot --print
 ```
 
 Print 模式的特点：
@@ -25,10 +25,10 @@ Print 模式的特点：
 
 ```sh
 # 分析 git diff 并生成提交信息
-git diff --staged | kimi --print -p "根据这个 diff 生成一个符合 Conventional Commits 规范的提交信息"
+git diff --staged | bugpilot --print -p "根据这个 diff 生成一个符合 Conventional Commits 规范的提交信息"
 
 # 读取文件并生成文档
-cat src/api.py | kimi --print -p "为这个 Python 模块生成 API 文档"
+cat src/api.py | bugpilot --print -p "为这个 Python 模块生成 API 文档"
 ```
 -->
 
@@ -37,13 +37,13 @@ cat src/api.py | kimi --print -p "为这个 Python 模块生成 API 文档"
 使用 `--final-message-only` 选项可以只输出最终的 assistant 消息，跳过中间的工具调用过程：
 
 ```sh
-kimi --print -p "根据当前变更给我一个 Git commit message" --final-message-only
+bugpilot --print -p "根据当前变更给我一个 Git commit message" --final-message-only
 ```
 
 `--quiet` 是 `--print --output-format text --final-message-only` 的快捷方式，适合只需要最终结果的场景：
 
 ```sh
-kimi --quiet -p "根据当前变更给我一个 Git commit message"
+bugpilot --quiet -p "根据当前变更给我一个 Git commit message"
 ```
 
 ## JSON 格式
@@ -55,7 +55,7 @@ Print 模式支持 JSON 格式的输入和输出，方便程序化处理。输�
 使用 `--output-format=stream-json` 以 JSONL（每行一个 JSON）格式输出：
 
 ```sh
-kimi --print -p "你好" --output-format=stream-json
+bugpilot --print -p "你好" --output-format=stream-json
 ```
 
 输出示例：
@@ -77,7 +77,7 @@ kimi --print -p "你好" --output-format=stream-json
 使用 `--input-format=stream-json` 接收 JSONL 格式的输入：
 
 ```sh
-echo '{"role":"user","content":"你好"}' | kimi --print --input-format=stream-json --output-format=stream-json
+echo '{"role":"user","content":"你好"}' | bugpilot --print --input-format=stream-json --output-format=stream-json
 ```
 
 这种模式下，BugPilot 会持续读取 stdin，每收到一条用户消息就处理并输出响应，直到 stdin 关闭。
@@ -142,12 +142,12 @@ Print 模式使用退出码表示执行结果，方便脚本和 CI 系统判断�
 示例：根据退出码决定是否重试：
 
 ```sh
-kimi --print -p "执行任务"
+bugpilot --print -p "执行任务"
 code=$?
 if [ $code -eq 75 ]; then
   echo "遇到暂时性错误，稍后重试..."
   sleep 10
-  kimi --print -p "执行任务"
+  bugpilot --print -p "执行任务"
 elif [ $code -ne 0 ]; then
   echo "遇到不可恢复的错误，退出码: $code"
   exit $code
@@ -161,7 +161,7 @@ fi
 在 CI 流程中自动生成代码或执行检查：
 
 ```sh
-kimi --print -p "检查 src/ 目录下是否有明显的安全问题，输出 JSON 格式的报告"
+bugpilot --print -p "检查 src/ 目录下是否有明显的安全问题，输出 JSON 格式的报告"
 ```
 
 **批量处理**
@@ -170,7 +170,7 @@ kimi --print -p "检查 src/ 目录下是否有明显的安全问题，输出 JS
 
 ```sh
 for file in src/*.py; do
-  kimi --print -p "为 $file 添加类型注解"
+  bugpilot --print -p "为 $file 添加类型注解"
 done
 ```
 
@@ -179,5 +179,5 @@ done
 作为其他工具的后端，通过 JSON 格式进行通信：
 
 ```sh
-my-tool | kimi --print --input-format=stream-json --output-format=stream-json | process-output
+my-tool | bugpilot --print --input-format=stream-json --output-format=stream-json | process-output
 ```

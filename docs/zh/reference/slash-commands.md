@@ -34,10 +34,10 @@
 
 登录或配置 API 平台。执行后首先选择平台：
 
-- **Kimi Code**：自动打开浏览器进行 OAuth 授权登录
+- **BugPilot**：自动打开浏览器进行 OAuth 授权登录
 - **其他平台**：输入 API 密钥，然后选择可用模型
 
-配置完成后自动保存到 `~/.kimi/config.toml` 并重新加载。详见 [平台与模型](../configuration/providers.md)。
+配置完成后自动保存到 `~/.bugpilot/config.toml` 并重新加载。详见 [平台与模型](../configuration/providers.md)。
 
 别名：`/setup`
 
@@ -97,7 +97,7 @@
 别名：`/status`
 
 ::: tip 提示
-此命令仅适用于 Kimi Code 平台。
+此命令仅适用于 BugPilot 平台。
 :::
 
 ### `/mcp`
@@ -163,7 +163,7 @@
 
 用法：
 
-- `/export`：导出到当前工作目录，文件名自动生成（格式为 `kimi-export-<会话ID前8位>-<时间戳>.md`）
+- `/export`：导出到当前工作目录，文件名自动生成（格式为 `bugpilot-export-<会话ID前8位>-<时间戳>.md`）
 - `/export <path>`：导出到指定路径。如果路径是目录，文件名会自动生成；如果是文件路径，则直接写入该文件
 
 导出文件包含：
@@ -237,7 +237,7 @@ Flow Skill 也可以通过 `/skill:<name>` 调用，此时作为普通 Skill 加
 - `/add-dir`：不带参数时列出已添加的额外目录
 
 ::: tip 提示
-已在工作目录内的目录无需添加，因为它们已经可访问。也可以在启动时通过 `--add-dir` 参数添加，详见 [`kimi` 命令](./kimi-command.md#工作目录)。
+已在工作目录内的目录无需添加，因为它们已经可访问。也可以在启动时通过 `--add-dir` 参数添加，详见 [`bugpilot` 命令](./bugpilot-command.md#工作目录)。
 :::
 
 ## 其他
@@ -320,20 +320,20 @@ AFK 会跳过所有审批确认，并且去掉提问澄清的安全网。仅在�
 
 ### `/web`
 
-切换到 Web UI。执行后 BugPilot 会启动 Web UI 服务器并在浏览器中打开当前会话，你可以在 Web UI 中继续对话。详见 [Web UI](./kimi-web.md)。
+切换到 Web UI。执行后 BugPilot 会启动 Web UI 服务器并在浏览器中打开当前会话，你可以在 Web UI 中继续对话。详见 [Web UI](./bugpilot-web.md)。
 
 ### `/vis`
 
-切换到 Agent Tracing Visualizer。执行后 BugPilot 会启动可视化面板服务器并在浏览器中打开当前会话的追踪视图，你可以在其中检查 Wire 事件时间线、上下文消息和用量统计。详见 [Agent Tracing Visualizer](./kimi-vis.md)。
+切换到 Agent Tracing Visualizer。执行后 BugPilot 会启动可视化面板服务器并在浏览器中打开当前会话的追踪视图，你可以在其中检查 Wire 事件时间线、上下文消息和用量统计。详见 [Agent Tracing Visualizer](./bugpilot-vis.md)。
 
 ### `/upgrade`
 
-安装新版 Kimi Code——更快、更强大的继任版本。执行后会显示安装命令并询问是否立即安装：
+安装新版 BugPilot——更快、更强大的继任版本。执行后会显示安装命令并询问是否立即安装：
 
 - 选择立即安装：BugPilot 会运行安装脚本，你现有的配置和会话会自动迁移
 - 选择稍后安装：仅显示安装命令，方便你手动执行
 
-安装完成后，在新终端中运行 `kimi` 即可启动新版 Kimi Code。
+安装完成后，在新终端中运行 `bugpilot` 即可启动新版 BugPilot。
 
 ::: tip 提示
 此命令仅在交互式 Shell 模式下可用。

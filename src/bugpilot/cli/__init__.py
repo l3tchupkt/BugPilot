@@ -901,6 +901,7 @@ def bugpilot(
 def login() -> None:
     """Login to your BugPilot account."""
     import typer
+
     typer.echo("BugPilot does not require remote login.")
 
 
@@ -908,6 +909,7 @@ def login() -> None:
 def logout() -> None:
     """Logout from your BugPilot account."""
     import typer
+
     typer.echo("BugPilot does not require remote login.")
 
 
@@ -924,6 +926,7 @@ def term(
 @cli.command()
 def acp():
     """Run BugPilot ACP server."""
+
 
 #     acp_main()
 
@@ -974,6 +977,8 @@ def web_worker(session_id: str) -> None:
         raise typer.BadParameter(f"Invalid session ID: {session_id}") from exc
 
     enable_logging(debug=False)
+
+
 #     asyncio.run(run_worker(parsed_session_id))
 
 

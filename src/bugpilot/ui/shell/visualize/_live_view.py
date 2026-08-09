@@ -198,8 +198,7 @@ class _LiveView:
                 # Handle Ctrl+E specially - pause Live while the pager is active
                 if event == KeyEvent.CTRL_E:
                     if self.has_expandable_panel():
-
-#                         track("shortcut_expand")
+                        #                         track("shortcut_expand")
                         await listener.pause()
                         live.stop()
                         try:

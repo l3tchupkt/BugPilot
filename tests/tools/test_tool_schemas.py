@@ -480,7 +480,7 @@ def test_str_replace_file_params_schema(str_replace_file_tool: StrReplaceFile):
 
 
 def test_search_web_params_schema(search_web_tool: SearchWeb):
-    """Test the schema of MoonshotSearch tool parameters."""
+    """Test the schema of BugPilotSearch tool parameters."""
     assert search_web_tool.base.parameters == snapshot(
         {
             "properties": {

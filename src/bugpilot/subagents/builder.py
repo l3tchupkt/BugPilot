@@ -22,7 +22,6 @@ class SubagentBuilder:
             self._root_runtime.config,
             effective_model,
             session_id=self._root_runtime.session.id,
-
         )
         runtime = self._root_runtime.copy_for_subagent(
             agent_id=agent_id,

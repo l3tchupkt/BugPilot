@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.toolset import Toolset
 from bugpilot.tools.ask_user import _BASE_DESCRIPTION, AskUserQuestion
 
@@ -26,7 +26,7 @@ class TestAskUserDescriptionStability:
             toolset=toolset,
             runtime=runtime,
         )
-        soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+        soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
         before = tool.base.description
         soul._set_plan_mode(True, source="tool")

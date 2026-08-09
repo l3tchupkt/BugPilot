@@ -17,9 +17,9 @@ from bugpilot.background import TaskRuntime, TaskSpec
 from bugpilot.llm import LLM
 from bugpilot.notifications import NotificationEvent
 from bugpilot.soul import RunCancelled, StatusSnapshot, _current_wire, run_soul
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.utils.aioqueue import QueueShutDown
 from bugpilot.wire import Wire
 from bugpilot.wire.types import ApprovalRequest, ApprovalResponse, Notification
@@ -98,7 +98,7 @@ def _runtime_with_llm(runtime: Runtime, llm: LLM) -> Runtime:
 
 def _make_soul(runtime: Runtime, tmp_path: Path) -> tuple[Agent, Context]:
     llm = LLM(
-        chat_provider=_SequenceProvider([TextPart(text="done")]),
+        provider=_SequenceProvider([TextPart(text="done")]),
         max_context_size=100_000,
         capabilities=set(),
     )
@@ -109,7 +109,7 @@ def _make_soul(runtime: Runtime, tmp_path: Path) -> tuple[Agent, Context]:
         runtime=_runtime_with_llm(runtime, llm),
     )
     context = Context(file_backend=tmp_path / "history.jsonl")
-    return Agent(agent, context=context), context
+    return AgentLoop(agent, context=context), context
 
 
 def _write_completed_task(runtime: Runtime, task_id: str) -> None:
@@ -356,7 +356,7 @@ async def test_bugpilot_run_cancels_abandoned_approval_stream(
     monkeypatch.setattr(Agent, "_turn", fake_turn)
     monkeypatch.setattr(runtime.oauth, "ensure_fresh", fake_ensure_fresh)
 
-    soul = Agent(
+    soul = AgentLoop(
         Agent(
             name="Approval Stream Agent",
             system_prompt="System prompt.",
@@ -416,7 +416,7 @@ async def test_bugpilot_run_propagates_external_cancel_event(
     monkeypatch.setattr(Agent, "_turn", fake_turn)
     monkeypatch.setattr(runtime.oauth, "ensure_fresh", fake_ensure_fresh)
 
-    soul = Agent(
+    soul = AgentLoop(
         Agent(
             name="Approval Stream Agent",
             system_prompt="System prompt.",

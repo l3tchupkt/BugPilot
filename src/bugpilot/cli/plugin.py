@@ -253,7 +253,7 @@ def install_cmd(
             if model.provider in config.providers:
                 augment_provider_with_env_vars(config.providers[model.provider], model)
 
-#         oauth = OAuthManager(config)
+        #         oauth = OAuthManager(config)
         host_values = collect_host_values(config, oauth)
 
         if not host_values.get("api_key"):

@@ -13,7 +13,7 @@ If you want to continue a previous conversation, there are several ways:
 Use the `--continue` flag to continue the most recent session in the current working directory:
 
 ```sh
-kimi --continue
+bugpilot --continue
 ```
 
 **Interactively pick a session**
@@ -21,7 +21,7 @@ kimi --continue
 Use `--session` (or `--resume`, `-S`, `-r`) without an argument to open an interactive session picker, where you can use arrow keys to select the session to resume:
 
 ```sh
-kimi --session
+bugpilot --session
 ```
 
 > The interactive picker is only available in shell mode.
@@ -31,7 +31,7 @@ kimi --session
 Use `--session` (or `--resume`) with a session ID to resume that specific session:
 
 ```sh
-kimi -r abc123
+bugpilot -r abc123
 ```
 
 If the specified session ID does not exist, a new session is created automatically.
@@ -51,7 +51,7 @@ The list shows each session's title and last update time, helping you find the c
 When a session exits — whether through normal exit, `Ctrl-C` interruption, `/undo`, `/fork`, `/sessions` switch, or other scenarios — BugPilot automatically prints a resume command hint:
 
 ```
-To resume this session: kimi -r <session-id>
+To resume this session: bugpilot -r <session-id>
 ```
 
 You can copy this command directly and run it in your terminal next time to quickly resume the session. Empty sessions do not show this hint.

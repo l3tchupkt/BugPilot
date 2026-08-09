@@ -104,5 +104,5 @@ def format_release_notes(changelog: dict[str, ReleaseEntry], include_lib_changes
 
 
 CHANGELOG = parse_changelog(
-    (Path(__file__).parent.parent / "CHANGELOG.md").read_text(encoding="utf-8")
+    (Path(__file__).parent.parent.parent.parent / "CHANGELOG.md").read_text(encoding="utf-8")
 )

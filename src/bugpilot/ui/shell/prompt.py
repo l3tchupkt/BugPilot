@@ -1290,7 +1290,7 @@ class CustomPromptSession:
                 return
             self._mode = self._mode.toggle()
 
-#             track("shortcut_mode_switch", to_mode=self._mode.value)
+            #             track("shortcut_mode_switch", to_mode=self._mode.value)
             # Apply mode-specific settings
             self._apply_mode(event)
             # Redraw UI
@@ -1307,7 +1307,7 @@ class CustomPromptSession:
                     assert self._plan_mode_toggle_callback is not None
                     new_state = await self._plan_mode_toggle_callback()
 
-#                     track("shortcut_plan_toggle", enabled=new_state)
+                    #                     track("shortcut_plan_toggle", enabled=new_state)
                     if new_state:
                         toast("plan mode ON", topic="plan_mode", duration=3.0, immediate=True)
                     else:
@@ -1322,14 +1322,14 @@ class CustomPromptSession:
         def _(event: KeyPressEvent) -> None:
             """Insert a newline when Alt-Enter or Ctrl-J is pressed."""
 
-#             track("shortcut_newline")
+            #             track("shortcut_newline")
             event.current_buffer.insert_text("\n")
 
         @_kb.add("c-o", eager=True)
         def _(event: KeyPressEvent) -> None:
             """Open current buffer in external editor."""
 
-#             track("shortcut_editor")
+            #             track("shortcut_editor")
             self._open_in_external_editor(event)
 
         @_kb.add(
@@ -1484,8 +1484,7 @@ class CustomPromptSession:
 
             @_kb.add("c-v", eager=True)
             def _(event: KeyPressEvent) -> None:
-
-#                 track("shortcut_paste")
+                #                 track("shortcut_paste")
                 if self._try_paste_media(event):
                     return
                 if clipboard_available:

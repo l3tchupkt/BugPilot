@@ -38,8 +38,8 @@ shell UI, ACP server mode for IDE integrations, and MCP tool loading.
   Specs can `extend` base agents, select tools by import path, and register builtin subagent
   types via the `subagents` field. Subagent instances are persisted separately under the session
   directory and can be resumed by `agent_id`. System prompts live alongside specs; builtin args
-  include `KIMI_NOW`, `KIMI_WORK_DIR`, `KIMI_WORK_DIR_LS`, `KIMI_AGENTS_MD`, `KIMI_SKILLS`, `KIMI_OS`, `KIMI_SHELL`
-  (this file is injected via `KIMI_AGENTS_MD`).
+  include `BUGPILOT_NOW`, `BUGPILOT_WORK_DIR`, `BUGPILOT_WORK_DIR_LS`, `BUGPILOT_AGENTS_MD`, `BUGPILOT_SKILLS`, `BUGPILOT_OS`, `BUGPILOT_SHELL`
+  (this file is injected via `BUGPILOT_AGENTS_MD`).
 - **Tooling**: `src/bugpilot/soul/toolset.py` loads tools by import path, injects dependencies,
   and runs tool calls. Built-in tools live in `src/bugpilot/tools/` (agent, shell, file, web,
   todo, background, dmail, think, plan). MCP tools are loaded via `fastmcp`; CLI management is
@@ -48,7 +48,7 @@ shell UI, ACP server mode for IDE integrations, and MCP tool loading.
   The `Agent` tool (`src/bugpilot/tools/agent/`) creates or resumes subagent instances, while
   `SubagentStore` persists instance metadata, prompts, wire logs, and context under
   `session/subagents/<agent_id>/`.
-- **Core loop**: `src/bugpilot/soul/kimisoul.py` is the main agent loop. It accepts user input,
+- **Core loop**: `src/bugpilot/soul/bugpilotsoul.py` is the main agent loop. It accepts user input,
   handles slash commands (`src/bugpilot/soul/slash.py`), appends to `Context`
   (`src/bugpilot/soul/context.py`), calls the LLM (kosong), runs tools, and performs compaction
   (`src/bugpilot/soul/compaction.py`) when needed.
@@ -71,7 +71,7 @@ shell UI, ACP server mode for IDE integrations, and MCP tool loading.
   entrypoints; this is what UI layers use.
 - `src/bugpilot/soul/agent.py`: `Runtime` (config, session, builtins), `Agent` (system prompt +
   toolset), and `LaborMarket` (builtin subagent type registry).
-- `src/bugpilot/soul/kimisoul.py`: `Agent.run(...)` is the loop boundary; it emits Wire
+- `src/bugpilot/soul/bugpilotsoul.py`: `Agent.run(...)` is the loop boundary; it emits Wire
   messages and executes tools via `Toolset`.
 - `src/bugpilot/soul/context.py`: conversation history + checkpoints; used by DMail for
   checkpointed replies.
@@ -102,8 +102,8 @@ shell UI, ACP server mode for IDE integrations, and MCP tool loading.
 - Python >=3.12 (ty config uses 3.14); line length 100.
 - Ruff handles lint + format (rules: E, F, UP, B, SIM, I); pyright + ty for type checks.
 - Tests use pytest + pytest-asyncio; files are `tests/test_*.py`.
-- CLI entry points: `kimi` / `bugpilot` -> `src/bugpilot/__main__.py` (routes to `src/bugpilot/cli/__init__.py`).
-- User config: `~/.kimi/config.toml`; logs, sessions, and MCP config live in `~/.kimi/`.
+- CLI entry points: `bugpilot` / `bugpilot` -> `src/bugpilot/__main__.py` (routes to `src/bugpilot/cli/__init__.py`).
+- User config: `~/.bugpilot/config.toml`; logs, sessions, and MCP config live in `~/.bugpilot/`.
 
 ## Git commit messages
 

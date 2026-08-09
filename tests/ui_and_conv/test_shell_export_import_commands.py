@@ -7,14 +7,13 @@ from unittest.mock import AsyncMock, Mock
 from kosong.message import Message
 
 from bugpilot.session import Session
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.ui.shell import export_import as shell_export_import
 from bugpilot.wire.types import TextPart, TurnBegin, TurnEnd
 
 
 def _make_shell_app(work_dir: Path) -> Mock:
-    from bugpilot.soul.agent_loop import Agent
-
-    soul = Mock(spec=Agent)
+    soul = Mock(spec=AgentLoop)
     soul.runtime.session.work_dir = work_dir
     soul.runtime.session.id = "curr-session-id"
     soul.context.history = []

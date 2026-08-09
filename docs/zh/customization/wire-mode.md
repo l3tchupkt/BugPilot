@@ -9,7 +9,7 @@ Wire 是 BugPilot 内部使用的消息传递层。当你使用终端交互时�
 Wire 模式（`--wire`）将这个通信协议暴露出来，允许外部程序直接与 BugPilot 交互。这适用于构建自定义 UI 或将 BugPilot 嵌入到其他应用中。
 
 ```sh
-kimi --wire
+bugpilot --wire
 ```
 
 ## 使用场景
@@ -1133,83 +1133,83 @@ interface ShellDisplayBlock {
 }
 ```
 
-## Kimi Agent（Rust）Wire Server
+## BugPilot Agent（Rust）Wire Server
 
 ::: warning 注意
-Kimi Agent 目前为实验性功能，API 和行为可能在后续版本中发生变化。
+BugPilot Agent 目前为实验性功能，API 和行为可能在后续版本中发生变化。
 :::
 
-Kimi Agent (Rust) 是 BugPilot 内核的 Rust 实现，专为 Wire 模式设计。如果你只需要 Wire 协议服务，Kimi Agent (Rust) 提供了一个更轻量的选择。Rust 实现位于 [`l3tchupkt/kimi-agent-rs`](https://github.com/l3tchupkt/kimi-agent-rs)。
+BugPilot Agent (Rust) 是 BugPilot 内核的 Rust 实现，专为 Wire 模式设计。如果你只需要 Wire 协议服务，BugPilot Agent (Rust) 提供了一个更轻量的选择。Rust 实现位于 [`l3tchupkt/bugpilot-agent-rs`](https://github.com/l3tchupkt/bugpilot-agent-rs)。
 
 ### 特点
 
-- **Wire 协议完全兼容**：与 Python 版 `kimi --wire` 使用相同的 Wire 协议，现有客户端无需修改
+- **Wire 协议完全兼容**：与 Python 版 `bugpilot --wire` 使用相同的 Wire 协议，现有客户端无需修改
 - **更小的体积**：单一静态链接二进制，无需 Python 运行时
 - **更快的启动**：原生编译，启动速度更快
-- **相同的配置**：使用相同的配置文件（`~/.kimi/config.toml`）和会话目录
+- **相同的配置**：使用相同的配置文件（`~/.bugpilot/config.toml`）和会话目录
 
 ### 限制
 
 - **仅支持 Wire 模式**：没有 Shell/Print/ACP UI
-- **仅支持 Kimi 供应商**：不支持 OpenAI、Anthropic 等其他供应商
-- **无 Kimi 账号登录功能**：没有 `login`/`logout` 子命令和 `/login`、`/logout` 斜杠命令，需要手动配置 API 密钥
+- **仅支持 BugPilot 供应商**：不支持 OpenAI、Anthropic 等其他供应商
+- **无 BugPilot 账号登录功能**：没有 `login`/`logout` 子命令和 `/login`、`/logout` 斜杠命令，需要手动配置 API 密钥
 - **不支持 `--prompt`/`--command`**：Wire 服务器不接受初始提示词
 - **仅支持本地执行**：没有 SSH Kaos 支持
-- **MCP OAuth 存储位置不同**：Kimi Agent 存储在 `~/.kimi/credentials/mcp_auth.json`，Python 版存储在 `~/.kimi/mcp-oauth/`，两者不兼容
+- **MCP OAuth 存储位置不同**：BugPilot Agent 存储在 `~/.bugpilot/credentials/mcp_auth.json`，Python 版存储在 `~/.bugpilot/mcp-oauth/`，两者不兼容
 
 ### 安装
 
-从 [GitHub Releases](https://github.com/l3tchupkt/kimi-agent-rs/releases) 下载预编译的二进制文件：
+从 [GitHub Releases](https://github.com/l3tchupkt/bugpilot-agent-rs/releases) 下载预编译的二进制文件：
 
 ```sh
 # macOS (Apple Silicon)
-curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-aarch64-apple-darwin.tar.gz | tar xz
-sudo mv kimi-agent /usr/local/bin/
+curl -L https://github.com/l3tchupkt/bugpilot-agent-rs/releases/latest/download/bugpilot-agent-aarch64-apple-darwin.tar.gz | tar xz
+sudo mv bugpilot-agent /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
-sudo mv kimi-agent /usr/local/bin/
+curl -L https://github.com/l3tchupkt/bugpilot-agent-rs/releases/latest/download/bugpilot-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
+sudo mv bugpilot-agent /usr/local/bin/
 ```
 
 ### 使用
 
-Kimi Agent 默认运行 Wire 模式：
+BugPilot Agent 默认运行 Wire 模式：
 
 ```sh
-kimi-agent
+bugpilot-agent
 ```
 
-常用选项与 `kimi` 命令相同：
+常用选项与 `bugpilot` 命令相同：
 
 ```sh
 # 指定工作目录
-kimi-agent --work-dir /path/to/project
+bugpilot-agent --work-dir /path/to/project
 
 # 继续上一个会话
-kimi-agent --continue
+bugpilot-agent --continue
 
 # 使用指定会话
-kimi-agent --session <session-id>
+bugpilot-agent --session <session-id>
 
 # 使用指定模型
-kimi-agent --model k2
+bugpilot-agent --model k2
 
 # YOLO 模式（跳过审批）
-kimi-agent --yolo
+bugpilot-agent --yolo
 ```
 
 子命令：
 
 ```sh
 # 显示版本和环境信息
-kimi-agent info
+bugpilot-agent info
 
 # 管理 MCP 服务器
-kimi-agent mcp list
-kimi-agent mcp add <name> <command> [args...]
-kimi-agent mcp remove <name>
+bugpilot-agent mcp list
+bugpilot-agent mcp add <name> <command> [args...]
+bugpilot-agent mcp remove <name>
 ```
 
 ### 版本同步
 
-Kimi Agent 与 BugPilot 独立发版。兼容性与同步状态以 `l3tchupkt/kimi-agent-rs` 的发布说明为准。
+BugPilot Agent 与 BugPilot 独立发版。兼容性与同步状态以 `l3tchupkt/bugpilot-agent-rs` 的发布说明为准。

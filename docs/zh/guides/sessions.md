@@ -13,7 +13,7 @@ BugPilot 会自动保存你的对话历史，方便你随时继续之前的工�
 使用 `--continue` 参数可以继续当前工作目录下最近的会话：
 
 ```sh
-kimi --continue
+bugpilot --continue
 ```
 
 **交互式选择会话**
@@ -21,7 +21,7 @@ kimi --continue
 使用 `--session`（或 `--resume`、`-S`、`-r`）不带参数可以打开交互式会话选择器，用方向键选择要恢复的会话：
 
 ```sh
-kimi --session
+bugpilot --session
 ```
 
 > 交互式选择器仅在 Shell 模式下可用。
@@ -31,7 +31,7 @@ kimi --session
 使用 `--session`（或 `--resume`）加上会话 ID 可以恢复指定的会话：
 
 ```sh
-kimi -r abc123
+bugpilot -r abc123
 ```
 
 如果指定的会话 ID 不存在，会自动创建一个新会话。
@@ -51,7 +51,7 @@ kimi -r abc123
 当会话退出时（包括正常退出、`Ctrl-C` 中断、`/undo`、`/fork`、`/sessions` 切换等场景），BugPilot 会自动打印一条续接命令提示：
 
 ```
-To resume this session: kimi -r <session-id>
+To resume this session: bugpilot -r <session-id>
 ```
 
 你可以直接复制这条命令，下次在终端中运行即可快速恢复该会话。空会话不会显示此提示。

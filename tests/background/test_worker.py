@@ -1,7 +1,7 @@
 from __future__ import annotations
-import sys
 
 import asyncio
+import sys
 import time
 
 import pytest
@@ -49,7 +49,7 @@ async def test_worker_respects_kill_control(runtime):
         session_id=runtime.session.id,
         description="sleep task",
         tool_call_id="tool-5",
-        command="python -c \"import time; time.sleep(5)\"",
+        command='python -c "import time; time.sleep(5)"',
         shell_name="cmd" if sys.platform == "win32" else "bash",
         shell_path="cmd.exe" if sys.platform == "win32" else "/bin/bash",
         cwd=str(runtime.session.work_dir),
@@ -91,7 +91,7 @@ async def test_worker_marks_timeout_as_failed(runtime):
         session_id=runtime.session.id,
         description="timeout task",
         tool_call_id="tool-6",
-        command="python -c \"import time; time.sleep(2)\"",
+        command='python -c "import time; time.sleep(2)"',
         shell_name="cmd" if sys.platform == "win32" else "bash",
         shell_path="cmd.exe" if sys.platform == "win32" else "/bin/bash",
         cwd=str(runtime.session.work_dir),

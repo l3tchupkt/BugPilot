@@ -29,7 +29,7 @@ def _get_host_values(config: Config) -> dict[str, str]:
     """
     from bugpilot.plugin.manager import collect_host_values
 
-#     oauth = OAuthManager(config)
+    #     oauth = OAuthManager(config)
     return collect_host_values()
 
 
@@ -60,7 +60,7 @@ class PluginTool(CallableTool):
         )
         self._command = tool_spec.command
         self._plugin_dir = plugin_dir
-        self._inject = inject  # e.g. {"kimiCodeAPIKey": "api_key"}
+        self._inject = inject  # e.g. {"bugpilotCodeAPIKey": "api_key"}
         self._config = config
         self._approval = approval
 
@@ -72,7 +72,7 @@ class PluginTool(CallableTool):
             for target_key, source_key in self._inject.items():
                 if source_key in host_values:
                     # Inject as env var using the plugin's config key name
-                    # e.g. kimiCodeAPIKey=<fresh api_key>
+                    # e.g. bugpilotCodeAPIKey=<fresh api_key>
                     env[target_key] = host_values[source_key]
         return env
 

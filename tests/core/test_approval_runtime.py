@@ -15,9 +15,9 @@ from bugpilot.approval_runtime import (
     set_current_approval_source,
 )
 from bugpilot.soul import RunCancelled, run_soul
-from bugpilot.soul.agent import Agent as SoulAgent
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop as SoulAgent
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.utils.aioqueue import QueueShutDown
 from bugpilot.wire import Wire
 from bugpilot.wire.root_hub import RootWireHub
@@ -314,7 +314,7 @@ async def test_agent_loop_run_preserves_existing_approval_source(
     monkeypatch.setattr(Agent, "_turn", fake_turn)
     pass
 
-    soul = Agent(
+    soul = AgentLoop(
         SoulAgent(
             name="test",
             system_prompt="test prompt",
@@ -378,7 +378,7 @@ async def test_agent_loop_run_cancels_own_foreground_approvals_on_cancel(
     monkeypatch.setattr(Agent, "_turn", fake_turn)
     pass
 
-    soul = Agent(
+    soul = AgentLoop(
         SoulAgent(
             name="test",
             system_prompt="test prompt",

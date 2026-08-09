@@ -29,7 +29,7 @@ source ~/.zshrc
 
 **使用**
 
-安装后，在 Zsh 中按 `Ctrl-X` 可以快速切换到 BugPilot，无需手动输入 `kimi` 命令。
+安装后，在 Zsh 中按 `Ctrl-X` 可以快速切换到 BugPilot，无需手动输入 `bugpilot` 命令。
 
 ::: tip 提示
 如果你使用其他 Zsh 插件管理器（如 zinit、zplug 等），请参考 [zsh-bugpilot 仓库](https://github.com/l3tchupkt/zsh-bugpilot) 的 README 了解安装方法。

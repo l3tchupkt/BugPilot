@@ -108,13 +108,13 @@ async def load_agents_md(work_dir: KaosPath) -> str | None:
     discovered: list[tuple[KaosPath, str]] = []  # (path, content)
     for d in dirs:
         # .bugpilot/AGENTS.md is always checked independently (can coexist with root-level file)
-        kimi_path = d / ".bugpilot" / "AGENTS.md"
+        bugpilot_path = d / ".bugpilot" / "AGENTS.md"
         # AGENTS.md and agents.md are mutually exclusive (uppercase wins)
         root_candidates = [d / "AGENTS.md", d / "agents.md"]
 
         candidates: list[KaosPath] = []
-        if await kimi_path.is_file():
-            candidates.append(kimi_path)
+        if await bugpilot_path.is_file():
+            candidates.append(bugpilot_path)
         for rc in root_candidates:
             if await rc.is_file():
                 candidates.append(rc)
@@ -172,7 +172,7 @@ class Runtime:
     """Agent runtime."""
 
     config: Config
-#     oauth: OAuthManager
+    #     oauth: OAuthManager
     llm: LLM | None  # we do not freeze the `Runtime` dataclass because LLM can be changed
     session: Session
     builtin_args: BuiltinSystemPromptArgs
@@ -210,7 +210,7 @@ class Runtime:
     @staticmethod
     async def create(
         config: Config,
-#         oauth: OAuthManager,
+        #         oauth: OAuthManager,
         llm: LLM | None,
         session: Session,
         yolo: bool,

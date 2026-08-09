@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 import asyncio
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,7 +12,6 @@ import bugpilot.soul.agent_loop as agent_loop_module
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.approval import Approval
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.wire.types import StepBegin, StepInterrupted, TextPart, TurnBegin, TurnEnd
 
 
@@ -21,14 +21,14 @@ def approval() -> Approval:
     return Approval(yolo=False)
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> AgentLoop:
     agent = Agent(
         name="Turn Balance Agent",
         system_prompt="Test prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
 @pytest.mark.asyncio

@@ -78,9 +78,9 @@ def test_simple_ref():
 
 
 def test_ensure_property_types_fills_missing_type_on_enum():
-    """Regression for Moonshot 400: an MCP tool property with only `enum` and
+    """Regression for BugPilot 400: an MCP tool property with only `enum` and
     no `type` (as emitted by some JetBrains MCP tools, e.g. `truncateMode`)
-    must have `type` filled in so the schema passes Moonshot validation."""
+    must have `type` filled in so the schema passes BugPilot validation."""
     schema: JsonSchema = {
         "type": "object",
         "properties": {

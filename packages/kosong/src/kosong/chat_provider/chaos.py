@@ -148,7 +148,7 @@ class ChaosChatProvider:
         Inject chaos transport into providers backed by httpx AsyncBaseTransport.
 
         Supported today (explicit list):
-        - Kimi
+        - BugPilot
         - OpenAILegacy
         - Anthropic
 
@@ -217,13 +217,13 @@ class ChaosChatProvider:
         return ChaosChatProvider(self._provider.with_thinking(effort), self._chaos_config)
 
     @classmethod
-    def for_kimi(
+    def for_bugpilot(
         cls, chaos_config: ChaosConfig | None = None, **kwargs: Any
     ) -> "ChaosChatProvider":
-        """Helper to wrap a Kimi provider without changing caller sites."""
-        from kosong.chat_provider.kimi import Kimi
+        """Helper to wrap a BugPilot provider without changing caller sites."""
+        from kosong.chat_provider.bugpilot import BugPilot
 
-        return cls(Kimi(**kwargs), chaos_config=chaos_config)
+        return cls(BugPilot(**kwargs), chaos_config=chaos_config)
 
 
 class ChaosStreamedMessage:

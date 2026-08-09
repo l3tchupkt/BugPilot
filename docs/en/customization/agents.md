@@ -7,7 +7,7 @@ An agent defines the AI's behavior, including system prompts, available tools, a
 BugPilot provides two built-in agents. You can select one at startup with the `--agent` flag:
 
 ```sh
-kimi --agent okabe
+bugpilot --agent okabe
 ```
 
 ### `default`
@@ -25,7 +25,7 @@ An experimental agent for testing new prompts and tools. Adds `SendDMail` on top
 Agents are defined in YAML format. Load a custom agent with the `--agent-file` flag:
 
 ```sh
-kimi --agent-file /path/to/my-agent.yaml
+bugpilot --agent-file /path/to/my-agent.yaml
 ```
 
 **Basic structure**
@@ -75,12 +75,12 @@ The system prompt file is a Markdown template that can use `${VAR}` syntax to re
 
 | Variable | Description |
 |----------|-------------|
-| `${KIMI_NOW}` | Current time (ISO format) |
-| `${KIMI_WORK_DIR}` | Working directory path |
-| `${KIMI_WORK_DIR_LS}` | Working directory file list |
-| `${KIMI_AGENTS_MD}` | Merged `AGENTS.md` content from project root to working directory (including `.kimi/AGENTS.md`) |
-| `${KIMI_SKILLS}` | Loaded skills list |
-| `${KIMI_ADDITIONAL_DIRS_INFO}` | Information about additional directories added via `--add-dir` or `/add-dir` |
+| `${BUGPILOT_NOW}` | Current time (ISO format) |
+| `${BUGPILOT_WORK_DIR}` | Working directory path |
+| `${BUGPILOT_WORK_DIR_LS}` | Working directory file list |
+| `${BUGPILOT_AGENTS_MD}` | Merged `AGENTS.md` content from project root to working directory (including `.bugpilot/AGENTS.md`) |
+| `${BUGPILOT_SKILLS}` | Loaded skills list |
+| `${BUGPILOT_ADDITIONAL_DIRS_INFO}` | Information about additional directories added via `--add-dir` or `/add-dir` |
 
 You can also define custom parameters via `system_prompt_args`:
 
@@ -97,9 +97,9 @@ Then use `${MY_VAR}` in the prompt.
 ```markdown
 # My Agent
 
-You are a helpful assistant. Current time: ${KIMI_NOW}.
+You are a helpful assistant. Current time: ${BUGPILOT_NOW}.
 
-Working directory: ${KIMI_WORK_DIR}
+Working directory: ${BUGPILOT_WORK_DIR}
 
 ${MY_VAR}
 ```
@@ -293,7 +293,7 @@ When `run_in_background=true`, the command is launched as a background task and 
 ### `SearchWeb`
 
 - **Path**: `bugpilot.tools.web:SearchWeb`
-- **Description**: Search the web. Requires search service configuration (auto-configured on Kimi Code platform).
+- **Description**: Search the web. Requires search service configuration (auto-configured on BugPilot platform).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|

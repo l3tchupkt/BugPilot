@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 import asyncio
 import time
 from pathlib import Path
@@ -9,19 +10,18 @@ from kosong.tooling.empty import EmptyToolset
 from bugpilot.background import TaskRuntime, TaskSpec, TaskStatus
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.ui.shell import task_browser as task_browser_module
 from bugpilot.ui.shell.task_browser import TaskBrowserApp, TaskBrowserModel
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> AgentLoop:
     agent = Agent(
         name="Test Agent",
         system_prompt="Test system prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
 def _write_task(

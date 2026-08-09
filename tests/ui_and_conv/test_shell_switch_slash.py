@@ -14,6 +14,7 @@ from unittest.mock import Mock
 import pytest
 
 from bugpilot.cli import Reload, SwitchToVis, SwitchToWeb
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.ui.shell.slash import ShellSlashCmdFunc, shell_mode_registry
 from bugpilot.ui.shell.slash import registry as shell_slash_registry
 from bugpilot.utils.slashcmd import SlashCommand
@@ -27,9 +28,8 @@ async def _invoke_slash_command(command: SlashCommand[ShellSlashCmdFunc], shell:
 
 def _mock_shell_with_soul(session_id: str = "current-session-id") -> Mock:
     """Create a mock Shell whose soul passes the Agent isinstance check."""
-    from bugpilot.soul.agent_loop import Agent
 
-    mock_soul = Mock(spec=Agent)
+    mock_soul = Mock(spec=AgentLoop)
     mock_soul.runtime.session.id = session_id
     shell = Mock()
     shell.soul = mock_soul
@@ -89,7 +89,7 @@ class TestWebCommandBehavior:
 
         assert exc_info.value.session_id == "abc-def"
 
-    async def test_session_id_none_without_kimi_soul(self) -> None:
+    async def test_session_id_none_without_bugpilot_soul(self) -> None:
         """When soul is not a Agent, session_id should be None."""
         shell = Mock()
         shell.soul = Mock()  # plain Mock, not spec=Agent
@@ -166,7 +166,7 @@ class TestVisCommandBehavior:
 
         assert exc_info.value.session_id == "abc-def"
 
-    async def test_session_id_none_without_kimi_soul(self) -> None:
+    async def test_session_id_none_without_bugpilot_soul(self) -> None:
         """When soul is not a Agent, session_id should be None."""
         shell = Mock()
         shell.soul = Mock()

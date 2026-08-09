@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "kimi-cli-docs",
+      "name": "bugpilot-docs",
       "dependencies": {
         "mermaid": "^11.12.2",
         "vitepress-plugin-llms": "^1.10.0",

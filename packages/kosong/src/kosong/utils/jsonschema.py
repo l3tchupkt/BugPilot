@@ -87,11 +87,11 @@ def deref_json_schema(schema: JsonDict) -> JsonDict:
 def ensure_property_types(schema: JsonDict) -> JsonDict:
     """Return a deep copy of ``schema`` with an explicit ``type`` on every property.
 
-    The Moonshot (Kimi) API rejects tool parameter schemas where a property
+    The BugPilot (BugPilot) API rejects tool parameter schemas where a property
     schema omits ``type`` — for example ``{"enum": ["smart", "full"]}`` with no
     ``"type": "string"``. JSON Schema itself permits this (the property then
     accepts any value), and providers such as OpenAI and Anthropic accept it,
-    but Moonshot's stricter validator returns HTTP 400 with
+    but BugPilot's stricter validator returns HTTP 400 with
     ``"At path 'properties.X': type is not defined"``.
 
     This function walks any property schemas nested under ``properties``,
@@ -216,7 +216,7 @@ def _infer_type_from_values(values: list[JsonType]) -> str:
     - single type → return it
     - ``{integer, number}`` → ``"number"`` (integer is a subset of number)
     - anything else mixed (e.g. ``[True, 1]`` or ``["a", 1]``) → fall back to
-      ``"string"``, which Moonshot tolerates without cross-checking enum
+      ``"string"``, which BugPilot tolerates without cross-checking enum
       values against the declared type
     """
     inferred: set[str] = set()

@@ -29,6 +29,7 @@ def get_plugins_dir() -> Path:
 
 def collect_host_values() -> dict[str, str]:
     from bugpilot.config import load_config
+
     config = load_config()
     """Collect host values (api_key, base_url) for plugin injection.
 

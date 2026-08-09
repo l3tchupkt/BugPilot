@@ -6,13 +6,12 @@ from unittest.mock import AsyncMock, Mock
 from kosong.message import Message
 
 from bugpilot.soul import slash as soul_slash
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.wire.types import TextPart
 
 
 def _make_soul(work_dir: Path) -> Mock:
-    from bugpilot.soul.agent_loop import Agent
-
-    soul = Mock(spec=Agent)
+    soul = Mock(spec=AgentLoop)
     soul.runtime.session.work_dir = work_dir
     soul.runtime.session.id = "soul-session-id"
     soul.context.history = []

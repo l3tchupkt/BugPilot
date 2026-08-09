@@ -415,18 +415,20 @@ async def test_find_user_skills_dirs_brand_wins_over_generic_same_skill(monkeypa
 
 
 @pytest.mark.asyncio
-async def test_find_user_skills_dirs_brand_group_prefers_kimi_over_claude(monkeypatch, tmp_path):
+async def test_find_user_skills_dirs_brand_group_prefers_bugpilot_over_claude(
+    monkeypatch, tmp_path
+):
     """Brand group: ~/.bugpilot/skills takes priority over ~/.claude/skills."""
     home_dir = tmp_path / "home"
-    kimi_dir = home_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = home_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = home_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
     monkeypatch.setattr(Path, "home", lambda: home_dir)
 
     dirs = await find_user_skills_dirs()
     # Only bugpilot should be selected (first existing in brand group)
-    assert KaosPath.unsafe_from_local_path(kimi_dir) in dirs
+    assert KaosPath.unsafe_from_local_path(bugpilot_dir) in dirs
     assert KaosPath.unsafe_from_local_path(claude_dir) not in dirs
 
 
@@ -446,17 +448,17 @@ async def test_find_project_skills_dirs_merge(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_find_project_skills_dirs_brand_prefers_kimi(tmp_path):
+async def test_find_project_skills_dirs_brand_prefers_bugpilot(tmp_path):
     """Project layer brand group: .bugpilot/skills wins over .claude/skills."""
     work_dir = tmp_path / "project"
-    kimi_dir = work_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = work_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = work_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
 
     dirs = await find_project_skills_dirs(KaosPath.unsafe_from_local_path(work_dir))
     assert len(dirs) == 1
-    assert dirs[0] == KaosPath.unsafe_from_local_path(kimi_dir)
+    assert dirs[0] == KaosPath.unsafe_from_local_path(bugpilot_dir)
 
 
 @pytest.mark.asyncio
@@ -539,30 +541,30 @@ async def test_find_user_skills_dirs_generic_group_prefers_config_over_agents(
 
 
 @pytest.mark.asyncio
-async def test_find_user_skills_dirs_merge_brands_kimi_and_claude(monkeypatch, tmp_path):
+async def test_find_user_skills_dirs_merge_brands_bugpilot_and_claude(monkeypatch, tmp_path):
     """merge_brands=True: bugpilot + claude both exist → both returned, bugpilot first."""
     home_dir = tmp_path / "home"
-    kimi_dir = home_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = home_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = home_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
     monkeypatch.setattr(Path, "home", lambda: home_dir)
 
     dirs = await find_user_skills_dirs(merge_brands=True)
-    assert KaosPath.unsafe_from_local_path(kimi_dir) in dirs
+    assert KaosPath.unsafe_from_local_path(bugpilot_dir) in dirs
     assert KaosPath.unsafe_from_local_path(claude_dir) in dirs
     # bugpilot before claude
-    kimi_idx = dirs.index(KaosPath.unsafe_from_local_path(kimi_dir))
+    bugpilot_idx = dirs.index(KaosPath.unsafe_from_local_path(bugpilot_dir))
     claude_idx = dirs.index(KaosPath.unsafe_from_local_path(claude_dir))
-    assert kimi_idx < claude_idx
+    assert bugpilot_idx < claude_idx
 
 
 @pytest.mark.asyncio
 async def test_find_user_skills_dirs_merge_brands_all_three(monkeypatch, tmp_path):
     """merge_brands=True: all three brand dirs → [bugpilot, claude, codex]."""
     home_dir = tmp_path / "home"
-    kimi_dir = home_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = home_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = home_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
     codex_dir = home_dir / ".codex" / "skills"
@@ -572,7 +574,7 @@ async def test_find_user_skills_dirs_merge_brands_all_three(monkeypatch, tmp_pat
     dirs = await find_user_skills_dirs(merge_brands=True)
     brand_dirs = dirs  # no generic dirs created
     assert len(brand_dirs) == 3
-    assert brand_dirs[0] == KaosPath.unsafe_from_local_path(kimi_dir)
+    assert brand_dirs[0] == KaosPath.unsafe_from_local_path(bugpilot_dir)
     assert brand_dirs[1] == KaosPath.unsafe_from_local_path(claude_dir)
     assert brand_dirs[2] == KaosPath.unsafe_from_local_path(codex_dir)
 
@@ -590,13 +592,13 @@ async def test_find_user_skills_dirs_merge_brands_only_claude(monkeypatch, tmp_p
 
 
 @pytest.mark.asyncio
-async def test_find_user_skills_dirs_merge_brands_same_skill_kimi_wins(monkeypatch, tmp_path):
+async def test_find_user_skills_dirs_merge_brands_same_skill_bugpilot_wins(monkeypatch, tmp_path):
     """merge_brands=True + same skill name → bugpilot version wins via discover."""
     home_dir = tmp_path / "home"
-    kimi_dir = home_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = home_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     _write_skill(
-        kimi_dir / "deploy",
+        bugpilot_dir / "deploy",
         "---\nname: deploy\ndescription: bugpilot deploy\n---\n",
     )
     claude_dir = home_dir / ".claude" / "skills"
@@ -617,15 +619,15 @@ async def test_find_user_skills_dirs_merge_brands_same_skill_kimi_wins(monkeypat
 async def test_find_project_skills_dirs_merge_brands(tmp_path):
     """Project layer merge_brands=True: all brand dirs returned."""
     work_dir = tmp_path / "project"
-    kimi_dir = work_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = work_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = work_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
 
     dirs = await find_project_skills_dirs(
         KaosPath.unsafe_from_local_path(work_dir), merge_brands=True
     )
-    assert KaosPath.unsafe_from_local_path(kimi_dir) in dirs
+    assert KaosPath.unsafe_from_local_path(bugpilot_dir) in dirs
     assert KaosPath.unsafe_from_local_path(claude_dir) in dirs
 
 
@@ -653,8 +655,8 @@ def test_get_builtin_skills_dir_normal_env():
 async def test_resolve_skills_roots_passes_merge_brands(monkeypatch, tmp_path):
     """resolve_skills_roots forwards merge_brands to finders."""
     home_dir = tmp_path / "home"
-    kimi_dir = home_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = home_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = home_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
     monkeypatch.setattr(Path, "home", lambda: home_dir)
@@ -664,7 +666,7 @@ async def test_resolve_skills_roots_passes_merge_brands(monkeypatch, tmp_path):
 
     # Without merge_brands: only bugpilot
     roots_default = _roots_of(await resolve_skills_roots(KaosPath.unsafe_from_local_path(work_dir)))
-    assert KaosPath.unsafe_from_local_path(kimi_dir) in roots_default
+    assert KaosPath.unsafe_from_local_path(bugpilot_dir) in roots_default
     assert KaosPath.unsafe_from_local_path(claude_dir) not in roots_default
 
     # With merge_brands: both
@@ -674,7 +676,7 @@ async def test_resolve_skills_roots_passes_merge_brands(monkeypatch, tmp_path):
             merge_brands=True,
         )
     )
-    assert KaosPath.unsafe_from_local_path(kimi_dir) in roots_merged
+    assert KaosPath.unsafe_from_local_path(bugpilot_dir) in roots_merged
     assert KaosPath.unsafe_from_local_path(claude_dir) in roots_merged
 
 
@@ -1770,8 +1772,8 @@ async def test_default_config_effectively_merges_user_brand_skill_dirs(monkeypat
     from bugpilot.config import Config
 
     home_dir = tmp_path / "home"
-    kimi_dir = home_dir / ".bugpilot" / "skills"
-    kimi_dir.mkdir(parents=True)
+    bugpilot_dir = home_dir / ".bugpilot" / "skills"
+    bugpilot_dir.mkdir(parents=True)
     claude_dir = home_dir / ".claude" / "skills"
     claude_dir.mkdir(parents=True)
     monkeypatch.setattr(Path, "home", lambda: home_dir)
@@ -1788,7 +1790,7 @@ async def test_default_config_effectively_merges_user_brand_skill_dirs(monkeypat
     )
     roots = [s.root for s in scoped]
 
-    assert KaosPath.unsafe_from_local_path(kimi_dir) in roots
+    assert KaosPath.unsafe_from_local_path(bugpilot_dir) in roots
     assert KaosPath.unsafe_from_local_path(claude_dir) in roots
 
 

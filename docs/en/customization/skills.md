@@ -32,7 +32,7 @@ Skills shipped with the package, providing basic capabilities. Lowest priority.
 Stored in the user's home directory, effective across all projects. Candidate directories are split into two groups; within each group, the first existing directory is selected, and results from both groups are merged independently (brand group has higher specificity and priority):
 
 - **Brand group** (mutually exclusive):
-  1. `~/.kimi/skills/`
+  1. `~/.bugpilot/skills/`
   2. `~/.claude/skills/`
   3. `~/.codex/skills/`
 - **Generic group** (mutually exclusive):
@@ -41,14 +41,14 @@ Stored in the user's home directory, effective across all projects. Candidate di
 
 Both groups are searched independently and results are merged. When a skill with the same name exists in both groups, the brand group version takes priority.
 
-By default, **all existing brand directories are loaded and merged**, with same-name skills resolved by priority: kimi > claude > codex. The generic group is not affected. This "merge everything" behaviour is controlled by `merge_all_available_skills`, which defaults to `true`:
+By default, **all existing brand directories are loaded and merged**, with same-name skills resolved by priority: bugpilot > claude > codex. The generic group is not affected. This "merge everything" behaviour is controlled by `merge_all_available_skills`, which defaults to `true`:
 
 ```toml
 # Default; merges every brand directory that exists.
 merge_all_available_skills = true
 ```
 
-Set it to `false` to restore the older first-match-only behaviour, where only the highest-priority existing brand directory is used (kimi, or claude if kimi is absent, and so on):
+Set it to `false` to restore the older first-match-only behaviour, where only the highest-priority existing brand directory is used (bugpilot, or claude if bugpilot is absent, and so on):
 
 ```toml
 merge_all_available_skills = false
@@ -59,7 +59,7 @@ merge_all_available_skills = false
 Stored in the project directory, effective within that project. Candidate paths are resolved relative to the **project root** (the nearest `.git` ancestor of the work directory, falling back to the work directory itself when there is no `.git` marker), so launching bugpilot from a subdirectory of a monorepo still surfaces skills defined at the repository root. The same two-group split as user-level skills applies:
 
 - **Brand group** (mutually exclusive):
-  1. `.kimi/skills/`
+  1. `.bugpilot/skills/`
   2. `.claude/skills/`
   3. `.codex/skills/`
 - **Generic group**: `.agents/skills/`
@@ -69,7 +69,7 @@ The `merge_all_available_skills` config applies to project-level skills as well.
 You can also specify additional skills directories with the `--skills-dir` flag. This flag can be specified multiple times, and the directories override the auto-discovered user/project directories:
 
 ```sh
-kimi --skills-dir /path/to/my-skills --skills-dir /path/to/more-skills
+bugpilot --skills-dir /path/to/my-skills --skills-dir /path/to/more-skills
 ```
 
 **Extra skills directories (additive)**
@@ -112,7 +112,7 @@ Regardless of form (subdirectory or flat), each skill's `description` is resolve
 3. `"No description provided."` (last resort)
 
 ::: tip
-Skills paths are independent of [`KIMI_SHARE_DIR`](../configuration/env-vars.md#kimi-share-dir). `KIMI_SHARE_DIR` customizes the storage location for configuration, sessions, logs, and other runtime data, but does not affect Skills search paths. Skills are cross-tool shared capability extensions (compatible with Kimi CLI, Claude, Codex, and others), which is a different type of data from application runtime data. To specify custom skills paths, use the `--skills-dir` flag or `extra_skill_dirs` config.
+Skills paths are independent of [`BUGPILOT_SHARE_DIR`](../configuration/env-vars.md#bugpilot-share-dir). `BUGPILOT_SHARE_DIR` customizes the storage location for configuration, sessions, logs, and other runtime data, but does not affect Skills search paths. Skills are cross-tool shared capability extensions (compatible with BugPilot, Claude, Codex, and others), which is a different type of data from application runtime data. To specify custom skills paths, use the `--skills-dir` flag or `extra_skill_dirs` config.
 :::
 
 ## Built-in skills
@@ -120,7 +120,7 @@ Skills paths are independent of [`KIMI_SHARE_DIR`](../configuration/env-vars.md#
 BugPilot includes the following built-in skills:
 
 - **bugpilot-help**: BugPilot help. Answers questions about BugPilot installation, configuration, slash commands, keyboard shortcuts, MCP integration, providers, environment variables, and more.
-- **skill-creator**: Guide for creating skills. When you need to create a new skill (or update an existing skill) to extend Kimi's capabilities, you can use this skill to get detailed creation guidance and best practices.
+- **skill-creator**: Guide for creating skills. When you need to create a new skill (or update an existing skill) to extend BugPilot's capabilities, you can use this skill to get detailed creation guidance and best practices.
 
 ## Creating a skill
 

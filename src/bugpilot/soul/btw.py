@@ -18,7 +18,7 @@ import kosong
 from kosong.message import Message, ToolCall
 from kosong.tooling import Tool, ToolError, ToolResult
 
-from bugpilot.llm import estimate_message_tokens, with_kimi_generation_overrides
+from bugpilot.llm import estimate_message_tokens, with_bugpilot_generation_overrides
 from bugpilot.soul import LLMNotSet, wire_send
 from bugpilot.soul.dynamic_injection import normalize_history
 from bugpilot.soul.message import system_reminder
@@ -120,7 +120,6 @@ async def execute_side_question(
     """
     import time
 
-
     t0 = time.monotonic()
     _outcome = "error"
     _error_type: str | None = None
@@ -155,7 +154,7 @@ async def execute_side_question(
                 ),
             )
             result = await kosong.step(
-                with_kimi_generation_overrides(chat_provider, generation_overrides),
+                with_bugpilot_generation_overrides(chat_provider, generation_overrides),
                 system_prompt,
                 toolset,
                 history,
@@ -211,6 +210,8 @@ async def execute_side_question(
         }
         if _error_type is not None:
             kwargs["error_type"] = _error_type
+
+
 #         track("tool_call", **kwargs)
 
 

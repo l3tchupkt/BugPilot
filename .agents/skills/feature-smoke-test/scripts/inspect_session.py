@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Locate and summarize a Kimi CLI session for smoke-test review."""
+"""Locate and summarize a BugPilot session for smoke-test review."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from typing import Any
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Locate and summarize a Kimi CLI session for smoke-test review."
+        description="Locate and summarize a BugPilot session for smoke-test review."
     )
     parser.add_argument("--share-dir", type=Path, help="Share dir that contains sessions/")
     parser.add_argument("--session-dir", type=Path, help="Explicit session directory to inspect")

@@ -74,14 +74,14 @@ variable at runtime. Do not commit API keys into this repository.
 
 Model selection:
 
-- `HARBOR_MODEL` (default: `kimi/kimi-for-coding`)
+- `HARBOR_MODEL` (default: `bugpilot/bugpilot-for-coding`)
 
 ## Use current bugpilot source (not release build)
 
 `run_smoke.sh` defaults to evaluating the current repository commit by using a
 custom Harbor agent import path:
 
-- `tests_ai.accuracy_smoke.local_bugpilot_agent:LocalKimiCli`
+- `tests_ai.accuracy_smoke.local_bugpilot_agent:LocalBugPilotCli`
 
 By default, it builds a local wheel from your current workspace and installs
 that wheel inside the benchmark container. This means local unpushed changes
@@ -97,7 +97,7 @@ Wheel controls:
 Example override:
 
 ```bash
-BUGPILOT_WHEEL_DIR=/tmp/kimi-wheel-cache \
+BUGPILOT_WHEEL_DIR=/tmp/bugpilot-wheel-cache \
   bash tests_ai/accuracy_smoke/scripts/run_smoke.sh
 ```
 

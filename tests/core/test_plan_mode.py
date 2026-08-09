@@ -10,10 +10,10 @@ from kosong.tooling import ToolError, ToolReturnValue
 from kosong.tooling.empty import EmptyToolset
 from pydantic import ValidationError
 
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.approval import Approval
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.toolset import Toolset
 from bugpilot.tools.file.replace import StrReplaceFile
 from bugpilot.tools.file.write import WriteFile
@@ -47,14 +47,14 @@ def _clear_slug_cache():
     _slug_cache.clear()
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> AgentLoop:
     agent = Agent(
         name="Test Agent",
         system_prompt="Test system prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
 def _tool_output_text(result: ToolReturnValue) -> str:
@@ -645,7 +645,7 @@ class TestAgentPlanState:
             toolset=toolset,
             runtime=runtime,
         )
-        soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+        soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
         assert write_tool._plan_mode_checker is not None
         assert write_tool._plan_file_path_getter is not None

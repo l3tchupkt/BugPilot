@@ -12,9 +12,9 @@ BugPilot is suited for:
 
 BugPilot supports the following usage modes:
 
-- **[Interactive CLI (`kimi`)](../reference/kimi-command.md)**: Chat with AI in the terminal using natural language or execute shell commands directly
-- **[Browser UI (`kimi web`)](../reference/kimi-web.md)**: Open a graphical interface in your local browser, with session management, file references, code highlighting, and more
-- **[Agent integration (`kimi acp`)](../reference/kimi-acp.md)**: Run as a service and integrate with [IDEs](./ides.md) and other local agent clients via the [Agent Client Protocol]
+- **[Interactive CLI (`bugpilot`)](../reference/bugpilot-command.md)**: Chat with AI in the terminal using natural language or execute shell commands directly
+- **[Browser UI (`bugpilot web`)](../reference/bugpilot-web.md)**: Open a graphical interface in your local browser, with session management, file references, code highlighting, and more
+- **[Agent integration (`bugpilot acp`)](../reference/bugpilot-acp.md)**: Run as a service and integrate with [IDEs](./ides.md) and other local agent clients via the [Agent Client Protocol]
 
 ::: info Tip
 If you encounter issues or have suggestions, please provide feedback on [GitHub Issues](https://github.com/l3tchupkt/bugpilot/issues).
@@ -25,29 +25,29 @@ If you encounter issues or have suggestions, please provide feedback on [GitHub 
 ## Installation
 
 ::: tip
-BugPilot is evolving into [Kimi Code](https://github.com/l3tchupkt/kimi-code). Installing Kimi Code **automatically migrates** your configuration and sessions. New users are encouraged to install Kimi Code directly; the instructions below still work, and existing users don't need to migrate immediately.
+BugPilot is evolving into [BugPilot](https://github.com/l3tchupkt/bugpilot). Installing BugPilot **automatically migrates** your configuration and sessions. New users are encouraged to install BugPilot directly; the instructions below still work, and existing users don't need to migrate immediately.
 :::
 
 Run the installation script to complete the installation. The script will first install [uv](https://docs.astral.sh/uv/) (a Python package manager), then install BugPilot via uv:
 
 ```sh
 # Linux / macOS
-curl -LsSf https://code.kimi.com/install.sh | bash
+curl -LsSf https://code.bugpilot.com/install.sh | bash
 ```
 
 ```powershell
 # Windows (PowerShell)
-Invoke-RestMethod https://code.kimi.com/install.ps1 | Invoke-Expression
+Invoke-RestMethod https://code.bugpilot.com/install.ps1 | Invoke-Expression
 ```
 
 Verify the installation:
 
 ```sh
-kimi --version
+bugpilot --version
 ```
 
 ::: tip
-Due to macOS security checks, the first run of the `kimi` command may take longer. You can add your terminal application in "System Settings → Privacy & Security → Developer Tools" to speed up subsequent launches.
+Due to macOS security checks, the first run of the `bugpilot` command may take longer. You can add your terminal application in "System Settings → Privacy & Security → Developer Tools" to speed up subsequent launches.
 :::
 
 If you already have uv installed, you can also run:
@@ -76,11 +76,11 @@ uv tool uninstall bugpilot
 
 ## First run
 
-Run the `kimi` command in the project directory where you want to work to start BugPilot:
+Run the `bugpilot` command in the project directory where you want to work to start BugPilot:
 
 ```sh
 cd your-project
-kimi
+bugpilot
 ```
 
 On first launch, you need to configure your API source. Enter the `/login` command to start configuration:
@@ -89,7 +89,7 @@ On first launch, you need to configure your API source. Enter the `/login` comma
 /login
 ```
 
-After execution, first select a platform. We recommend **Kimi Code**, which automatically opens a browser for OAuth authorization; selecting other platforms requires entering an API key. After configuration, BugPilot will automatically save the settings and reload. See [Providers](../configuration/providers.md) for details.
+After execution, first select a platform. We recommend **BugPilot**, which automatically opens a browser for OAuth authorization; selecting other platforms requires entering an API key. After configuration, BugPilot will automatically save the settings and reload. See [Providers](../configuration/providers.md) for details.
 
 Now you can chat with BugPilot directly using natural language. Try describing a task you want to complete, for example:
 

@@ -4,18 +4,18 @@ BugPilot 使用配置文件管理 API 供应商、模型、服务和运行参数
 
 ## 配置文件位置
 
-默认配置文件位于 `~/.kimi/config.toml`。首次运行时，如果配置文件不存在，BugPilot 会自动创建一个默认的配置文件。
+默认配置文件位于 `~/.bugpilot/config.toml`。首次运行时，如果配置文件不存在，BugPilot 会自动创建一个默认的配置文件。
 
 你可以通过 `--config-file` 参数指定其他配置文件（TOML 或 JSON 格式均可）：
 
 ```sh
-kimi --config-file /path/to/config.toml
+bugpilot --config-file /path/to/config.toml
 ```
 
 在程序化调用 BugPilot 时，也可以通过 `--config` 参数直接传入完整的配置内容：
 
 ```sh
-kimi --config '{"default_model": "kimi-for-coding", "providers": {...}, "models": {...}}'
+bugpilot --config '{"default_model": "bugpilot-for-coding", "providers": {...}, "models": {...}}'
 ```
 
 ## 配置项
@@ -44,7 +44,7 @@ kimi --config '{"default_model": "kimi-for-coding", "providers": {...}, "models"
 ### 完整配置示例
 
 ```toml
-default_model = "kimi-for-coding"
+default_model = "bugpilot-for-coding"
 default_thinking = false
 default_yolo = false
 skip_afk_prompt_injection = false
@@ -55,14 +55,14 @@ show_thinking_stream = true
 merge_all_available_skills = true
 telemetry = true
 
-[providers.kimi-for-coding]
-type = "kimi"
-base_url = "https://api.kimi.com/coding/v1"
+[providers.bugpilot-for-coding]
+type = "bugpilot"
+base_url = "https://api.bugpilot.com/coding/v1"
 api_key = "sk-xxx"
 
-[models.kimi-for-coding]
-provider = "kimi-for-coding"
-model = "kimi-for-coding"
+[models.bugpilot-for-coding]
+provider = "bugpilot-for-coding"
+model = "bugpilot-for-coding"
 max_context_size = 262144
 
 [loop_control]
@@ -77,12 +77,12 @@ max_running_tasks = 4
 keep_alive_on_exit = false
 agent_task_timeout_s = 900
 
-[services.moonshot_search]
-base_url = "https://api.kimi.com/coding/v1/search"
+[services.bugpilot_search]
+base_url = "https://api.bugpilot.com/coding/v1/search"
 api_key = "sk-xxx"
 
-[services.moonshot_fetch]
-base_url = "https://api.kimi.com/coding/v1/fetch"
+[services.bugpilot_fetch]
+base_url = "https://api.bugpilot.com/coding/v1/fetch"
 api_key = "sk-xxx"
 
 [mcp.client]
@@ -104,9 +104,9 @@ tool_call_timeout_ms = 60000
 示例：
 
 ```toml
-[providers.moonshot-cn]
-type = "kimi"
-base_url = "https://api.moonshot.cn/v1"
+[providers.bugpilot-cn]
+type = "bugpilot"
+base_url = "https://api.bugpilot.ai/v1"
 api_key = "sk-xxx"
 custom_headers = { "X-Custom-Header" = "value" }
 ```
@@ -130,9 +130,9 @@ custom_headers = { "X-Custom-Header" = "value" }
 示例：
 
 ```toml
-[models.kimi-k2-thinking-turbo]
-provider = "moonshot-cn"
-model = "kimi-k2-thinking-turbo"
+[models.bugpilot-k2-thinking-turbo]
+provider = "bugpilot-cn"
+model = "bugpilot-k2-thinking-turbo"
 max_context_size = 262144
 capabilities = ["thinking", "image_in"]
 ```
@@ -175,7 +175,7 @@ capabilities = ["thinking"]
 
 `services` 配置 BugPilot 使用的外部服务。
 
-#### `moonshot_search`
+#### `bugpilot_search`
 
 配置网页搜索服务，启用后 `SearchWeb` 工具可用。
 
@@ -185,7 +185,7 @@ capabilities = ["thinking"]
 | `api_key` | `string` | 是 | API 密钥 |
 | `custom_headers` | `table` | 否 | 请求时附加的自定义 HTTP 头 |
 
-#### `moonshot_fetch`
+#### `bugpilot_fetch`
 
 配置网页抓取服务，启用后 `FetchURL` 工具优先使用此服务抓取网页内容。
 
@@ -196,7 +196,7 @@ capabilities = ["thinking"]
 | `custom_headers` | `table` | 否 | 请求时附加的自定义 HTTP 头 |
 
 ::: tip 提示
-使用 `/login` 命令配置 Kimi Code 平台时，搜索和抓取服务会自动配置。
+使用 `/login` 命令配置 BugPilot 平台时，搜索和抓取服务会自动配置。
 :::
 
 ### `mcp`
@@ -217,7 +217,7 @@ capabilities = ["thinking"]
 [[hooks]]
 event = "PreToolUse"
 matcher = "Shell"
-command = ".kimi/hooks/safety-check.sh"
+command = ".bugpilot/hooks/safety-check.sh"
 timeout = 10
 
 [[hooks]]
@@ -235,6 +235,6 @@ command = "prettier --write"
 
 ## JSON 配置迁移
 
-如果 `~/.kimi/config.toml` 不存在但 `~/.kimi/config.json` 存在，BugPilot 会自动将 JSON 配置迁移到 TOML 格式，并将原文件备份为 `config.json.bak`。
+如果 `~/.bugpilot/config.toml` 不存在但 `~/.bugpilot/config.json` 存在，BugPilot 会自动将 JSON 配置迁移到 TOML 格式，并将原文件备份为 `config.json.bak`。
 
 `--config-file` 指定的配置文件根据扩展名自动选择解析方式。`--config` 传入的配置内容会先尝试按 JSON 解析，失败后再尝试 TOML。

@@ -7,7 +7,7 @@ Agent 定义了 AI 的行为方式，包括系统提示词、可用工具和子 
 BugPilot 提供两个内置 Agent。启动时可以通过 `--agent` 参数选择：
 
 ```sh
-kimi --agent okabe
+bugpilot --agent okabe
 ```
 
 ### `default`
@@ -25,7 +25,7 @@ kimi --agent okabe
 Agent 使用 YAML 格式定义。通过 `--agent-file` 参数加载自定义 Agent：
 
 ```sh
-kimi --agent-file /path/to/my-agent.yaml
+bugpilot --agent-file /path/to/my-agent.yaml
 ```
 
 **基本结构**
@@ -75,12 +75,12 @@ agent:
 
 | 变量 | 说明 |
 |------|------|
-| `${KIMI_NOW}` | 当前时间（ISO 格式） |
-| `${KIMI_WORK_DIR}` | 工作目录路径 |
-| `${KIMI_WORK_DIR_LS}` | 工作目录文件列表 |
-| `${KIMI_AGENTS_MD}` | 从项目根目录到工作目录逐层合并的 `AGENTS.md` 内容（包括 `.kimi/AGENTS.md`） |
-| `${KIMI_SKILLS}` | 加载的 Skills 列表 |
-| `${KIMI_ADDITIONAL_DIRS_INFO}` | 通过 `--add-dir` 或 `/add-dir` 添加的额外目录信息 |
+| `${BUGPILOT_NOW}` | 当前时间（ISO 格式） |
+| `${BUGPILOT_WORK_DIR}` | 工作目录路径 |
+| `${BUGPILOT_WORK_DIR_LS}` | 工作目录文件列表 |
+| `${BUGPILOT_AGENTS_MD}` | 从项目根目录到工作目录逐层合并的 `AGENTS.md` 内容（包括 `.bugpilot/AGENTS.md`） |
+| `${BUGPILOT_SKILLS}` | 加载的 Skills 列表 |
+| `${BUGPILOT_ADDITIONAL_DIRS_INFO}` | 通过 `--add-dir` 或 `/add-dir` 添加的额外目录信息 |
 
 你也可以通过 `system_prompt_args` 定义自定义参数：
 
@@ -97,9 +97,9 @@ agent:
 ```markdown
 # My Agent
 
-You are a helpful assistant. Current time: ${KIMI_NOW}.
+You are a helpful assistant. Current time: ${BUGPILOT_NOW}.
 
-Working directory: ${KIMI_WORK_DIR}
+Working directory: ${BUGPILOT_WORK_DIR}
 
 ${MY_VAR}
 ```
@@ -293,7 +293,7 @@ agent:
 ### `SearchWeb`
 
 - **路径**：`bugpilot.tools.web:SearchWeb`
-- **描述**：搜索网页。需要配置搜索服务（Kimi Code 平台自动配置）。
+- **描述**：搜索网页。需要配置搜索服务（BugPilot 平台自动配置）。
 
 | 参数 | 类型 | 说明 |
 |------|------|------|

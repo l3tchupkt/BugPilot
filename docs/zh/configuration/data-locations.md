@@ -1,19 +1,19 @@
 # 数据路径
 
-BugPilot 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。本页介绍各类数据文件的位置和用途。
+BugPilot 将所有数据存储在用户主目录下的 `~/.bugpilot/` 目录中。本页介绍各类数据文件的位置和用途。
 
 ::: tip 提示
-可以通过设置 `KIMI_SHARE_DIR` 环境变量来自定义共享目录路径。详见 [环境变量](./env-vars.md#kimi-share-dir)。
+可以通过设置 `BUGPILOT_SHARE_DIR` 环境变量来自定义共享目录路径。详见 [环境变量](./env-vars.md#bugpilot-share-dir)。
 
-注意：`KIMI_SHARE_DIR` 仅影响上述运行时数据的存储位置，不影响 [Agent Skills](../customization/skills.md) 的搜索路径。Skills 作为跨工具共享的能力扩展，与运行时数据是不同类型的数据。
+注意：`BUGPILOT_SHARE_DIR` 仅影响上述运行时数据的存储位置，不影响 [Agent Skills](../customization/skills.md) 的搜索路径。Skills 作为跨工具共享的能力扩展，与运行时数据是不同类型的数据。
 :::
 
 ## 目录结构
 
 ```
-~/.kimi/
+~/.bugpilot/
 ├── config.toml           # 主配置文件
-├── kimi.json             # 元数据
+├── bugpilot.json             # 元数据
 ├── mcp.json              # MCP 服务器配置
 ├── credentials/          # OAuth 凭据
 │   └── <provider>.json
@@ -24,7 +24,7 @@ BugPilot 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。�
 │           ├── context.jsonl
 │           ├── wire.jsonl
 │           └── state.json
-├── imported_sessions/    # 导入的会话数据（通过 kimi vis 导入）
+├── imported_sessions/    # 导入的会话数据（通过 bugpilot vis 导入）
 │   └── <session-id>/
 │       ├── context.jsonl
 │       ├── wire.jsonl
@@ -34,7 +34,7 @@ BugPilot 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。�
 ├── user-history/         # 输入历史
 │   └── <work-dir-hash>.jsonl
 └── logs/                 # 日志
-    └── kimi.log
+    └── bugpilot.log
 ```
 
 ## 配置与元数据
@@ -45,7 +45,7 @@ BugPilot 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。�
 
 可以通过 `--config-file` 参数指定其他位置的配置文件。
 
-### `kimi.json`
+### `bugpilot.json`
 
 元数据文件，存储 BugPilot 的运行状态，包括：
 
@@ -56,7 +56,7 @@ BugPilot 将所有数据存储在用户主目录下的 `~/.kimi/` 目录中。�
 
 ### `mcp.json`
 
-MCP 服务器配置文件，存储通过 `kimi mcp add` 命令添加的 MCP 服务器。详见 [MCP](../customization/mcp.md)。
+MCP 服务器配置文件，存储通过 `bugpilot mcp add` 命令添加的 MCP 服务器。详见 [MCP](../customization/mcp.md)。
 
 示例结构：
 
@@ -76,15 +76,15 @@ MCP 服务器配置文件，存储通过 `kimi mcp add` 命令添加的 MCP 服�
 
 ## 凭据
 
-OAuth 凭据存储在 `~/.kimi/credentials/` 目录下。通过 `/login` 登录 Kimi 账号后，OAuth token 会保存在此目录中。
+OAuth 凭据存储在 `~/.bugpilot/credentials/` 目录下。通过 `/login` 登录 BugPilot 账号后，OAuth token 会保存在此目录中。
 
-MCP 服务器的 OAuth token 单独存储在 `~/.kimi/mcp-oauth/`。通过 `kimi mcp auth <name>` 授权使用 `--auth oauth` 添加的 MCP 服务器后，后续会话会复用该目录中的 token。可以用 `kimi mcp reset-auth <name>` 清除某个服务器的 MCP OAuth token。
+MCP 服务器的 OAuth token 单独存储在 `~/.bugpilot/mcp-oauth/`。通过 `bugpilot mcp auth <name>` 授权使用 `--auth oauth` 添加的 MCP 服务器后，后续会话会复用该目录中的 token。可以用 `bugpilot mcp reset-auth <name>` 清除某个服务器的 MCP OAuth token。
 
 `credentials/` 目录中的文件权限设置为仅当前用户可读写（600），以保护敏感信息。
 
 ## 会话数据
 
-会话数据按工作目录分组存储在 `~/.kimi/sessions/` 下。每个工作目录对应一个以路径 MD5 哈希命名的子目录，每个会话对应一个以会话 ID 命名的子目录。
+会话数据按工作目录分组存储在 `~/.bugpilot/sessions/` 下。每个工作目录对应一个以路径 MD5 哈希命名的子目录，每个会话对应一个以会话 ID 命名的子目录。
 
 ### `context.jsonl`
 
@@ -106,7 +106,7 @@ Wire 消息记录文件，以 JSONL 格式存储会话中的 Wire 事件。用�
 - `approval`：审批决策状态（YOLO 和 AFK 模式开关、已自动批准的操作类型）
 - `plan_mode`：Plan 模式的开关状态
 - `plan_session_id`：当前 Plan 会话的唯一标识符，用于关联 plan 文件
-- `plan_slug`：Plan 文件的路径标识（即 `~/.kimi/plans/<slug>.md` 中的 slug），会话重启后可恢复到同一文件
+- `plan_slug`：Plan 文件的路径标识（即 `~/.bugpilot/plans/<slug>.md` 中的 slug），会话重启后可恢复到同一文件
 - `subagent_instances`：子 Agent 实例的状态和元数据
 - `additional_dirs`：通过 `--add-dir` 或 `/add-dir` 添加的额外工作区目录
 
@@ -126,35 +126,35 @@ Wire 消息记录文件，以 JSONL 格式存储会话中的 Wire 事件。用�
 
 ## Plan 方案文件
 
-Plan 模式的方案文件存储在 `~/.kimi/plans/` 目录下。每个 Plan 会话对应一个随机命名的 Markdown 文件（即 `<slug>.md`）。
+Plan 模式的方案文件存储在 `~/.bugpilot/plans/` 目录下。每个 Plan 会话对应一个随机命名的 Markdown 文件（即 `<slug>.md`）。
 
 `plan_slug` 保存在 `state.json` 中，会话重启后仍能恢复到同一方案文件。使用 `/plan clear` 命令可以清除当前 Plan 会话的方案文件。
 
 ## 输入历史
 
-用户输入历史存储在 `~/.kimi/user-history/` 目录下。每个工作目录对应一个以路径 MD5 哈希命名的 `.jsonl` 文件。
+用户输入历史存储在 `~/.bugpilot/user-history/` 目录下。每个工作目录对应一个以路径 MD5 哈希命名的 `.jsonl` 文件。
 
 输入历史用于 Shell 模式下的历史浏览（上下方向键）和搜索（Ctrl-R）。
 
 ## 日志
 
-运行日志存储在 `~/.kimi/logs/kimi.log`。默认日志级别为 INFO，使用 `--debug` 参数可启用 TRACE 级别。
+运行日志存储在 `~/.bugpilot/logs/bugpilot.log`。默认日志级别为 INFO，使用 `--debug` 参数可启用 TRACE 级别。
 
 日志文件用于排查问题。如需报告 bug，请附上相关日志内容。
 
 ## 清理数据
 
-删除共享目录（默认 `~/.kimi/`，或 `KIMI_SHARE_DIR` 指定的路径）可以完全清理 BugPilot 的所有数据，包括配置、会话和历史。
+删除共享目录（默认 `~/.bugpilot/`，或 `BUGPILOT_SHARE_DIR` 指定的路径）可以完全清理 BugPilot 的所有数据，包括配置、会话和历史。
 
 如只需清理部分数据：
 
 | 需求 | 操作 |
 | --- | --- |
-| 重置配置 | 删除 `~/.kimi/config.toml` |
-| 清理所有会话 | 删除 `~/.kimi/sessions/` 目录 |
+| 重置配置 | 删除 `~/.bugpilot/config.toml` |
+| 清理所有会话 | 删除 `~/.bugpilot/sessions/` 目录 |
 | 清理特定工作目录的会话 | 在 Shell 模式下使用 `/sessions` 查看并删除 |
-| 清理 Plan 方案文件 | 删除 `~/.kimi/plans/` 目录，或在 Plan 模式下使用 `/plan clear` |
-| 清理输入历史 | 删除 `~/.kimi/user-history/` 目录 |
-| 清理日志 | 删除 `~/.kimi/logs/` 目录 |
-| 清理 MCP 配置 | 删除 `~/.kimi/mcp.json` 或使用 `kimi mcp remove` |
-| 清理登录凭据 | 删除 `~/.kimi/credentials/` 目录或使用 `/logout` |
+| 清理 Plan 方案文件 | 删除 `~/.bugpilot/plans/` 目录，或在 Plan 模式下使用 `/plan clear` |
+| 清理输入历史 | 删除 `~/.bugpilot/user-history/` 目录 |
+| 清理日志 | 删除 `~/.bugpilot/logs/` 目录 |
+| 清理 MCP 配置 | 删除 `~/.bugpilot/mcp.json` 或使用 `bugpilot mcp remove` |
+| 清理登录凭据 | 删除 `~/.bugpilot/credentials/` 目录或使用 `/logout` |

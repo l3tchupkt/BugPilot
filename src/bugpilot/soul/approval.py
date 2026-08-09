@@ -18,6 +18,8 @@ from bugpilot.approval_runtime import (
 class ApprovalResult:
     approved: bool
     feedback: str = ""
+
+
 from bugpilot.soul.toolset import get_current_step_no, get_current_tool_call_or_none
 from bugpilot.tools.utils import ToolRejectedError
 from bugpilot.utils.logging import logger
@@ -68,7 +70,7 @@ def _track_permission_result(
     )
     if step_no is not None:
         kwargs["step_no"] = step_no
-#     if tid := get_current_trace_id():
+        #     if tid := get_current_trace_id():
         source = get_current_approval_source_or_none()
         is_subagent = source is not None and source.agent_id is not None
         if is_subagent:
@@ -223,7 +225,6 @@ class Approval:
             description=description,
         )
         if self.is_auto_approve():
-
             _track_permission_result(
                 step_no=_step_no,
                 tool_name=_tool_name,
@@ -237,7 +238,6 @@ class Approval:
             return ApprovalResult(approved=True)
 
         if action in self._state.auto_approve_actions:
-
             _track_permission_result(
                 step_no=_step_no,
                 tool_name=_tool_name,
@@ -268,7 +268,6 @@ class Approval:
         try:
             response, feedback = await self._runtime.wait_for_response(request_id)
         except ApprovalCancelledError:
-
             record = self._runtime.get_request(request_id)
             _track_permission_result(
                 step_no=_step_no,

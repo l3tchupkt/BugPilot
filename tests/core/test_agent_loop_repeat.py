@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 from collections.abc import AsyncIterator, Sequence
 from pathlib import Path
 from typing import Self
@@ -14,7 +15,6 @@ import bugpilot.soul.agent_loop as agent_loop_module
 from bugpilot.llm import LLM
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.toolset import Toolset
 
 
@@ -110,14 +110,14 @@ def _runtime_with_llm(runtime: Runtime, llm: LLM) -> Runtime:
     )
 
 
-def _make_soul(runtime: Runtime, llm: LLM, toolset: Toolset, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, llm: LLM, toolset: Toolset, tmp_path: Path) -> AgentLoop:
     agent = Agent(
         name="Repeat Test Agent",
         system_prompt="Test system prompt.",
         toolset=toolset,
         runtime=_runtime_with_llm(runtime, llm),
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
 @pytest.mark.asyncio
@@ -129,7 +129,7 @@ async def test_turn_force_stops_after_twelve_identical_calls(
     toolset = Toolset()
     toolset.add(_DummyTool())
     llm = LLM(
-        chat_provider=_RepeatChatProvider(),
+        provider=_RepeatChatProvider(),
         max_context_size=100_000,
         capabilities=set(),
     )

@@ -8,7 +8,7 @@ Configuration priority from highest to lowest:
 
 1. **Environment variables** - Highest priority, for temporary overrides or CI/CD environments
 2. **CLI flags** - Flags specified at startup
-3. **Configuration file** - `~/.kimi/config.toml` or file specified via `--config-file`
+3. **Configuration file** - `~/.bugpilot/config.toml` or file specified via `--config-file`
 
 ## CLI flags
 
@@ -17,7 +17,7 @@ Configuration priority from highest to lowest:
 | Flag | Description |
 | --- | --- |
 | `--config <TOML/JSON>` | Pass configuration content directly, overrides default config file |
-| `--config-file <PATH>` | Specify configuration file path, replaces default `~/.kimi/config.toml` |
+| `--config-file <PATH>` | Specify configuration file path, replaces default `~/.bugpilot/config.toml` |
 
 `--config` and `--config-file` cannot be used together.
 
@@ -53,7 +53,7 @@ Environment variables can override provider and model settings without modifying
 
 Environment variables take effect based on the current provider type:
 
-- `kimi` type providers: Use `KIMI_*` environment variables
+- `bugpilot` type providers: Use `BUGPILOT_*` environment variables
 - `openai_legacy` or `openai_responses` type providers: Use `OPENAI_*` environment variables
 - Other provider types: Environment variable overrides not supported
 
@@ -62,24 +62,24 @@ See [Environment Variables](./env-vars.md) for the complete list.
 Example:
 
 ```sh
-BUGPILOT_API_KEY="sk-xxx" KIMI_MODEL_NAME="kimi-k2-thinking-turbo" kimi
+BUGPILOT_API_KEY="sk-xxx" BUGPILOT_MODEL_NAME="bugpilot-k2-thinking-turbo" bugpilot
 ```
 
 ## Configuration priority example
 
-Assume the configuration file `~/.kimi/config.toml` contains:
+Assume the configuration file `~/.bugpilot/config.toml` contains:
 
 ```toml
-default_model = "kimi-for-coding"
+default_model = "bugpilot-for-coding"
 
-[providers.kimi-for-coding]
-type = "kimi"
-base_url = "https://api.kimi.com/coding/v1"
+[providers.bugpilot-for-coding]
+type = "bugpilot"
+base_url = "https://api.bugpilot.com/coding/v1"
 api_key = "sk-config"
 
-[models.kimi-for-coding]
-provider = "kimi-for-coding"
-model = "kimi-for-coding"
+[models.bugpilot-for-coding]
+provider = "bugpilot-for-coding"
+model = "bugpilot-for-coding"
 max_context_size = 262144
 ```
 
@@ -87,7 +87,7 @@ Here are the configuration sources in different scenarios:
 
 | Scenario | `base_url` | `api_key` | `model` |
 | --- | --- | --- | --- |
-| `kimi` | Config file | Config file | Config file |
-| `BUGPILOT_API_KEY=sk-env kimi` | Config file | Environment variable | Config file |
-| `kimi --model other` | Config file | Config file | CLI flag |
-| `KIMI_MODEL_NAME=k2 kimi` | Config file | Config file | Environment variable |
+| `bugpilot` | Config file | Config file | Config file |
+| `BUGPILOT_API_KEY=sk-env bugpilot` | Config file | Environment variable | Config file |
+| `bugpilot --model other` | Config file | Config file | CLI flag |
+| `BUGPILOT_MODEL_NAME=k2 bugpilot` | Config file | Config file | Environment variable |

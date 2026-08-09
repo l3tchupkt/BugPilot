@@ -40,7 +40,7 @@ BugPilot 支持 13 种生命周期事件：
 
 ## 配置 Hooks
 
-在 `~/.kimi/config.toml` 中使用 `[[hooks]]` 数组定义 hook：
+在 `~/.bugpilot/config.toml` 中使用 `[[hooks]]` 数组定义 hook：
 
 ```toml
 # 文件编辑后自动格式化
@@ -53,19 +53,19 @@ command = "jq -r '.tool_input.file_path' | xargs prettier --write"
 [[hooks]]
 event = "PreToolUse"
 matcher = "WriteFile|StrReplaceFile"
-command = ".kimi/hooks/protect-env.sh"
+command = ".bugpilot/hooks/protect-env.sh"
 timeout = 10
 
 # 需要审批时发送桌面通知
 [[hooks]]
 event = "Notification"
 matcher = "permission_prompt"
-command = "osascript -e 'display notification \"Kimi needs attention\" with title \"Kimi CLI\"'"
+command = "osascript -e 'display notification \"BugPilot needs attention\" with title \"BugPilot\"'"
 
 # 会话结束前检查任务完成情况
 [[hooks]]
 event = "Stop"
-command = ".kimi/hooks/check-complete.sh"
+command = ".bugpilot/hooks/check-complete.sh"
 ```
 
 ### 配置字段
@@ -123,7 +123,7 @@ Hook 命令从标准输入接收 JSON 格式的上下文信息，包含通用字
 
 ```bash
 #!/bin/bash
-# .kimi/hooks/protect-env.sh
+# .bugpilot/hooks/protect-env.sh
 
 read JSON
 echo "$JSON" | jq -r '.tool_input.file_path' | grep -qE '\.env$|\.env\.local$'
@@ -140,7 +140,7 @@ exit 0
 
 ```bash
 #!/bin/bash
-# .kimi/hooks/auto-format.sh
+# .bugpilot/hooks/auto-format.sh
 
 FILE=$(python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))")
 
@@ -157,10 +157,10 @@ exit 0
 
 ```bash
 #!/bin/bash
-# .kimi/hooks/check-complete.sh
+# .bugpilot/hooks/check-complete.sh
 
 # 检查是否有进行中的后台任务
-if kimi task list --active 2>/dev/null | grep -q "running"; then
+if bugpilot task list --active 2>/dev/null | grep -q "running"; then
     echo '{"hookSpecificOutput":{"permissionDecision":"deny","permissionDecisionReason":"还有后台任务在运行，请先检查 /task"}}'
     exit 0
 fi

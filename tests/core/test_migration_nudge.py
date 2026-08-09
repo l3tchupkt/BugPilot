@@ -12,7 +12,9 @@ def test_install_command_per_platform():
     assert mn.install_command("linux") == (
         "curl -fsSL https://code.bugpilot.com/bugpilot-code/install.sh | bash"
     )
-    assert mn.install_command("win32") == ("irm https://code.bugpilot.com/bugpilot-code/install.ps1 | iex")
+    assert mn.install_command("win32") == (
+        "irm https://code.bugpilot.com/bugpilot-code/install.ps1 | iex"
+    )
 
 
 def test_install_run_command_wraps_powershell_on_windows():
@@ -34,14 +36,15 @@ def test_verify_command_per_platform():
 def test_exit_nudge_text_uses_platform_install_command():
     assert "curl -fsSL" in mn.exit_nudge_text("linux").plain
     assert (
-        "irm https://code.bugpilot.com/bugpilot-code/install.ps1 | iex" in mn.exit_nudge_text("win32").plain
+        "irm https://code.bugpilot.com/bugpilot-code/install.ps1 | iex"
+        in mn.exit_nudge_text("win32").plain
     )
 
 
-def test_kimi_code_installed_detects_dir(tmp_path: Path):
-    assert mn.kimi_code_installed(tmp_path) is False
+def test_bugpilot_code_installed_detects_dir(tmp_path: Path):
+    assert mn.bugpilot_code_installed(tmp_path) is False
     (tmp_path / ".bugpilot-code").mkdir()
-    assert mn.kimi_code_installed(tmp_path) is True
+    assert mn.bugpilot_code_installed(tmp_path) is True
 
 
 def test_exit_nudge_throttled_once_per_day(tmp_path: Path):

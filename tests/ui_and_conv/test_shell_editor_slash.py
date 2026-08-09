@@ -9,9 +9,9 @@ from unittest.mock import Mock
 from kosong.tooling.empty import EmptyToolset
 
 from bugpilot.config import get_default_config
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.ui.shell import Shell
 from bugpilot.ui.shell import slash as shell_slash
 
@@ -23,7 +23,7 @@ def _make_shell_app(runtime: Runtime, tmp_path: Path) -> SimpleNamespace:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     return SimpleNamespace(soul=soul)
 
 

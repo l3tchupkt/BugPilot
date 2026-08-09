@@ -38,7 +38,7 @@ def run_agent(script_dir: Path, tests_dir: Path) -> None:
     cmd = [
         "uv",
         "run",
-        "kimi",
+        "bugpilot",
         "--yolo",
         "--agent-file",
         str(script_dir / "main.yaml"),

@@ -35,7 +35,7 @@ registry = SlashCommandRegistry[ShellSlashCmdFunc]()
 shell_mode_registry = SlashCommandRegistry[ShellSlashCmdFunc]()
 
 
-def ensure_kimi_soul(app: Shell) -> Agent | None:
+def ensure_bugpilot_soul(app: Shell) -> Agent | None:
     if not isinstance(app.soul, Agent):
         console.print("[red]Agent required[/red]")
         return None
@@ -163,7 +163,7 @@ async def btw(app: Shell, args: str):
     if not question:
         console.print('[yellow]Usage: "/btw <question>"[/yellow]')
         return
-    if ensure_kimi_soul(app) is None:
+    if ensure_bugpilot_soul(app) is None:
         return
     if app._prompt_session is None:  # pyright: ignore[reportPrivateUsage]
         console.print("[yellow]/btw is only available in interactive shell mode.[/yellow]")
@@ -185,12 +185,12 @@ async def model(app: Shell, args: str):
     """Switch LLM model or thinking mode"""
     from bugpilot.llm import derive_model_capabilities
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
     config = soul.runtime.config
 
-#     await refresh_managed_models(config)
+    #     await refresh_managed_models(config)
 
     if not config.models:
         console.print('[yellow]No models configured, send "/login" to login.[/yellow]')
@@ -217,7 +217,7 @@ async def model(app: Shell, args: str):
     model_choices: list[tuple[str, str]] = []
     for name in sorted(config.models):
         model_cfg = config.models[name]
-#         provider_label = get_platform_name_for_provider(model_cfg.provider) or model_cfg.provider
+        #         provider_label = get_platform_name_for_provider(model_cfg.provider) or model_cfg.provider
         marker = " (current)" if name == curr_model_name else ""
         display = model_cfg.display_name or model_cfg.model
         label = f"{display}{marker}"
@@ -296,7 +296,6 @@ async def model(app: Shell, args: str):
         console.print(f"[red]Failed to save config: {exc}[/red]")
         return
 
-
     if model_changed:
         pass
     if thinking_changed:
@@ -315,7 +314,7 @@ async def editor(app: Shell, args: str):
     """Set default external editor for Ctrl-O"""
     from bugpilot.utils.editor import get_editor_command
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
     config = soul.runtime.config
@@ -454,7 +453,7 @@ async def feedback(app: Shell, args: str):
 
 async def _do_new_session(app: Shell, args: str) -> None:
     """Shared implementation for /new and /clear."""
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
     current_session = soul.runtime.session
@@ -466,7 +465,7 @@ async def _do_new_session(app: Shell, args: str) -> None:
         await current_session.delete()
     session = await Session.create(work_dir)
 
-#     track("session_new")
+    #     track("session_new")
     console.print("[green]New session created. Switching...[/green]")
     raise Reload(session_id=session.id)
 
@@ -486,7 +485,7 @@ async def new(app: Shell, args: str) -> None:
 @registry.command(name="title", aliases=["rename"])
 async def title(app: Shell, args: str):
     """Set or show the session title"""
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
     session = soul.runtime.session
@@ -515,7 +514,7 @@ async def list_sessions(app: Shell, args: str):
 
     from bugpilot.ui.shell.session_picker import SessionPickerApp
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -539,8 +538,7 @@ async def list_sessions(app: Shell, args: str):
         console.print(f"[yellow]Session is in a different directory. Run:[/yellow]\n  {cmd}")
         return
 
-
-#     track("session_resume")
+    #     track("session_resume")
     console.print(f"[green]Switching to session {selection}...[/green]")
     raise Reload(session_id=selection)
 
@@ -549,7 +547,7 @@ async def list_sessions(app: Shell, args: str):
 @shell_mode_registry.command(name="task")
 async def task(app: Shell, args: str):
     """Browse and manage background tasks"""
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
     if args.strip():
@@ -568,7 +566,7 @@ def theme(app: Shell, args: str):
     """Switch terminal color theme (dark/light)"""
     from bugpilot.ui.theme import get_active_theme
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -605,8 +603,7 @@ def theme(app: Shell, args: str):
         console.print(f"[red]Failed to save config: {exc}[/red]")
         return
 
-
-#     track("theme_switch", theme=arg)
+    #     track("theme_switch", theme=arg)
     console.print(f"[green]Switched to {arg} theme. Reloading...[/green]")
     raise Reload(session_id=soul.runtime.session.id)
 
@@ -615,8 +612,8 @@ def theme(app: Shell, args: str):
 def web(app: Shell, args: str):
     """Open BugPilot Web UI in browser"""
 
-#     track("web_opened")
-    soul = ensure_kimi_soul(app)
+    #     track("web_opened")
+    soul = ensure_bugpilot_soul(app)
     session_id = soul.runtime.session.id if soul else None
     raise SwitchToWeb(session_id=session_id)
 
@@ -625,8 +622,8 @@ def web(app: Shell, args: str):
 def vis(app: Shell, args: str):
     """Open BugPilot Agent Tracing Visualizer in browser"""
 
-#     track("vis_opened")
-    soul = ensure_kimi_soul(app)
+    #     track("vis_opened")
+    soul = ensure_bugpilot_soul(app)
     session_id = soul.runtime.session.id if soul else None
     raise SwitchToVis(session_id=session_id)
 
@@ -640,7 +637,7 @@ async def upgrade(app: Shell, args: str):
         verify_command,
     )
 
-#     track("upgrade_invoked")
+    #     track("upgrade_invoked")
 
     cmd = install_command(sys.platform)
     run_cmd = install_run_command(sys.platform)
@@ -678,7 +675,7 @@ async def mcp(app: Shell, args: str):
     """Show MCP servers and tools"""
     from rich.live import Live
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
     await soul.start_background_mcp_loading()
@@ -718,7 +715,7 @@ async def mcp(app: Shell, args: str):
 @shell_mode_registry.command
 def hooks(app: Shell, args: str):
     """List configured hooks"""
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -749,7 +746,7 @@ async def undo(app: Shell, args: str):
     from bugpilot.session_fork import enumerate_turns, fork_session
     from bugpilot.utils.string import shorten
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -805,8 +802,7 @@ async def undo(app: Shell, args: str):
             source_title=session.title,
         )
 
-
-#     track("undo")
+    #     track("undo")
     console.print(f"[green]Forked at turn {turn_index}. Switching to new session...[/green]")
     raise Reload(session_id=new_session_id, prefill_text=user_text)
 
@@ -816,7 +812,7 @@ async def fork(app: Shell, args: str):
     """Fork the current session (copy all history to a new session)"""
     from bugpilot.session_fork import fork_session
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -829,8 +825,7 @@ async def fork(app: Shell, args: str):
         source_title=session.title,
     )
 
-
-#     track("session_fork")
+    #     track("session_fork")
     console.print("[green]Session forked. Switching to new session...[/green]")
     raise Reload(session_id=new_session_id)
 

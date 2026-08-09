@@ -130,7 +130,7 @@ class OpenAILegacy:
         # Auto-enable reasoning_effort when the history contains ThinkPart but reasoning
         # was not explicitly configured. This prevents server validation errors from APIs
         # (e.g. One API) that require reasoning_effort when messages contain reasoning_content.
-        # See: https://github.com/l3tchupkt/kimi-cli/issues/1616
+        # See: https://github.com/l3tchupkt/bugpilot/issues/1616
         if isinstance(reasoning_effort, Omit) and self._reasoning_key:
             has_think_part = any(
                 isinstance(part, ThinkPart) for message in history for part in message.content

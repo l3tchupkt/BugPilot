@@ -293,6 +293,7 @@ class TestFileToolLogging:
 class TestSearchWebLogging:
     async def test_search_timeout_logged(self, search_web_tool):
         from bugpilot.tools.web.search import Params
+
         from tests.conftest import tool_call_context
 
         with (
