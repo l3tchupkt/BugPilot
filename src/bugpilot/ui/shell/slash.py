@@ -486,10 +486,7 @@ async def theme(app: Shell, args: str):
     """Switch terminal color theme"""
     from bugpilot.ui.theme import get_active_theme
     from prompt_toolkit.shortcuts.choice_input import ChoiceInput
-
-    soul = ensure_bugpilot_soul(app)
-    if soul is None:
-        return
+    from bugpilot.config import load_config, save_config, ConfigError, get_config_file
 
     current = get_active_theme()
     arg = args.strip().lower()
@@ -517,13 +514,7 @@ async def theme(app: Shell, args: str):
         console.print(f"[yellow]Already using {arg} theme.[/yellow]")
         return
 
-    config_file = soul.runtime.config.source_file
-    if config_file is None:
-        console.print(
-            "[yellow]Theme switching requires a config file; "
-            "restart without --config to persist this setting.[/yellow]"
-        )
-        return
+    config_file = get_config_file()
 
     # Persist to disk first — only update in-memory state after success
     try:
@@ -535,7 +526,9 @@ async def theme(app: Shell, args: str):
         return
 
     console.print(f"[green]Switched to {arg} theme. Reloading...[/green]")
-    raise Reload(session_id=soul.runtime.session.id)
+    from bugpilot.soul.agent_loop import Agent
+    session_id = app.soul.runtime.session.id if isinstance(app.soul, Agent) else None
+    raise Reload(session_id=session_id)
 
 
 @registry.command
@@ -800,14 +793,16 @@ async def provider(app: Shell, args: str):
     from bugpilot.ui.shell.console import console
     from prompt_toolkit.shortcuts.choice_input import ChoiceInput
     from typing import cast
-    from bugpilot.config import load_config, save_config, ConfigError
+    from bugpilot.config import load_config, save_config, ConfigError, get_config_file
     from bugpilot.llm import ActiveProviderConfig
     
-    soul = ensure_bugpilot_soul(app)
-    if soul is None:
+    config_file = get_config_file()
+    try:
+        config = load_config(config_file)
+    except ConfigError as exc:
+        console.print(f"[red]Failed to load config: {exc}[/red]")
         return
         
-    config = soul.runtime.config
     providers = list(config.providers.keys())
     
     if not providers:
@@ -832,27 +827,23 @@ async def provider(app: Shell, args: str):
     if not selected:
         return
         
-    config_file = config.source_file
-    if config_file is None:
-        console.print("[yellow]Cannot save provider without a config file.[/yellow]")
-        return
-        
     try:
-        config_for_save = load_config(config_file)
         # Try to find a default model for this provider if possible, or leave it blank
         model_name = ""
-        for m in config_for_save.models.values():
+        for m in config.models.values():
             if m.provider == selected:
                 model_name = m.model
                 break
-        config_for_save.provider = ActiveProviderConfig(name=selected, model=model_name)
-        save_config(config_for_save, config_file)
+        config.provider = ActiveProviderConfig(name=selected, model=model_name)
+        save_config(config, config_file)
     except (ConfigError, OSError) as exc:
         console.print(f"[red]Failed to save config: {exc}[/red]")
         return
 
     console.print(f"[green]Switched provider to {selected}. Reloading...[/green]")
-    raise Reload(session_id=soul.runtime.session.id)
+    from bugpilot.soul.agent_loop import Agent
+    session_id = app.soul.runtime.session.id if isinstance(app.soul, Agent) else None
+    raise Reload(session_id=session_id)
 
 @registry.command
 @shell_mode_registry.command
