@@ -273,7 +273,6 @@ class BugPilotCLI:
                 if "api_key" in str(e).lower() and ui_mode == "shell":
                     import rich.prompt
                     import rich.console
-                    from pydantic import SecretStr
                     from bugpilot.config import save_config
                     
                     console = rich.console.Console(stderr=True)
