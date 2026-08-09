@@ -220,6 +220,19 @@ class BugPilotCLI:
             if model_name and model_name in config.models:
                 model = config.models[model_name]
                 provider = config.providers.get(model.provider)
+            elif model_name and "/" in model_name:
+                provider_name, dyn_model_name = model_name.split("/", 1)
+                provider = config.providers.get(provider_name)
+                if provider:
+                    from bugpilot.llm import _fetch_dynamic_model_context
+                    max_ctx = await _fetch_dynamic_model_context(provider, dyn_model_name)
+                    model = LLMModel(
+                        provider=provider_name,
+                        model=dyn_model_name,
+                        max_context_size=max_ctx
+                    )
+                    # Register it for future use in the session
+                    config.models[model_name] = model
 
         if not model or not provider:
             model = LLMModel(provider="", model="", max_context_size=100_000)

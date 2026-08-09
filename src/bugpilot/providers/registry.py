@@ -15,12 +15,17 @@ class ProviderRegistry:
             model_name = config.provider.model
             provider_name = config.provider.name
         else:
-            # Legacy fallback
-            if model_alias not in config.models:
-                raise KeyError(f"Unknown model alias: {model_alias}")
-            model_config = config.models[model_alias]
-            model_name = model_config.model
-            provider_name = model_config.provider
+            # Check configured models
+            if model_alias in config.models:
+                model_config = config.models[model_alias]
+                model_name = model_config.model
+                provider_name = model_config.provider
+            else:
+                # Dynamic fallback: parse `provider_name/model_name`
+                if "/" in model_alias:
+                    provider_name, model_name = model_alias.split("/", 1)
+                else:
+                    raise KeyError(f"Unknown model alias: {model_alias}")
 
         if provider_name not in config.providers:
             raise KeyError(f"Provider {provider_name} not found in configuration")
