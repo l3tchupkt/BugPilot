@@ -27,7 +27,7 @@ from bugpilot.soul import (
     Soul,
     run_soul,
 )
-from bugpilot.soul.agent_loop import Agent
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.ui.print.visualize import visualize
 from bugpilot.utils.logging import logger, open_original_stderr
 from bugpilot.utils.signals import install_sigint_handler
@@ -89,7 +89,7 @@ class Print:
                     logger.info("Running agent with command: {command}", command=command)
                     if self.output_format == "text" and not self.final_only:
                         print(command)
-                    runtime = self.soul.runtime if isinstance(self.soul, Agent) else None
+                    runtime = self.soul.runtime if isinstance(self.soul, AgentLoop) else None
                     await run_soul(
                         self.soul,
                         command,

@@ -31,6 +31,7 @@ class SubagentBuilder:
         return await load_agent(
             type_def.agent_file,
             runtime,
+            persona=type_def.persona,
             mcp_configs=[],
         )
 

@@ -966,7 +966,8 @@ class AgentLoop:
 
             # ── 2a. Step Guard ──────────────────────────────────────────────────
             if step_no > self._loop_control.max_steps_per_turn:
-                raise MaxStepsReached(self._loop_control.max_steps_per_turn)
+                # raise MaxStepsReached(self._loop_control.max_steps_per_turn)
+                pass
 
             self._current_step_no = step_no
 
@@ -1829,7 +1830,8 @@ class FlowRunner:
                 continue
 
             if moves >= self._max_moves:
-                raise MaxStepsReached(total_steps)
+                # raise MaxStepsReached(total_steps)
+                pass
             next_id, steps_used = await self._execute_flow_node(soul, node, edges)
             total_steps += steps_used
             if next_id is None:

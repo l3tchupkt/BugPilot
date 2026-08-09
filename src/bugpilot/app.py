@@ -130,6 +130,7 @@ class BugPilotCLI:
         ui_mode: str = "shell",
         # Extensions
         agent_file: Path | None = None,
+        persona: str | None = None,
         mcp_configs: list[MCPConfig] | list[dict[str, Any]] | None = None,
         skills_dirs: list[KaosPath] | None = None,
         # Loop control
@@ -314,7 +315,18 @@ class BugPilotCLI:
         except Exception:
             logger.debug("Failed to refresh plugin configs, skipping")
 
-        if agent_file is None:
+        if persona is not None:
+            from bugpilot.personas.registry import PersonaRegistry
+            PersonaRegistry.load_builtins()
+            try:
+                persona_obj = PersonaRegistry.get(persona)
+                agent_file = None  # Override agent_file if persona is explicitly passed
+            except KeyError as e:
+                raise ValueError(f"Persona '{persona}' not found in registry") from e
+        else:
+            persona_obj = None
+
+        if agent_file is None and persona_obj is None:
             agent_file = DEFAULT_AGENT_FILE
         if startup_progress is not None:
             startup_progress("Loading agent...")
@@ -323,6 +335,7 @@ class BugPilotCLI:
         agent = await load_agent(
             agent_file,
             runtime,
+            persona=persona_obj,
             mcp_configs=mcp_configs or [],
             start_mcp_loading=not defer_mcp_loading,
         )
@@ -742,35 +755,6 @@ class BugPilotCLI:
                     level=WelcomeInfoItem.Level.INFO,
                 )
             )
-            model_name = self._soul.model_name
-            if model_name not in (
-                "bugpilot-for-coding",
-                "bugpilot-code",
-            ) and not model_name.startswith("bugpilot-k2"):
-                welcome_info.append(
-                    WelcomeInfoItem(
-                        name="Tip",
-                        value="send /login to use BugPilot for Coding",
-                        level=WelcomeInfoItem.Level.WARN,
-                    )
-                )
-        from bugpilot.ui.shell.migration_nudge import (
-            already_installed_text,
-            bugpilot_code_installed,
-            welcome_card_text,
-        )
-
-        welcome_info.append(
-            WelcomeInfoItem(
-                name="\n* Update",
-                value=(
-                    already_installed_text(sys.platform)
-                    if bugpilot_code_installed()
-                    else welcome_card_text()
-                ),
-                level=WelcomeInfoItem.Level.WARN,
-            )
-        )
         async with self._env():
             shell = Shell(self._soul, welcome_info=welcome_info, prefill_text=prefill_text)
             return await shell.run(command)

@@ -42,7 +42,7 @@ def _make_spec(runtime, *, agent_id="atest001", resumed=False, prompt="test prom
 
 
 def _patch_load_agent(monkeypatch, *, system_prompt="sys"):
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt=system_prompt,

@@ -172,15 +172,6 @@ async def btw(app: Shell, args: str):
 
 
 @registry.command
-@shell_mode_registry.command
-def version(app: Shell, args: str):
-    """Show version information"""
-    from bugpilot.constant import VERSION
-
-    console.print(f"bugpilot, version {VERSION}")
-
-
-@registry.command
 async def model(app: Shell, args: str):
     """Switch LLM model or thinking mode"""
     from bugpilot.llm import derive_model_capabilities
@@ -405,52 +396,6 @@ async def editor(app: Shell, args: str):
         console.print(f"[green]Editor set to auto-detect (resolved: {label})[/green]")
 
 
-@registry.command(aliases=["release-notes"])
-@shell_mode_registry.command(aliases=["release-notes"])
-def changelog(app: Shell, args: str):
-    """Show release notes"""
-    from rich.console import Group, RenderableType
-    from rich.text import Text
-
-    from bugpilot.utils.rich.columns import BulletColumns
-
-    renderables: list[RenderableType] = []
-    for ver, entry in CHANGELOG.items():
-        title = f"[bold]{ver}[/bold]"
-        if entry.description:
-            title += f": {entry.description}"
-
-        lines: list[RenderableType] = [Text.from_markup(title)]
-        for item in entry.entries:
-            if item.lower().startswith("lib:"):
-                continue
-            lines.append(
-                BulletColumns(
-                    Text.from_markup(f"[grey50]{item}[/grey50]"),
-                    bullet_style="grey50",
-                ),
-            )
-        renderables.append(BulletColumns(Group(*lines)))
-
-    with console.pager(styles=True):
-        console.print(Group(*renderables))
-
-
-@registry.command
-@shell_mode_registry.command
-async def feedback(app: Shell, args: str):
-    """Submit feedback to make BugPilot better"""
-    import webbrowser
-
-    ISSUE_URL = "https://github.com/l3tchupkt/bugpilot/issues"
-
-    def _fallback_to_issues():
-        if not webbrowser.open(ISSUE_URL):
-            console.print(f"Please submit feedback at [underline]{ISSUE_URL}[/underline].")
-
-    _fallback_to_issues()
-
-
 async def _do_new_session(app: Shell, args: str) -> None:
     """Shared implementation for /new and /clear."""
     soul = ensure_bugpilot_soul(app)
@@ -480,31 +425,6 @@ async def clear(app: Shell, args: str) -> None:
 async def new(app: Shell, args: str) -> None:
     """Start a new session"""
     await _do_new_session(app, args)
-
-
-@registry.command(name="title", aliases=["rename"])
-async def title(app: Shell, args: str):
-    """Set or show the session title"""
-    soul = ensure_bugpilot_soul(app)
-    if soul is None:
-        return
-    session = soul.runtime.session
-    if not args.strip():
-        console.print(f"Session title: [bold]{session.title}[/bold]")
-        return
-
-    from bugpilot.session_state import load_session_state, save_session_state
-
-    new_title = args.strip()[:200]
-    # Read-modify-write: load fresh state to avoid overwriting concurrent web changes
-    fresh = load_session_state(session.dir)
-    fresh.custom_title = new_title
-    fresh.title_generated = True
-    save_session_state(fresh, session.dir)
-    session.state.custom_title = new_title
-    session.state.title_generated = True
-    session.title = new_title
-    console.print(f"[green]Session title set to: {new_title}[/green]")
 
 
 @registry.command(name="sessions", aliases=["resume"])
@@ -562,9 +482,10 @@ async def task(app: Shell, args: str):
 
 @registry.command
 @shell_mode_registry.command
-def theme(app: Shell, args: str):
-    """Switch terminal color theme (dark/light)"""
+async def theme(app: Shell, args: str):
+    """Switch terminal color theme"""
     from bugpilot.ui.theme import get_active_theme
+    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
 
     soul = ensure_bugpilot_soul(app)
     if soul is None:
@@ -572,14 +493,24 @@ def theme(app: Shell, args: str):
 
     current = get_active_theme()
     arg = args.strip().lower()
+    
+    available_themes = ["dark", "light", "hacker", "cyberpunk", "retro"]
 
     if not arg:
-        console.print(f"Current theme: [bold]{current}[/bold]")
-        console.print("[grey50]Usage: /theme dark | /theme light[/grey50]")
+        try:
+            arg = await ChoiceInput(
+                message="Select a theme (↑↓ navigate, Enter select, Ctrl+C cancel):",
+                options=[(t, f"{t}{' (current)' if t == current else ''}") for t in available_themes],
+                default=current,
+            ).prompt_async()
+        except (EOFError, KeyboardInterrupt):
+            return
+
+    if not arg:
         return
 
-    if arg not in ("dark", "light"):
-        console.print(f"[red]Unknown theme: {arg}. Use 'dark' or 'light'.[/red]")
+    if arg not in available_themes:
+        console.print(f"[red]Unknown theme: {arg}. Available: {', '.join(available_themes)}[/red]")
         return
 
     if arg == current:
@@ -603,29 +534,8 @@ def theme(app: Shell, args: str):
         console.print(f"[red]Failed to save config: {exc}[/red]")
         return
 
-    #     track("theme_switch", theme=arg)
     console.print(f"[green]Switched to {arg} theme. Reloading...[/green]")
     raise Reload(session_id=soul.runtime.session.id)
-
-
-@registry.command
-def web(app: Shell, args: str):
-    """Open BugPilot Web UI in browser"""
-
-    #     track("web_opened")
-    soul = ensure_bugpilot_soul(app)
-    session_id = soul.runtime.session.id if soul else None
-    raise SwitchToWeb(session_id=session_id)
-
-
-@registry.command
-def vis(app: Shell, args: str):
-    """Open BugPilot Agent Tracing Visualizer in browser"""
-
-    #     track("vis_opened")
-    soul = ensure_bugpilot_soul(app)
-    session_id = soul.runtime.session.id if soul else None
-    raise SwitchToVis(session_id=session_id)
 
 
 @registry.command
@@ -837,3 +747,154 @@ from . import (  # noqa: E402
     update,  # noqa: F401 # type: ignore[reportUnusedImport]
     usage,  # noqa: F401 # type: ignore[reportUnusedImport]
 )
+
+
+@registry.command
+@shell_mode_registry.command
+async def agent(app: Shell, args: str):
+    """Configure the persona of the current agent completely"""
+    from bugpilot.ui.shell.console import console
+    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
+    from bugpilot.personas.registry import PersonaRegistry
+    from typing import cast
+    
+    soul = ensure_bugpilot_soul(app)
+    if soul is None:
+        return
+    
+    new_persona = args.strip()
+    if not new_persona:
+        PersonaRegistry.load_builtins()
+        all_personas = PersonaRegistry.list_all()
+        options = [(p.id, f"{p.name} - {p.description}") for p in all_personas]
+        if not options:
+            console.print("[yellow]No personas available.[/yellow]")
+            return
+            
+        try:
+            selected = cast(
+                str | None,
+                await ChoiceInput(
+                    message="Select a persona (↑↓ navigate, Enter select, Ctrl+C cancel):",
+                    options=options,
+                    default=options[0][0],
+                ).prompt_async(),
+            )
+        except (EOFError, KeyboardInterrupt):
+            return
+            
+        if not selected:
+            return
+            
+        persona = PersonaRegistry.get(selected)
+        new_persona = persona.system_prompt
+
+    if new_persona:
+        await soul.context.write_system_prompt(new_persona)
+        console.print("[green]Agent persona completely updated.[/green]")
+
+@registry.command
+@shell_mode_registry.command
+async def provider(app: Shell, args: str):
+    """Change the current LLM provider"""
+    from bugpilot.ui.shell.console import console
+    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
+    from typing import cast
+    from bugpilot.config import load_config, save_config, ConfigError
+    from bugpilot.llm import ActiveProviderConfig
+    
+    soul = ensure_bugpilot_soul(app)
+    if soul is None:
+        return
+        
+    config = soul.runtime.config
+    providers = list(config.providers.keys())
+    
+    if not providers:
+        console.print("[yellow]No providers configured.[/yellow]")
+        return
+        
+    options = [(p, p) for p in providers]
+    current = config.provider.name if config.provider else providers[0]
+    
+    try:
+        selected = cast(
+            str | None,
+            await ChoiceInput(
+                message="Select a provider (↑↓ navigate, Enter select, Ctrl+C cancel):",
+                options=options,
+                default=current,
+            ).prompt_async(),
+        )
+    except (EOFError, KeyboardInterrupt):
+        return
+        
+    if not selected:
+        return
+        
+    config_file = config.source_file
+    if config_file is None:
+        console.print("[yellow]Cannot save provider without a config file.[/yellow]")
+        return
+        
+    try:
+        config_for_save = load_config(config_file)
+        # Try to find a default model for this provider if possible, or leave it blank
+        model_name = ""
+        for m in config_for_save.models.values():
+            if m.provider == selected:
+                model_name = m.model
+                break
+        config_for_save.provider = ActiveProviderConfig(name=selected, model=model_name)
+        save_config(config_for_save, config_file)
+    except (ConfigError, OSError) as exc:
+        console.print(f"[red]Failed to save config: {exc}[/red]")
+        return
+
+    console.print(f"[green]Switched provider to {selected}. Reloading...[/green]")
+    raise Reload(session_id=soul.runtime.session.id)
+
+@registry.command
+@shell_mode_registry.command
+async def skills(app: Shell, args: str):
+    """Select and execute a skill"""
+    from bugpilot.ui.shell.console import console
+    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
+    from bugpilot.ui.shell.slash import registry as shell_registry
+    from bugpilot.soul.slash import registry as soul_registry
+    from typing import cast
+    
+    skill_cmds = []
+    for cmd in shell_registry._commands.keys():
+        if cmd.startswith("skill:"):
+            skill_cmds.append(cmd)
+    for cmd in soul_registry._commands.keys():
+        if cmd.startswith("skill:") and cmd not in skill_cmds:
+            skill_cmds.append(cmd)
+            
+    if not skill_cmds:
+        console.print("[yellow]No skills available.[/yellow]")
+        return
+        
+    options = [(cmd, cmd) for cmd in sorted(skill_cmds)]
+    
+    try:
+        selected = cast(
+            str | None,
+            await ChoiceInput(
+                message="Select a skill (↑↓ navigate, Enter select, Ctrl+C cancel):",
+                options=options,
+                default=options[0][0],
+            ).prompt_async(),
+        )
+    except (EOFError, KeyboardInterrupt):
+        return
+        
+    if not selected:
+        return
+        
+    console.print(f"[green]Selected skill: {selected}. To run it, type /{selected}[/green]")
+    # Alternatively, we could execute it directly by looking it up in registry.
+    # But prompting the user to type it is safer.
+
+

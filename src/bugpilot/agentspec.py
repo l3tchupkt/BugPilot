@@ -63,7 +63,7 @@ class ResolvedAgentSpec:
     """Resolved agent specification."""
 
     name: str
-    system_prompt_path: Path
+    system_prompt: str
     system_prompt_args: dict[str, str]
     model: str | None
     when_to_use: str
@@ -71,6 +71,28 @@ class ResolvedAgentSpec:
     allowed_tools: list[str] | None
     exclude_tools: list[str]
     subagents: dict[str, SubagentSpec]
+
+    @classmethod
+    def from_persona(cls, persona: "Persona") -> "ResolvedAgentSpec":
+        """Convert a Persona into a ResolvedAgentSpec."""
+        subagents = {}
+        for sub_id in persona.allowed_subagents:
+            subagents[sub_id] = SubagentSpec(
+                path=Path(f"persona:{sub_id}"),
+                description=f"Subagent of type {sub_id}"
+            )
+            
+        return cls(
+            name=persona.name,
+            system_prompt=persona.system_prompt,
+            system_prompt_args={},
+            model=persona.default_model,
+            when_to_use=persona.description,
+            tools=list(persona.tools),
+            allowed_tools=list(persona.tools),
+            exclude_tools=[],
+            subagents=subagents,
+        )
 
 
 def load_agent_spec(agent_file: Path) -> ResolvedAgentSpec:
@@ -97,7 +119,7 @@ def load_agent_spec(agent_file: Path) -> ResolvedAgentSpec:
         agent_spec.subagents = {}
     return ResolvedAgentSpec(
         name=agent_spec.name,
-        system_prompt_path=agent_spec.system_prompt_path,
+        system_prompt=agent_spec.system_prompt_path.read_text(encoding="utf-8").strip(),
         system_prompt_args=agent_spec.system_prompt_args,
         model=agent_spec.model,
         when_to_use=agent_spec.when_to_use or "",

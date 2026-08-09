@@ -12,7 +12,7 @@ from typing import Literal
 from prompt_toolkit.styles import Style as PTKStyle
 from rich.style import Style as RichStyle
 
-type ThemeName = Literal["dark", "light"]
+type ThemeName = Literal["dark", "light", "hacker", "cyberpunk", "retro"]
 
 
 # ---------------------------------------------------------------------------
@@ -41,6 +41,27 @@ _DIFF_LIGHT = DiffColors(
     add_hl=RichStyle(bgcolor="#aff5b4"),
     del_hl=RichStyle(bgcolor="#ffc1c0"),
 )
+_DIFF_HACKER = DiffColors(
+    add_bg=RichStyle(bgcolor="#003300"),
+    del_bg=RichStyle(bgcolor="#330000"),
+    add_hl=RichStyle(bgcolor="#004400"),
+    del_hl=RichStyle(bgcolor="#440000"),
+)
+
+_DIFF_CYBERPUNK = DiffColors(
+    add_bg=RichStyle(bgcolor="#2c003e"),
+    del_bg=RichStyle(bgcolor="#3d0014"),
+    add_hl=RichStyle(bgcolor="#470066"),
+    del_hl=RichStyle(bgcolor="#660022"),
+)
+
+_DIFF_RETRO = DiffColors(
+    add_bg=RichStyle(bgcolor="#332211"),
+    del_bg=RichStyle(bgcolor="#331111"),
+    add_hl=RichStyle(bgcolor="#443311"),
+    del_hl=RichStyle(bgcolor="#441111"),
+)
+
 
 
 # ---------------------------------------------------------------------------
@@ -96,6 +117,69 @@ def _task_browser_style_light() -> PTKStyle:
     )
 
 
+
+def _task_browser_style_hacker() -> PTKStyle:
+    return PTKStyle.from_dict({
+        "header": "bg:#001100 #00ff00",
+        "header.title": "bg:#001100 #00ff00 bold",
+        "header.meta": "bg:#001100 #008800",
+        "status.running": "bg:#001100 #00ff00 bold",
+        "status.success": "bg:#001100 #00cc00",
+        "status.warning": "bg:#001100 #cccc00",
+        "status.error": "bg:#001100 #ff0000",
+        "status.info": "bg:#001100 #00cccc",
+        "task-list": "bg:#000500 #00aa00",
+        "task-list.checked": "bg:#002200 #00ff00 bold",
+        "frame.border": "#00ff00",
+        "frame.label": "bg:#000500 #00ff00 bold",
+        "footer": "bg:#000500 #00cc00",
+        "footer.key": "bg:#000500 #00ff00 bold",
+        "footer.text": "bg:#000500 #00cc00",
+        "footer.warning": "bg:#220000 #ff0000 bold",
+        "footer.meta": "bg:#000500 #008800",
+    })
+
+def _task_browser_style_cyberpunk() -> PTKStyle:
+    return PTKStyle.from_dict({
+        "header": "bg:#1a0b2e #ff00ff",
+        "header.title": "bg:#1a0b2e #00ffff bold",
+        "header.meta": "bg:#1a0b2e #ff00aa",
+        "status.running": "bg:#1a0b2e #00ffcc bold",
+        "status.success": "bg:#1a0b2e #00ffcc",
+        "status.warning": "bg:#1a0b2e #ffcc00",
+        "status.error": "bg:#1a0b2e #ff003c",
+        "status.info": "bg:#1a0b2e #00ccff",
+        "task-list": "bg:#0d0514 #cc00ff",
+        "task-list.checked": "bg:#2e0f4c #00ffff bold",
+        "frame.border": "#ff00ff",
+        "frame.label": "bg:#0d0514 #00ffff bold",
+        "footer": "bg:#0d0514 #ff00aa",
+        "footer.key": "bg:#0d0514 #00ffff bold",
+        "footer.text": "bg:#0d0514 #ff00aa",
+        "footer.warning": "bg:#4c001a #ff003c bold",
+        "footer.meta": "bg:#0d0514 #8800aa",
+    })
+
+def _task_browser_style_retro() -> PTKStyle:
+    return PTKStyle.from_dict({
+        "header": "bg:#221100 #ffaa00",
+        "header.title": "bg:#221100 #ffcc00 bold",
+        "header.meta": "bg:#221100 #cc8800",
+        "status.running": "bg:#221100 #aaff00 bold",
+        "status.success": "bg:#221100 #88cc00",
+        "status.warning": "bg:#221100 #ffaa00",
+        "status.error": "bg:#221100 #ff4400",
+        "status.info": "bg:#221100 #00ccff",
+        "task-list": "bg:#110800 #cc9900",
+        "task-list.checked": "bg:#331a00 #ffcc00 bold",
+        "frame.border": "#ff9900",
+        "frame.label": "bg:#110800 #ffcc00 bold",
+        "footer": "bg:#110800 #ccaa00",
+        "footer.key": "bg:#110800 #ffcc00 bold",
+        "footer.text": "bg:#110800 #ccaa00",
+        "footer.warning": "bg:#441100 #ff4400 bold",
+        "footer.meta": "bg:#110800 #aa6600",
+    })
 # ---------------------------------------------------------------------------
 # Prompt / completion menu colors (used by ui/shell/prompt.py)
 # ---------------------------------------------------------------------------
@@ -130,6 +214,48 @@ _PROMPT_STYLE_LIGHT = {
 }
 
 
+
+_PROMPT_STYLE_HACKER = {
+    "bottom-toolbar": "noreverse",
+    "running-prompt-placeholder": "fg:#008800 italic",
+    "running-prompt-separator": "fg:#004400",
+    "slash-completion-menu": "bg:#001100",
+    "slash-completion-menu.separator": "fg:#004400",
+    "slash-completion-menu.marker": "fg:#006600",
+    "slash-completion-menu.marker.current": "fg:#00ff00",
+    "slash-completion-menu.command": "fg:#00aa00",
+    "slash-completion-menu.meta": "fg:#008800",
+    "slash-completion-menu.command.current": "fg:#00ff00 bold",
+    "slash-completion-menu.meta.current": "fg:#00cc00",
+}
+
+_PROMPT_STYLE_CYBERPUNK = {
+    "bottom-toolbar": "noreverse",
+    "running-prompt-placeholder": "fg:#aa00aa italic",
+    "running-prompt-separator": "fg:#660066",
+    "slash-completion-menu": "bg:#1a0b2e",
+    "slash-completion-menu.separator": "fg:#660066",
+    "slash-completion-menu.marker": "fg:#aa00aa",
+    "slash-completion-menu.marker.current": "fg:#00ffff",
+    "slash-completion-menu.command": "fg:#cc00ff",
+    "slash-completion-menu.meta": "fg:#ff00aa",
+    "slash-completion-menu.command.current": "fg:#00ffff bold",
+    "slash-completion-menu.meta.current": "fg:#00ccff",
+}
+
+_PROMPT_STYLE_RETRO = {
+    "bottom-toolbar": "noreverse",
+    "running-prompt-placeholder": "fg:#cc8800 italic",
+    "running-prompt-separator": "fg:#884400",
+    "slash-completion-menu": "bg:#221100",
+    "slash-completion-menu.separator": "fg:#884400",
+    "slash-completion-menu.marker": "fg:#cc8800",
+    "slash-completion-menu.marker.current": "fg:#ffcc00",
+    "slash-completion-menu.command": "fg:#ffaa00",
+    "slash-completion-menu.meta": "fg:#cc8800",
+    "slash-completion-menu.command.current": "fg:#ffcc00 bold",
+    "slash-completion-menu.meta.current": "fg:#ffaa00",
+}
 # ---------------------------------------------------------------------------
 # Bottom toolbar fragment colors (used by ui/shell/prompt.py)
 # ---------------------------------------------------------------------------
@@ -170,6 +296,39 @@ _TOOLBAR_LIGHT = ToolbarColors(
 )
 
 
+
+_TOOLBAR_HACKER = ToolbarColors(
+    separator="fg:#004400",
+    yolo_label="bold fg:#ffff00",
+    afk_label="bold fg:#ffaa00",
+    plan_label="bold fg:#00ffff",
+    plan_prompt="fg:#00ffff",
+    cwd="fg:#00aa00",
+    bg_tasks="fg:#008800",
+    tip="fg:#006600",
+)
+
+_TOOLBAR_CYBERPUNK = ToolbarColors(
+    separator="fg:#660066",
+    yolo_label="bold fg:#ffcc00",
+    afk_label="bold fg:#ff5500",
+    plan_label="bold fg:#00ffff",
+    plan_prompt="fg:#00ffff",
+    cwd="fg:#cc00ff",
+    bg_tasks="fg:#aa00aa",
+    tip="fg:#ff00aa",
+)
+
+_TOOLBAR_RETRO = ToolbarColors(
+    separator="fg:#884400",
+    yolo_label="bold fg:#ff0000",
+    afk_label="bold fg:#ff5500",
+    plan_label="bold fg:#00ccff",
+    plan_prompt="fg:#00ccff",
+    cwd="fg:#cc9900",
+    bg_tasks="fg:#aa8800",
+    tip="fg:#cc8800",
+)
 # ---------------------------------------------------------------------------
 # MCP status prompt colors (used by ui/shell/mcp_status.py)
 # ---------------------------------------------------------------------------
@@ -204,6 +363,33 @@ _MCP_PROMPT_LIGHT = MCPPromptColors(
 )
 
 
+
+_MCP_PROMPT_HACKER = MCPPromptColors(
+    text="fg:#00ff00",
+    detail="fg:#00aa00",
+    connected="fg:#00ff00",
+    connecting="fg:#00ffff",
+    pending="fg:#ffff00",
+    failed="fg:#ff0000",
+)
+
+_MCP_PROMPT_CYBERPUNK = MCPPromptColors(
+    text="fg:#00ffff",
+    detail="fg:#cc00ff",
+    connected="fg:#00ffcc",
+    connecting="fg:#00ccff",
+    pending="fg:#ffcc00",
+    failed="fg:#ff003c",
+)
+
+_MCP_PROMPT_RETRO = MCPPromptColors(
+    text="fg:#ffcc00",
+    detail="fg:#cc9900",
+    connected="fg:#88cc00",
+    connecting="fg:#00ccff",
+    pending="fg:#ffaa00",
+    failed="fg:#ff4400",
+)
 # ---------------------------------------------------------------------------
 # Public API — resolve by theme name
 # ---------------------------------------------------------------------------
@@ -220,22 +406,54 @@ def get_active_theme() -> ThemeName:
     return _active_theme
 
 
+
 def get_diff_colors() -> DiffColors:
-    return _DIFF_LIGHT if _active_theme == "light" else _DIFF_DARK
+    return {
+        "dark": _DIFF_DARK,
+        "light": _DIFF_LIGHT,
+        "hacker": _DIFF_HACKER,
+        "cyberpunk": _DIFF_CYBERPUNK,
+        "retro": _DIFF_RETRO
+    }.get(_active_theme, _DIFF_DARK)
 
 
 def get_task_browser_style() -> PTKStyle:
-    return _task_browser_style_light() if _active_theme == "light" else _task_browser_style_dark()
+    func = {
+        "dark": _task_browser_style_dark,
+        "light": _task_browser_style_light,
+        "hacker": _task_browser_style_hacker,
+        "cyberpunk": _task_browser_style_cyberpunk,
+        "retro": _task_browser_style_retro
+    }.get(_active_theme, _task_browser_style_dark)
+    return func()
 
 
 def get_prompt_style() -> PTKStyle:
-    d = _PROMPT_STYLE_LIGHT if _active_theme == "light" else _PROMPT_STYLE_DARK
+    d = {
+        "dark": _PROMPT_STYLE_DARK,
+        "light": _PROMPT_STYLE_LIGHT,
+        "hacker": _PROMPT_STYLE_HACKER,
+        "cyberpunk": _PROMPT_STYLE_CYBERPUNK,
+        "retro": _PROMPT_STYLE_RETRO
+    }.get(_active_theme, _PROMPT_STYLE_DARK)
     return PTKStyle.from_dict(d)
 
 
 def get_toolbar_colors() -> ToolbarColors:
-    return _TOOLBAR_LIGHT if _active_theme == "light" else _TOOLBAR_DARK
+    return {
+        "dark": _TOOLBAR_DARK,
+        "light": _TOOLBAR_LIGHT,
+        "hacker": _TOOLBAR_HACKER,
+        "cyberpunk": _TOOLBAR_CYBERPUNK,
+        "retro": _TOOLBAR_RETRO
+    }.get(_active_theme, _TOOLBAR_DARK)
 
 
 def get_mcp_prompt_colors() -> MCPPromptColors:
-    return _MCP_PROMPT_LIGHT if _active_theme == "light" else _MCP_PROMPT_DARK
+    return {
+        "dark": _MCP_PROMPT_DARK,
+        "light": _MCP_PROMPT_LIGHT,
+        "hacker": _MCP_PROMPT_HACKER,
+        "cyberpunk": _MCP_PROMPT_CYBERPUNK,
+        "retro": _MCP_PROMPT_RETRO
+    }.get(_active_theme, _MCP_PROMPT_DARK)

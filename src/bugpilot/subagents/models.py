@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Any
 
 type ToolPolicyMode = Literal["inherit", "allowlist"]
 type SubagentStatus = Literal[
@@ -31,6 +31,7 @@ class AgentTypeDefinition:
     default_model: str | None = None
     tool_policy: ToolPolicy = field(default_factory=lambda: ToolPolicy(mode="inherit"))
     supports_background: bool = True
+    persona: Any = None
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

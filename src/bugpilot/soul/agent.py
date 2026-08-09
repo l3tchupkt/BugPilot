@@ -378,14 +378,15 @@ class Agent:
 
 
 async def load_agent(
-    agent_file: Path,
+    agent_file: Path | None,
     runtime: Runtime,
     *,
+    persona: "Persona" | None = None,
     mcp_configs: list[MCPConfig] | list[dict[str, Any]],
     start_mcp_loading: bool = True,
 ) -> Agent:
     """
-    Load agent from specification file.
+    Load agent from specification file or persona.
 
     Raises:
         FileNotFoundError: When the agent file is not found.
@@ -396,14 +397,25 @@ async def load_agent(
         MCPConfigError(BugPilotError, ValueError): When any MCP configuration is invalid.
         MCPRuntimeError(BugPilotError, RuntimeError): When any MCP server cannot be connected.
     """
-    logger.info("Loading agent: {agent_file}", agent_file=agent_file)
-    agent_spec = load_agent_spec(agent_file)
+    from bugpilot.agentspec import load_agent_spec, ResolvedAgentSpec
 
-    system_prompt = _load_system_prompt(
-        agent_spec.system_prompt_path,
-        agent_spec.system_prompt_args,
-        runtime.builtin_args,
-    )
+    if persona is not None:
+        logger.info("Loading agent from persona: {name}", name=persona.name)
+        agent_spec = ResolvedAgentSpec.from_persona(persona)
+        system_prompt = _load_system_prompt(
+            agent_spec.system_prompt,
+            agent_spec.system_prompt_args,
+            runtime.builtin_args,
+        )
+    else:
+        assert agent_file is not None, "agent_file must be provided if persona is None"
+        logger.info("Loading agent: {agent_file}", agent_file=agent_file)
+        agent_spec = load_agent_spec(agent_file)
+        system_prompt = _load_system_prompt(
+            agent_spec.system_prompt,
+            agent_spec.system_prompt_args,
+            runtime.builtin_args,
+        )
 
     # Register built-in subagent types before loading tools because some tools render
     # descriptions from the labor market on initialization.
@@ -411,7 +423,20 @@ async def load_agent(
         logger.debug(
             "Registering builtin subagent type: {subagent_name}", subagent_name=subagent_name
         )
-        builtin_spec = load_agent_spec(subagent_spec.path)
+        
+        # Handle persona subagents vs file subagents
+        if str(subagent_spec.path).startswith("persona:"):
+            from bugpilot.personas.registry import PersonaRegistry
+            PersonaRegistry.load_builtins()
+            try:
+                sub_persona = PersonaRegistry.get(subagent_spec.path.name.replace("persona:", ""))
+                builtin_spec = ResolvedAgentSpec.from_persona(sub_persona)
+            except KeyError:
+                logger.warning("Referenced persona '{name}' not found", name=subagent_spec.path.name)
+                continue
+        else:
+            builtin_spec = load_agent_spec(subagent_spec.path)
+            
         tool_policy = (
             ToolPolicy(mode="allowlist", tools=tuple(builtin_spec.allowed_tools))
             if builtin_spec.allowed_tools is not None
@@ -422,6 +447,7 @@ async def load_agent(
                 name=subagent_name,
                 description=subagent_spec.description,
                 agent_file=subagent_spec.path,
+                persona=sub_persona if str(subagent_spec.path).startswith("persona:") else None,
                 when_to_use=builtin_spec.when_to_use,
                 default_model=builtin_spec.model,
                 tool_policy=tool_policy,
@@ -489,17 +515,17 @@ async def load_agent(
 
 
 def _load_system_prompt(
-    path: Path, args: dict[str, str], builtin_args: BuiltinSystemPromptArgs
+    system_prompt: str, args: dict[str, str], builtin_args: BuiltinSystemPromptArgs
 ) -> str:
-    logger.info("Loading system prompt: {path}", path=path)
-    system_prompt = path.read_text(encoding="utf-8").strip()
+    logger.info("Rendering system prompt")
     logger.debug(
         "Substituting system prompt with builtin args: {builtin_args}, spec args: {spec_args}",
         builtin_args=builtin_args,
         spec_args=args,
     )
+    from jinja2 import BaseLoader
     env = JinjaEnvironment(
-        loader=FileSystemLoader(path.parent),
+        loader=BaseLoader(),
         keep_trailing_newline=True,
         lstrip_blocks=True,
         trim_blocks=True,
