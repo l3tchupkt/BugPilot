@@ -485,7 +485,6 @@ async def task(app: Shell, args: str):
 async def theme(app: Shell, args: str):
     """Switch terminal color theme"""
     from bugpilot.ui.theme import get_active_theme
-    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
     from bugpilot.config import load_config, save_config, ConfigError, get_config_file
 
     current = get_active_theme()
@@ -494,16 +493,9 @@ async def theme(app: Shell, args: str):
     available_themes = ["dark", "light", "hacker", "cyberpunk", "retro"]
 
     if not arg:
-        try:
-            arg = await ChoiceInput(
-                message="Select a theme (↑↓ navigate, Enter select, Ctrl+C cancel):",
-                options=[(t, f"{t}{' (current)' if t == current else ''}") for t in available_themes],
-                default=current,
-            ).prompt_async()
-        except (EOFError, KeyboardInterrupt):
-            return
-
-    if not arg:
+        console.print(f"Current theme: [bold]{current}[/bold]")
+        console.print(f"[grey50]Usage: /theme <theme>[/grey50]")
+        console.print(f"[grey50]Available: {', '.join(available_themes)}[/grey50]")
         return
 
     if arg not in available_themes:
@@ -747,7 +739,6 @@ from . import (  # noqa: E402
 async def agent(app: Shell, args: str):
     """Configure the persona of the current agent completely"""
     from bugpilot.ui.shell.console import console
-    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
     from bugpilot.personas.registry import PersonaRegistry
     from typing import cast
     
@@ -755,32 +746,20 @@ async def agent(app: Shell, args: str):
     if soul is None:
         return
     
-    new_persona = args.strip()
-    if not new_persona:
+    selected = args.strip()
+    if not selected:
         PersonaRegistry.load_builtins()
         all_personas = PersonaRegistry.list_all()
-        options = [(p.id, f"{p.name} - {p.description}") for p in all_personas]
-        if not options:
-            console.print("[yellow]No personas available.[/yellow]")
-            return
+        console.print("[yellow]Usage: /agent <persona_id>[/yellow]")
+        console.print(f"[grey50]Available: {', '.join(p.id for p in all_personas)}[/grey50]")
+        return
             
-        try:
-            selected = cast(
-                str | None,
-                await ChoiceInput(
-                    message="Select a persona (↑↓ navigate, Enter select, Ctrl+C cancel):",
-                    options=options,
-                    default=options[0][0],
-                ).prompt_async(),
-            )
-        except (EOFError, KeyboardInterrupt):
-            return
-            
-        if not selected:
-            return
-            
+    try:
         persona = PersonaRegistry.get(selected)
         new_persona = persona.system_prompt
+    except Exception:
+        # Fallback to direct text if persona not found
+        new_persona = selected
 
     if new_persona:
         await soul.context.write_system_prompt(new_persona)
@@ -791,7 +770,6 @@ async def agent(app: Shell, args: str):
 async def provider(app: Shell, args: str):
     """Change the current LLM provider"""
     from bugpilot.ui.shell.console import console
-    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
     from typing import cast
     from bugpilot.config import load_config, save_config, ConfigError, get_config_file
     from bugpilot.llm import ActiveProviderConfig
@@ -809,22 +787,13 @@ async def provider(app: Shell, args: str):
         console.print("[yellow]No providers configured.[/yellow]")
         return
         
-    options = [(p, p) for p in providers]
+    selected = args.strip()
     current = config.provider.name if config.provider else providers[0]
     
-    try:
-        selected = cast(
-            str | None,
-            await ChoiceInput(
-                message="Select a provider (↑↓ navigate, Enter select, Ctrl+C cancel):",
-                options=options,
-                default=current,
-            ).prompt_async(),
-        )
-    except (EOFError, KeyboardInterrupt):
-        return
-        
     if not selected:
+        console.print(f"Current provider: [bold]{current}[/bold]")
+        console.print(f"[grey50]Usage: /provider <name>[/grey50]")
+        console.print(f"[grey50]Available: {', '.join(providers)}[/grey50]")
         return
         
     try:
@@ -850,7 +819,6 @@ async def provider(app: Shell, args: str):
 async def skills(app: Shell, args: str):
     """Select and execute a skill"""
     from bugpilot.ui.shell.console import console
-    from prompt_toolkit.shortcuts.choice_input import ChoiceInput
     from bugpilot.ui.shell.slash import registry as shell_registry
     from bugpilot.soul.slash import registry as soul_registry
     from typing import cast
@@ -867,21 +835,11 @@ async def skills(app: Shell, args: str):
         console.print("[yellow]No skills available.[/yellow]")
         return
         
-    options = [(cmd, cmd) for cmd in sorted(skill_cmds)]
+    selected = args.strip()
     
-    try:
-        selected = cast(
-            str | None,
-            await ChoiceInput(
-                message="Select a skill (↑↓ navigate, Enter select, Ctrl+C cancel):",
-                options=options,
-                default=options[0][0],
-            ).prompt_async(),
-        )
-    except (EOFError, KeyboardInterrupt):
-        return
-        
     if not selected:
+        console.print(f"[yellow]Usage: /skills <skill_name>[/yellow]")
+        console.print(f"[grey50]Available skills: {', '.join(sorted(skill_cmds))}[/grey50]")
         return
         
     console.print(f"[green]Selected skill: {selected}. To run it, type /{selected}[/green]")

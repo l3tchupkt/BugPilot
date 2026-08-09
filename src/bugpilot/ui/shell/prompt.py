@@ -172,6 +172,58 @@ class SlashCommandCompleter(Completer):
                 )
 
 
+
+class SlashCommandArgumentCompleter(Completer):
+    """Provides completions for arguments of specific slash commands."""
+    
+    def get_completions(
+        self, document: Document, complete_event: CompleteEvent
+    ) -> Iterable[Completion]:
+        text = document.text_before_cursor
+        if not text.startswith("/"):
+            return
+            
+        parts = text.split(" ", 1)
+        if len(parts) < 2:
+            return
+            
+        cmd = parts[0]
+        arg_prefix = parts[1]
+        
+        candidates = []
+        if cmd == "/theme":
+            candidates = ["dark", "light", "hacker", "cyberpunk", "retro"]
+        elif cmd == "/provider":
+            from bugpilot.config import load_config, get_config_file, ConfigError
+            try:
+                config = load_config(get_config_file())
+                candidates = list(config.providers.keys())
+            except ConfigError:
+                pass
+        elif cmd == "/agent":
+            from bugpilot.personas.registry import PersonaRegistry
+            PersonaRegistry.load_builtins()
+            candidates = [p.id for p in PersonaRegistry.list_all()]
+        elif cmd == "/skills":
+            from bugpilot.ui.shell.slash import registry as shell_registry
+            from bugpilot.soul.slash import registry as soul_registry
+            skill_cmds = set()
+            for c in shell_registry._commands.keys():
+                if c.startswith("skill:"):
+                    skill_cmds.add(c)
+            for c in soul_registry._commands.keys():
+                if c.startswith("skill:"):
+                    skill_cmds.add(c)
+            candidates = sorted(list(skill_cmds))
+            
+        for c in candidates:
+            if c.lower().startswith(arg_prefix.lower()):
+                yield Completion(
+                    text=c,
+                    start_position=-len(arg_prefix),
+                    display=c,
+                )
+
 def _truncate_to_width(text: str, width: int) -> str:
     if width <= 0:
         return ""
@@ -1239,13 +1291,17 @@ class CustomPromptSession:
         # Build completers
         self._agent_mode_completer = merge_completers(
             [
+                SlashCommandArgumentCompleter(),
                 SlashCommandCompleter(agent_mode_slash_commands),
                 # TODO(kaos): we need an async KaosFileMentionCompleter
                 LocalFileMentionCompleter(KaosPath.cwd().unsafe_to_local_path()),
             ],
             deduplicate=True,
         )
-        self._shell_mode_completer = SlashCommandCompleter(shell_mode_slash_commands)
+        self._shell_mode_completer = merge_completers([
+            SlashCommandArgumentCompleter(),
+            SlashCommandCompleter(shell_mode_slash_commands)
+        ])
 
         # Build key bindings
         _kb = KeyBindings()
