@@ -79,5 +79,35 @@ class ProviderRegistry:
                 default_headers=provider_config.custom_headers,
             )
 
+        elif provider_type == "openrouter":
+            from bugpilot.providers.openrouter import OpenRouterProvider
+
+            return OpenRouterProvider(
+                model=model_name,
+                api_key=api_key,
+                base_url=provider_config.base_url,
+                default_headers=provider_config.custom_headers,
+            )
+
+        elif provider_type == "together-ai":
+            from bugpilot.providers.together_ai import TogetherAIProvider
+
+            return TogetherAIProvider(
+                model=model_name,
+                api_key=api_key,
+                base_url=provider_config.base_url,
+                default_headers=provider_config.custom_headers,
+            )
+
+        elif provider_type == "ollama":
+            from bugpilot.providers.ollama import OllamaProvider
+
+            return OllamaProvider(
+                model=model_name,
+                api_key=api_key,
+                base_url=provider_config.base_url,
+                default_headers=provider_config.custom_headers,
+            )
+
         else:
             raise ValueError(f"Unsupported provider type: {provider_type}")

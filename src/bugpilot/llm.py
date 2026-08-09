@@ -27,6 +27,9 @@ type ProviderType = Literal[
     "anthropic",
     "gemini",
     "openai-compatible",
+    "openrouter",
+    "together-ai",
+    "ollama",
 ]
 
 type ModelCapability = Literal["image_in", "video_in", "thinking", "always_thinking"]
