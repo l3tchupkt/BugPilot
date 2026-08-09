@@ -18,7 +18,7 @@ def test_load_default_agent_spec():
     spec = load_agent_spec(DEFAULT_AGENT_FILE)
 
     assert spec.name == snapshot("")
-    assert spec.system_prompt_path == DEFAULT_AGENT_FILE.parent / "system.md"
+    assert spec.system_prompt == (DEFAULT_AGENT_FILE.parent / "system.md").read_text(encoding="utf-8").strip()
     assert spec.system_prompt_args == snapshot({"ROLE_ADDITIONAL": ""})
     assert spec.when_to_use == snapshot("")
     assert spec.model == snapshot(None)
@@ -60,7 +60,7 @@ def test_load_default_agent_spec():
     subagent_specs = {name: load_agent_spec(spec.path) for name, spec in spec.subagents.items()}
 
     assert subagent_specs["coder"].name == snapshot("")
-    assert subagent_specs["coder"].system_prompt_path == DEFAULT_AGENT_FILE.parent / "system.md"
+    assert subagent_specs["coder"].system_prompt == (DEFAULT_AGENT_FILE.parent / "system.md").read_text(encoding="utf-8").strip()
     assert subagent_specs["coder"].system_prompt_args == snapshot(
         {
             "ROLE_ADDITIONAL": "You are now running as a subagent. All the `user` messages are sent by the main agent. The main agent cannot see your context, it can only see your last message when you finish the task. You must treat the parent agent as your caller. Do not directly ask the end user questions. If something is unclear, explain the ambiguity in your final summary to the parent agent.\n"  # noqa: E501
@@ -114,7 +114,7 @@ def test_load_default_agent_spec():
     assert sub_subagents == snapshot({})
 
     assert subagent_specs["explore"].name == snapshot("")
-    assert subagent_specs["explore"].system_prompt_path == DEFAULT_AGENT_FILE.parent / "system.md"
+    assert subagent_specs["explore"].system_prompt == (DEFAULT_AGENT_FILE.parent / "system.md").read_text(encoding="utf-8").strip()
     assert subagent_specs["explore"].system_prompt_args == snapshot(
         {
             "ROLE_ADDITIONAL": """\
@@ -191,7 +191,7 @@ You are meant to be a fast agent. Complete the search request efficiently and re
     assert sub_subagents == snapshot({})
 
     assert subagent_specs["plan"].name == snapshot("")
-    assert subagent_specs["plan"].system_prompt_path == DEFAULT_AGENT_FILE.parent / "system.md"
+    assert subagent_specs["plan"].system_prompt == (DEFAULT_AGENT_FILE.parent / "system.md").read_text(encoding="utf-8").strip()
     assert subagent_specs["plan"].system_prompt_args == snapshot(
         {
             "ROLE_ADDITIONAL": """\
@@ -257,7 +257,7 @@ def test_load_agent_spec_basic(agent_file: Path):
     spec = load_agent_spec(agent_file)
 
     assert spec.name == snapshot("Test Agent")
-    assert spec.system_prompt_path == agent_file.parent / "system.md"
+    assert spec.system_prompt == (agent_file.parent / "system.md").read_text(encoding="utf-8").strip()
     assert spec.tools == snapshot(["bugpilot.tools.think:Think"])
 
 
@@ -316,7 +316,7 @@ agent:
         spec = load_agent_spec(extending_agent)
 
         assert spec.name == snapshot("")
-        assert spec.system_prompt_path == DEFAULT_AGENT_FILE.parent / "system.md"
+        assert spec.system_prompt == (DEFAULT_AGENT_FILE.parent / "system.md").read_text(encoding="utf-8").strip()
         assert spec.system_prompt_args == snapshot(
             {"ROLE_ADDITIONAL": "", "CUSTOM_ARG": "custom_value"}
         )

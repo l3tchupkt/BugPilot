@@ -67,7 +67,7 @@ async def test_kill_background_agent_during_soul_run(runtime, monkeypatch):
     # Make run_soul block forever until cancelled.
     soul_started = asyncio.Event()
 
-    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="bg test",
@@ -154,7 +154,7 @@ async def test_kill_keeps_strong_reference_until_runner_finishes(runtime, monkey
 
     soul_started = asyncio.Event()
 
-    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="gc race test",
@@ -261,7 +261,7 @@ async def test_kill_before_runner_starts_cleans_up_live_tasks(runtime, monkeypat
 
     runner_body_started = asyncio.Event()
 
-    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True, **kwargs):
         # Reaching this proves the runner body executed — we want to assert
         # the opposite, so flip the flag if we ever get here.
         runner_body_started.set()
@@ -346,7 +346,7 @@ async def test_kill_cancels_pending_approvals(runtime, monkeypatch):
 
     approval_blocked = asyncio.Event()
 
-    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="approval test",
@@ -418,7 +418,7 @@ async def test_kill_completed_task_is_noop(runtime, monkeypatch):
 
     long = "x" * 250
 
-    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, rt, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="noop test",

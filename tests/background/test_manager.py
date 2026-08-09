@@ -309,7 +309,7 @@ async def test_background_agent_resume_restores_system_prompt_from_context(runti
 
     seen_prompts: list[str] = []
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="new system prompt",
@@ -372,7 +372,7 @@ async def test_background_agent_runner_records_wire_file_and_stage_markers(runti
 
     seen_wire_paths: list[str] = []
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -437,7 +437,7 @@ async def test_background_agent_runner_reports_rejected_tool_calls_clearly(runti
         ),
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",

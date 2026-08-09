@@ -44,6 +44,13 @@ def expect_snapshot(value: T, expected: Snapshot[T]) -> None:
         pytest.fail(f"Snapshot mismatch: {value!r} != {expected!r}")
 
 
+class MockChunk:
+    def __init__(self, part):
+        self.usage = None
+        self.text_delta = getattr(part, "text", None) if getattr(part, "type", "") == "text" else None
+        self.reasoning_delta = getattr(part, "think", None) if getattr(part, "type", "") == "think" else None
+        self.tool_call = part if hasattr(part, "function") else None
+
 class SequenceStreamedMessage:
     def __init__(self, parts: Sequence[StreamedMessagePart]) -> None:
         self._iter = self._to_stream(list(parts))
@@ -58,7 +65,7 @@ class SequenceStreamedMessage:
         self, parts: list[StreamedMessagePart]
     ) -> AsyncIterator[StreamedMessagePart]:
         for part in parts:
-            yield part
+            yield MockChunk(part)
 
     @property
     def id(self) -> str | None:
@@ -88,11 +95,10 @@ class SequenceChatProvider:
     def thinking_effort(self) -> ThinkingEffort | None:
         return None
 
-    async def generate(
+    def stream(
         self,
-        system_prompt: str,
-        tools: Sequence[Tool],
-        history: Sequence[Message],
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
     ) -> SequenceStreamedMessage:
         index = min(self._index, len(self._sequences) - 1)
         self._index += 1
@@ -126,7 +132,6 @@ def _runtime_with_llm(runtime: Runtime, llm: LLM) -> Runtime:
         notifications=runtime.notifications,
         background_tasks=runtime.background_tasks,
         skills=runtime.skills,
-        oauth=runtime.oauth,
         additional_dirs=runtime.additional_dirs,
         skills_dirs=runtime.skills_dirs,
         role=runtime.role,

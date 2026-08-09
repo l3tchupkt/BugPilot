@@ -39,7 +39,7 @@ async def test_agent_tool_creates_instance_and_returns_agent_id(agent_tool, runt
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -84,7 +84,7 @@ async def test_agent_tool_foreground_passes_subagent_wire_file(agent_tool, runti
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -128,7 +128,7 @@ async def test_agent_tool_resume_uses_actual_type(agent_tool, runtime, monkeypat
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -210,7 +210,7 @@ async def test_agent_tool_marks_instance_failed_when_summary_continuation_hits_m
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -265,7 +265,7 @@ async def test_agent_tool_marks_instance_killed_when_summary_continuation_is_can
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -319,7 +319,7 @@ async def test_agent_tool_marks_instance_failed_when_initial_run_raises(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -366,7 +366,7 @@ async def test_agent_tool_marks_instance_killed_when_initial_run_is_cancelled(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -411,7 +411,7 @@ async def test_agent_tool_returns_rejected_by_user_when_tool_request_is_rejected
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -928,7 +928,7 @@ async def test_agent_tool_background_agent_waits_for_approval(agent_tool, runtim
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1018,7 +1018,7 @@ async def test_task_stop_kills_background_agent_waiting_for_approval(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1092,7 +1092,7 @@ async def test_foreground_agent_explicit_timeout_returns_tool_error(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1144,7 +1144,7 @@ async def test_foreground_agent_internal_timeout_with_explicit_deadline(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1195,7 +1195,7 @@ async def test_agent_tool_returns_informative_error_when_chat_provider_fails(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1247,7 +1247,7 @@ async def test_agent_tool_returns_informative_error_when_api_status_error(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1296,7 +1296,7 @@ async def test_agent_tool_returns_error_when_final_response_is_none(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1347,7 +1347,7 @@ async def test_agent_tool_marks_instance_killed_when_run_cancelled(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1400,7 +1400,7 @@ async def test_agent_tool_returns_informative_error_when_api_connection_error(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1454,7 +1454,7 @@ async def test_background_agent_marks_failed_when_final_response_is_none(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1512,7 +1512,7 @@ async def test_foreground_runner_hook_trigger_exception_marks_instance_failed(
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",
@@ -1570,7 +1570,7 @@ async def test_background_agent_marks_killed_when_run_cancelled(agent_tool, runt
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",

@@ -51,7 +51,7 @@ def _patch_soul(monkeypatch, *, responses: list[str]) -> list[str]:
     seen_prompts: list[str] = []
     call_idx = 0
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",

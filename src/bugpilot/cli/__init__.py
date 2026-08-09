@@ -299,6 +299,13 @@ def bugpilot(
             help="Custom agent specification file. Default: builtin default agent.",
         ),
     ] = None,
+    persona: Annotated[
+        str | None,
+        typer.Option(
+            "--persona",
+            help="The ID of a registered persona to run (e.g. 'pentester').",
+        ),
+    ] = None,
     mcp_config_file: Annotated[
         list[Path] | None,
         typer.Option(
@@ -627,6 +634,7 @@ def bugpilot(
                 plan_mode=plan,
                 resumed=resumed,
                 agent_file=agent_file,
+                persona=persona,
                 mcp_configs=mcp_configs,
                 skills_dirs=skills_dirs,
                 max_steps_per_turn=max_steps_per_turn,

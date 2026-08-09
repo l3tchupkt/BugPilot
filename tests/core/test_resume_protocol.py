@@ -25,7 +25,7 @@ async def test_resume_protocol_surfaces_actual_subagent_type(agent_tool, runtime
         )
     )
 
-    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True):
+    async def fake_load_agent(agent_file, runtime, *, mcp_configs, start_mcp_loading=True, **kwargs):
         return SoulAgent(
             name=agent_file.stem,
             system_prompt="Subagent system prompt",

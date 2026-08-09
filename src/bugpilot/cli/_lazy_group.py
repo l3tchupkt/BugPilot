@@ -18,12 +18,14 @@ class LazySubcommandGroup(typer.core.TyperGroup):
         "export": ("bugpilot.cli.export", "cli", "Export session data."),
         "mcp": ("bugpilot.cli.mcp", "cli", "Manage MCP server configurations."),
         "plugin": ("bugpilot.cli.plugin", "cli", "Manage plugins."),
+        "personas": ("bugpilot.cli.personas", "cli", "Manage and list Personas."),
     }
     lazy_command_order: tuple[str, ...] = (
         "info",
         "export",
         "mcp",
         "plugin",
+        "personas",
     )
 
     # Click options that support optional values.  When the flag is present
