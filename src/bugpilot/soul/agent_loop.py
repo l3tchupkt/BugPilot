@@ -1176,7 +1176,7 @@ class AgentLoop:
                 except asyncio.CancelledError:
                     pass
 
-            stream = await provider.stream(
+            stream = provider.stream(
                 messages=messages,
                 tools=self._agent.toolset.tools,
             )

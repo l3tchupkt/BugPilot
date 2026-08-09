@@ -23,7 +23,7 @@ from bugpilot.session import Session
 from bugpilot.share import get_share_dir
 from bugpilot.soul import RunCancelled, run_soul
 from bugpilot.soul.agent import Runtime, load_agent
-from bugpilot.soul.agent_loop import Agent
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.soul.context import Context
 from bugpilot.soul.toolset import Toolset
 from bugpilot.utils.aioqueue import QueueShutDown
@@ -261,34 +261,13 @@ class BugPilotCLI:
             from bugpilot.providers.openai_compatible import OpenAICompatibleProvider
             provider_instance = OpenAICompatibleProvider(
                 model="",
-                api_key=None,
+                api_key="missing_api_key",
                 base_url="",
             )
         else:
-            try:
-                provider_instance = ProviderRegistry.create(
-                    config, model_name or config.default_model or "", session_id=session.id
-                )
-            except Exception as e:
-                if "api_key" in str(e).lower() and ui_mode == "shell":
-                    import rich.prompt
-                    import rich.console
-                    from bugpilot.config import save_config
-                    
-                    console = rich.console.Console(stderr=True)
-                    provider_key = model.provider
-                    console.print(f"\n[yellow]API key for '{provider_key}' is missing.[/yellow]")
-                    api_key_input = rich.prompt.Prompt.ask("Please enter your API key (input is hidden)", password=True)
-                    if api_key_input:
-                        provider.api_key = SecretStr(api_key_input)
-                        save_config(config, config.source_file)
-                        provider_instance = ProviderRegistry.create(
-                            config, model_name or config.default_model or "", session_id=session.id
-                        )
-                    else:
-                        raise e
-                else:
-                    raise e
+            provider_instance = ProviderRegistry.create(
+                config, model_name or config.default_model or "", session_id=session.id
+            )
         llm = LLM(
             provider=provider_instance,
             max_context_size=model.max_context_size,
@@ -359,7 +338,7 @@ class BugPilotCLI:
         else:
             await context.write_system_prompt(agent.system_prompt)
 
-        soul = Agent(agent, context=context)
+        soul = AgentLoop(agent, context=context)
 
         # Activate plan mode if requested (for new sessions or --plan flag)
         if plan_mode and not soul.plan_mode:
