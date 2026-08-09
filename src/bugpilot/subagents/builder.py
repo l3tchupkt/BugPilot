@@ -17,7 +17,7 @@ class SubagentBuilder:
         launch_spec: AgentLaunchSpec,
     ) -> Agent:
         effective_model = self.resolve_effective_model(type_def=type_def, launch_spec=launch_spec)
-        llm_override = clone_llm_with_model_alias(
+        llm_override = await clone_llm_with_model_alias(
             self._root_runtime.llm,
             self._root_runtime.config,
             effective_model,

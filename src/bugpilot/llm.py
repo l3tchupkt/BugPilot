@@ -30,6 +30,7 @@ type ProviderType = Literal[
     "openrouter",
     "together-ai",
     "ollama",
+    "nvidia",
 ]
 
 type ModelCapability = Literal["image_in", "video_in", "thinking", "always_thinking"]
@@ -149,7 +150,7 @@ def augment_provider_with_env_vars(provider: ConfigLLMProvider, model: LLMModel)
     return applied
 
 
-def clone_llm_with_model_alias(
+async def clone_llm_with_model_alias(
     llm: LLM | None,
     config: Config,
     model_alias: str | None,
@@ -158,8 +159,24 @@ def clone_llm_with_model_alias(
 ) -> LLM | None:
     if model_alias is None:
         return llm
+        
     if model_alias not in config.models:
-        raise KeyError(f"Unknown model alias: {model_alias}")
+        if "/" in model_alias:
+            provider_name, model_name = model_alias.split("/", 1)
+            if provider_name in config.providers:
+                provider_config = config.providers[provider_name]
+                max_context_size = await _fetch_dynamic_model_context(provider_config, model_name)
+                
+                from bugpilot.config import LLMModel
+                config.models[model_alias] = LLMModel(
+                    provider=provider_name,
+                    model=model_name,
+                    max_context_size=max_context_size
+                )
+            else:
+                raise KeyError(f"Unknown model alias: {model_alias}")
+        else:
+            raise KeyError(f"Unknown model alias: {model_alias}")
 
     from bugpilot.providers.registry import ProviderRegistry
 
@@ -172,6 +189,49 @@ def clone_llm_with_model_alias(
         capabilities=derive_model_capabilities(model),
         model_config=model,
     )
+
+async def _fetch_dynamic_model_context(provider_config: Any, model_name: str) -> int:
+    """Fetch model context window from provider API, defaulting to 128k if unavailable."""
+    default_context = 128000
+    base_url = provider_config.base_url
+    if not base_url:
+        if provider_config.type == "openrouter":
+            base_url = "https://openrouter.ai/api/v1"
+        elif provider_config.type == "together-ai":
+            base_url = "https://api.together.xyz/v1"
+        elif provider_config.type == "nvidia":
+            base_url = "https://integrate.api.nvidia.com/v1"
+        else:
+            return default_context
+            
+    base_url = base_url.rstrip("/")
+    if not base_url.endswith("/v1") and "/v1" not in base_url:
+        base_url = f"{base_url}/v1"
+            
+    try:
+        import httpx
+        api_key = provider_config.api_key.get_secret_value() if provider_config.api_key else None
+        if not api_key and provider_config.api_key_env:
+            import os
+            api_key = os.getenv(provider_config.api_key_env)
+            
+        headers = {}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+        if provider_config.custom_headers:
+            headers.update(provider_config.custom_headers)
+            
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{base_url}/models", headers=headers)
+            if resp.status_code == 200:
+                data = resp.json()
+                for m in data.get("data", []):
+                    if m.get("id") == model_name:
+                        return m.get("context_length", default_context)
+    except Exception:
+        pass
+    return default_context
+
 
 
 def derive_model_capabilities(model: LLMModel) -> set[ModelCapability]:
