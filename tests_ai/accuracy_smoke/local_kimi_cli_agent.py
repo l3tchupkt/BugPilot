@@ -4,16 +4,16 @@ import os
 import shlex
 from pathlib import Path
 
-from harbor.agents.installed.kimi_cli import KimiCli
+from harbor.agents.installed.bugpilot import KimiCli
 from harbor.environments.base import BaseEnvironment
 
 
 class LocalKimiCli(KimiCli):
-    """Harbor Kimi agent that installs kimi-cli from a local wheel."""
+    """Harbor Kimi agent that installs bugpilot from a local wheel."""
 
     @staticmethod
     def name() -> str:
-        return "kimi-cli-local"
+        return "bugpilot-local"
 
     async def install(self, environment: BaseEnvironment) -> None:
         wheel_path = os.environ.get("KIMI_CLI_WHEEL_PATH")

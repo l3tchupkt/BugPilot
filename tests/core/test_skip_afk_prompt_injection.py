@@ -11,24 +11,24 @@ from pathlib import Path
 import pytest
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.dynamic_injections.afk_mode import AfkModeInjectionProvider
-from kimi_cli.soul.dynamic_injections.plan_mode import PlanModeInjectionProvider
-from kimi_cli.soul.kimisoul import KimiSoul
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.dynamic_injections.afk_mode import AfkModeInjectionProvider
+from bugpilot.soul.dynamic_injections.plan_mode import PlanModeInjectionProvider
+from bugpilot.soul.agent_loop import Agent
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> KimiSoul:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
     agent = Agent(
         name="Test Agent",
         system_prompt="Test system prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return KimiSoul(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
-def _provider_types(soul: KimiSoul) -> set[type]:
+def _provider_types(soul: Agent) -> set[type]:
     # Access the private list to introspect provider composition.
     return {type(p) for p in soul._injection_providers}  # pyright: ignore[reportPrivateUsage]
 

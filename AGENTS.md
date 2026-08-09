@@ -29,64 +29,64 @@ shell UI, ACP server mode for IDE integrations, and MCP tool loading.
 
 ## Architecture overview
 
-- **CLI entry**: `src/kimi_cli/cli/__init__.py` (Typer) parses flags (UI mode, agent spec, config, MCP)
-  and routes into `KimiCLI` in `src/kimi_cli/app.py`.
-- **App/runtime setup**: `KimiCLI.create` loads config (`src/kimi_cli/config.py`), chooses a
-  model/provider (`src/kimi_cli/llm.py`), builds a `Runtime` (`src/kimi_cli/soul/agent.py`),
-  loads an agent spec, restores `Context`, then constructs `KimiSoul`.
-- **Agent specs**: YAML under `src/kimi_cli/agents/` loaded by `src/kimi_cli/agentspec.py`.
+- **CLI entry**: `src/bugpilot/cli/__init__.py` (Typer) parses flags (UI mode, agent spec, config, MCP)
+  and routes into `BugPilotCLI` in `src/bugpilot/app.py`.
+- **App/runtime setup**: `BugPilotCLI.create` loads config (`src/bugpilot/config.py`), chooses a
+  model/provider (`src/bugpilot/llm.py`), builds a `Runtime` (`src/bugpilot/soul/agent.py`),
+  loads an agent spec, restores `Context`, then constructs `Agent`.
+- **Agent specs**: YAML under `src/bugpilot/agents/` loaded by `src/bugpilot/agentspec.py`.
   Specs can `extend` base agents, select tools by import path, and register builtin subagent
   types via the `subagents` field. Subagent instances are persisted separately under the session
   directory and can be resumed by `agent_id`. System prompts live alongside specs; builtin args
   include `KIMI_NOW`, `KIMI_WORK_DIR`, `KIMI_WORK_DIR_LS`, `KIMI_AGENTS_MD`, `KIMI_SKILLS`, `KIMI_OS`, `KIMI_SHELL`
   (this file is injected via `KIMI_AGENTS_MD`).
-- **Tooling**: `src/kimi_cli/soul/toolset.py` loads tools by import path, injects dependencies,
-  and runs tool calls. Built-in tools live in `src/kimi_cli/tools/` (agent, shell, file, web,
+- **Tooling**: `src/bugpilot/soul/toolset.py` loads tools by import path, injects dependencies,
+  and runs tool calls. Built-in tools live in `src/bugpilot/tools/` (agent, shell, file, web,
   todo, background, dmail, think, plan). MCP tools are loaded via `fastmcp`; CLI management is
-  in `src/kimi_cli/mcp.py` and stored in the share dir.
-- **Subagents**: `LaborMarket` in `src/kimi_cli/soul/agent.py` registers builtin subagent types.
-  The `Agent` tool (`src/kimi_cli/tools/agent/`) creates or resumes subagent instances, while
+  in `src/bugpilot/mcp.py` and stored in the share dir.
+- **Subagents**: `LaborMarket` in `src/bugpilot/soul/agent.py` registers builtin subagent types.
+  The `Agent` tool (`src/bugpilot/tools/agent/`) creates or resumes subagent instances, while
   `SubagentStore` persists instance metadata, prompts, wire logs, and context under
   `session/subagents/<agent_id>/`.
-- **Core loop**: `src/kimi_cli/soul/kimisoul.py` is the main agent loop. It accepts user input,
-  handles slash commands (`src/kimi_cli/soul/slash.py`), appends to `Context`
-  (`src/kimi_cli/soul/context.py`), calls the LLM (kosong), runs tools, and performs compaction
-  (`src/kimi_cli/soul/compaction.py`) when needed.
-- **Approvals**: `src/kimi_cli/soul/approval.py` is the tool-facing facade. `ApprovalRuntime`
-  in `src/kimi_cli/approval_runtime/` is the session-level source of truth for pending approvals,
+- **Core loop**: `src/bugpilot/soul/kimisoul.py` is the main agent loop. It accepts user input,
+  handles slash commands (`src/bugpilot/soul/slash.py`), appends to `Context`
+  (`src/bugpilot/soul/context.py`), calls the LLM (kosong), runs tools, and performs compaction
+  (`src/bugpilot/soul/compaction.py`) when needed.
+- **Approvals**: `src/bugpilot/soul/approval.py` is the tool-facing facade. `ApprovalRuntime`
+  in `src/bugpilot/approval_runtime/` is the session-level source of truth for pending approvals,
   and approval requests are projected onto the root wire stream for Shell/Web style UIs.
-- **UI/Wire**: `src/kimi_cli/soul/run_soul` connects `KimiSoul` to a `Wire`
-  (`src/kimi_cli/wire/`) so UI loops can stream events. UIs live in `src/kimi_cli/ui/`
+- **UI/Wire**: `src/bugpilot/soul/run_soul` connects `Agent` to a `Wire`
+  (`src/bugpilot/wire/`) so UI loops can stream events. UIs live in `src/bugpilot/ui/`
   (shell/print/acp/wire).
-- **Shell UI**: `src/kimi_cli/ui/shell/` handles interactive TUI input, shell command mode,
+- **Shell UI**: `src/bugpilot/ui/shell/` handles interactive TUI input, shell command mode,
   and slash command autocomplete; it is the default interactive experience.
-- **Slash commands**: Soul-level commands live in `src/kimi_cli/soul/slash.py`; shell-level
-  commands live in `src/kimi_cli/ui/shell/slash.py`. The shell UI exposes both and dispatches
+- **Slash commands**: Soul-level commands live in `src/bugpilot/soul/slash.py`; shell-level
+  commands live in `src/bugpilot/ui/shell/slash.py`. The shell UI exposes both and dispatches
   based on the registry. Standard skills register `/skill:<skill-name>` and load `SKILL.md`
   as a user prompt; flow skills register `/flow:<skill-name>` and execute the embedded flow.
 
 ## Major modules and interfaces
 
-- `src/kimi_cli/app.py`: `KimiCLI.create(...)` and `KimiCLI.run(...)` are the main programmatic
+- `src/bugpilot/app.py`: `BugPilotCLI.create(...)` and `BugPilotCLI.run(...)` are the main programmatic
   entrypoints; this is what UI layers use.
-- `src/kimi_cli/soul/agent.py`: `Runtime` (config, session, builtins), `Agent` (system prompt +
+- `src/bugpilot/soul/agent.py`: `Runtime` (config, session, builtins), `Agent` (system prompt +
   toolset), and `LaborMarket` (builtin subagent type registry).
-- `src/kimi_cli/soul/kimisoul.py`: `KimiSoul.run(...)` is the loop boundary; it emits Wire
-  messages and executes tools via `KimiToolset`.
-- `src/kimi_cli/soul/context.py`: conversation history + checkpoints; used by DMail for
+- `src/bugpilot/soul/kimisoul.py`: `Agent.run(...)` is the loop boundary; it emits Wire
+  messages and executes tools via `Toolset`.
+- `src/bugpilot/soul/context.py`: conversation history + checkpoints; used by DMail for
   checkpointed replies.
-- `src/kimi_cli/soul/toolset.py`: load tools, run tool calls, bridge to MCP tools.
-- `src/kimi_cli/ui/*`: shell/print/acp frontends; they consume `Wire` messages.
-- `src/kimi_cli/wire/*`: event types and transport used between soul and UI.
+- `src/bugpilot/soul/toolset.py`: load tools, run tool calls, bridge to MCP tools.
+- `src/bugpilot/ui/*`: shell/print/acp frontends; they consume `Wire` messages.
+- `src/bugpilot/wire/*`: event types and transport used between soul and UI.
 
 ## Repo map
 
-- `src/kimi_cli/agents/`: built-in agent YAML specs and prompts
-- `src/kimi_cli/prompts/`: shared prompt templates
-- `src/kimi_cli/soul/`: core runtime/loop, context, compaction, approvals
-- `src/kimi_cli/tools/`: built-in tools
-- `src/kimi_cli/ui/`: UI frontends (shell/print/acp/wire)
-- `src/kimi_cli/acp/`: ACP server components
+- `src/bugpilot/agents/`: built-in agent YAML specs and prompts
+- `src/bugpilot/prompts/`: shared prompt templates
+- `src/bugpilot/soul/`: core runtime/loop, context, compaction, approvals
+- `src/bugpilot/tools/`: built-in tools
+- `src/bugpilot/ui/`: UI frontends (shell/print/acp/wire)
+- `src/bugpilot/acp/`: ACP server components
 - `packages/kosong/`, `packages/kaos/`: workspace deps
   + Kosong is an LLM abstraction layer designed for modern AI agent applications.
     It unifies message structures, asynchronous tool orchestration, and pluggable
@@ -102,7 +102,7 @@ shell UI, ACP server mode for IDE integrations, and MCP tool loading.
 - Python >=3.12 (ty config uses 3.14); line length 100.
 - Ruff handles lint + format (rules: E, F, UP, B, SIM, I); pyright + ty for type checks.
 - Tests use pytest + pytest-asyncio; files are `tests/test_*.py`.
-- CLI entry points: `kimi` / `kimi-cli` -> `src/kimi_cli/__main__.py` (routes to `src/kimi_cli/cli/__init__.py`).
+- CLI entry points: `kimi` / `bugpilot` -> `src/bugpilot/__main__.py` (routes to `src/bugpilot/cli/__init__.py`).
 - User config: `~/.kimi/config.toml`; logs, sessions, and MCP config live in `~/.kimi/`.
 
 ## Git commit messages

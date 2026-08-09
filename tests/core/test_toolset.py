@@ -1,4 +1,4 @@
-"""Tests for KimiToolset hide/unhide and deduplication functionality."""
+"""Tests for Toolset hide/unhide and deduplication functionality."""
 
 from __future__ import annotations
 
@@ -11,13 +11,13 @@ from kosong.tooling import CallableTool2, ToolError, ToolOk, ToolReturnValue
 from kosong.tooling.error import ToolNotFoundError as KosongToolNotFoundError
 from pydantic import BaseModel
 
-from kimi_cli.soul.toolset import (
+from bugpilot.soul.toolset import (
     _REMINDER_TEXT_1,
     _REMINDER_TEXT_3,
-    KimiToolset,
+    Toolset,
     _build_repeat_reminder,
 )
-from kimi_cli.wire.types import ToolCall, ToolResult
+from bugpilot.wire.types import ToolCall, ToolResult
 
 
 class DummyParams(BaseModel):
@@ -42,14 +42,14 @@ class DummyToolB(CallableTool2[DummyParams]):
         return ToolOk(output="b")
 
 
-def _make_toolset() -> KimiToolset:
-    ts = KimiToolset()
+def _make_toolset() -> Toolset:
+    ts = Toolset()
     ts.add(DummyToolA())
     ts.add(DummyToolB())
     return ts
 
 
-def _tool_names(ts: KimiToolset) -> set[str]:
+def _tool_names(ts: Toolset) -> set[str]:
     return {t.name for t in ts.tools}
 
 
@@ -390,7 +390,7 @@ def test_begin_end_step():
     assert ts.end_step() == [("ToolB", "{}")]
 
     # After end_step, internal lists are not cleared by end_step itself;
-    # the caller (KimiSoul) is expected to call begin_step again for the next step.
+    # the caller (Agent) is expected to call begin_step again for the next step.
     # But dedup_triggered should still reflect the last step's state.
     assert ts.dedup_triggered is False
 
@@ -472,7 +472,7 @@ async def test_cross_step_dedup_not_triggered_after_back_to_the_future():
 
 
 async def _run_consecutive(
-    ts: KimiToolset,
+    ts: Toolset,
     count: int,
     *,
     args: str = '{"value":"x"}',
@@ -612,7 +612,6 @@ async def test_tool_call_repeat_telemetry_matches_kimi_code(
     def fake_track(event: str, **props: object) -> None:
         events.append((event, props))
 
-    monkeypatch.setattr("kimi_cli.telemetry.track", fake_track)
 
     ts = _make_toolset()
     previous_calls: list[tuple[str, str]] = []
@@ -642,7 +641,6 @@ async def test_tool_call_dedup_detected_telemetry(monkeypatch: pytest.MonkeyPatc
     def fake_track(event: str, **props: object) -> None:
         events.append((event, props))
 
-    monkeypatch.setattr("kimi_cli.telemetry.track", fake_track)
 
     ts = _make_toolset()
     args = '{"value":"x"}'
@@ -679,7 +677,6 @@ async def test_tool_call_error_uses_enum_and_error_class(monkeypatch: pytest.Mon
     def fake_track(event: str, **props: object) -> None:
         events.append((event, props))
 
-    monkeypatch.setattr("kimi_cli.telemetry.track", fake_track)
 
     class FailingTool(CallableTool2[DummyParams]):
         name: str = "FailingTool"
@@ -713,7 +710,6 @@ async def test_tool_call_cancelled_outcome(monkeypatch: pytest.MonkeyPatch):
     def fake_track(event: str, **props: object) -> None:
         events.append((event, props))
 
-    monkeypatch.setattr("kimi_cli.telemetry.track", fake_track)
 
     class SlowTool(CallableTool2[DummyParams]):
         name: str = "SlowTool"

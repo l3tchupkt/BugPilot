@@ -9,14 +9,14 @@ import pytest
 from kosong.message import Message
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.approval_runtime import ApprovalRequestRecord, ApprovalRuntimeEvent, ApprovalSource
-from kimi_cli.background import TaskRuntime, TaskSpec
-from kimi_cli.background.agent_runner import BackgroundAgentRunner
-from kimi_cli.notifications import NotificationDelivery, NotificationEvent, NotificationView
-from kimi_cli.soul.agent import Agent as SoulAgent
-from kimi_cli.soul.context import Context
-from kimi_cli.subagents import AgentLaunchSpec, AgentTypeDefinition, ToolPolicy
-from kimi_cli.wire.types import TextPart
+from bugpilot.approval_runtime import ApprovalRequestRecord, ApprovalRuntimeEvent, ApprovalSource
+from bugpilot.background import TaskRuntime, TaskSpec
+from bugpilot.background.agent_runner import BackgroundAgentRunner
+from bugpilot.notifications import NotificationDelivery, NotificationEvent, NotificationView
+from bugpilot.soul.agent import Agent as SoulAgent
+from bugpilot.soul.context import Context
+from bugpilot.subagents import AgentLaunchSpec, AgentTypeDefinition, ToolPolicy
+from bugpilot.wire.types import TextPart
 
 
 def test_create_bash_task_persists_starting_state(runtime, monkeypatch):
@@ -29,8 +29,8 @@ def test_create_bash_task_persists_starting_state(runtime, monkeypatch):
         description="short sleep",
         timeout_s=10,
         tool_call_id="tool-1",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
     )
 
@@ -50,8 +50,8 @@ def test_create_bash_task_respects_max_running_tasks(runtime, monkeypatch):
         description="already running",
         tool_call_id="tool-limit",
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -66,8 +66,8 @@ def test_create_bash_task_respects_max_running_tasks(runtime, monkeypatch):
             description="short sleep",
             timeout_s=10,
             tool_call_id="tool-1b",
-            shell_name="bash",
-            shell_path="/bin/bash",
+            shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
             cwd=str(runtime.session.work_dir),
         )
 
@@ -97,8 +97,8 @@ def test_create_bash_task_does_not_overwrite_worker_terminal_state(runtime, monk
         description="instant completion",
         timeout_s=10,
         tool_call_id="tool-race",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
     )
 
@@ -121,8 +121,8 @@ def test_create_bash_task_records_failed_runtime_when_worker_launch_fails(runtim
             description="broken worker",
             timeout_s=10,
             tool_call_id="tool-launch-fail",
-            shell_name="bash",
-            shell_path="/bin/bash",
+            shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
             cwd=str(runtime.session.work_dir),
         )
 
@@ -152,7 +152,7 @@ async def test_create_agent_task_persists_timeout_s_on_spec(runtime, monkeypatch
     async def _noop(self):
         return None
 
-    monkeypatch.setattr("kimi_cli.background.agent_runner.BackgroundAgentRunner.run", _noop)
+    monkeypatch.setattr("bugpilot.background.agent_runner.BackgroundAgentRunner.run", _noop)
 
     # Explicit per-task timeout — must land on the persisted spec.
     view = manager.create_agent_task(
@@ -192,7 +192,7 @@ async def test_create_agent_task_persists_default_timeout_on_spec(runtime, monke
     async def _noop(self):
         return None
 
-    monkeypatch.setattr("kimi_cli.background.agent_runner.BackgroundAgentRunner.run", _noop)
+    monkeypatch.setattr("bugpilot.background.agent_runner.BackgroundAgentRunner.run", _noop)
 
     view = manager.create_agent_task(
         agent_id="a8888888",
@@ -228,7 +228,7 @@ async def test_create_agent_task_zero_timeout_s_stays_zero(runtime, monkeypatch)
     async def _noop(self):
         return None
 
-    monkeypatch.setattr("kimi_cli.background.agent_runner.BackgroundAgentRunner.run", _noop)
+    monkeypatch.setattr("bugpilot.background.agent_runner.BackgroundAgentRunner.run", _noop)
 
     view = manager.create_agent_task(
         agent_id="a9999999",
@@ -262,7 +262,7 @@ async def test_create_agent_task_persists_starting_state(runtime, monkeypatch):
     async def _noop(self):
         return None
 
-    monkeypatch.setattr("kimi_cli.background.agent_runner.BackgroundAgentRunner.run", _noop)
+    monkeypatch.setattr("bugpilot.background.agent_runner.BackgroundAgentRunner.run", _noop)
 
     view = manager.create_agent_task(
         agent_id="a1234567",
@@ -330,8 +330,8 @@ async def test_background_agent_resume_restores_system_prompt_from_context(runti
             Message(role="assistant", content=[TextPart(text="x" * 250)])
         )
 
-    monkeypatch.setattr("kimi_cli.subagents.builder.load_agent", fake_load_agent)
-    monkeypatch.setattr("kimi_cli.subagents.runner.run_soul", fake_run_soul)
+    monkeypatch.setattr("bugpilot.subagents.builder.load_agent", fake_load_agent)
+    monkeypatch.setattr("bugpilot.subagents.runner.run_soul", fake_run_soul)
 
     view = runtime.background_tasks.create_agent_task(
         agent_id="aexisting",
@@ -393,8 +393,8 @@ async def test_background_agent_runner_records_wire_file_and_stage_markers(runti
             Message(role="assistant", content=[TextPart(text="x" * 250)])
         )
 
-    monkeypatch.setattr("kimi_cli.subagents.builder.load_agent", fake_load_agent)
-    monkeypatch.setattr("kimi_cli.subagents.runner.run_soul", fake_run_soul)
+    monkeypatch.setattr("bugpilot.subagents.builder.load_agent", fake_load_agent)
+    monkeypatch.setattr("bugpilot.subagents.runner.run_soul", fake_run_soul)
 
     view = runtime.background_tasks.create_agent_task(
         agent_id="awiretest",
@@ -459,8 +459,8 @@ async def test_background_agent_runner_reports_rejected_tool_calls_clearly(runti
             Message(role="assistant", content=[TextPart(text="x" * 250)])
         )
 
-    monkeypatch.setattr("kimi_cli.subagents.builder.load_agent", fake_load_agent)
-    monkeypatch.setattr("kimi_cli.subagents.runner.run_soul", fake_run_soul)
+    monkeypatch.setattr("bugpilot.subagents.builder.load_agent", fake_load_agent)
+    monkeypatch.setattr("bugpilot.subagents.runner.run_soul", fake_run_soul)
 
     view = runtime.background_tasks.create_agent_task(
         agent_id="arejectedbg",
@@ -474,6 +474,7 @@ async def test_background_agent_runner_reports_rejected_tool_calls_clearly(runti
     await task
 
     runtime_after = runtime.background_tasks.store.read_runtime(view.spec.id)
+    print("FAILURE REASON:", runtime_after.failure_reason)
     assert runtime_after.status == "completed"
     record = runtime.subagent_store.require_instance("arejectedbg")
     assert record.status == "idle"
@@ -611,8 +612,8 @@ def test_recover_marks_stale_running_task_as_lost(runtime):
         description="stale task",
         tool_call_id="tool-2",
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -728,8 +729,8 @@ def test_recover_marks_stale_starting_task_without_heartbeat_as_lost(runtime):
         description="stale starting task",
         tool_call_id="tool-2b",
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -759,8 +760,8 @@ def test_recover_marks_stale_kill_requested_task_as_killed(runtime):
         description="stale kill task",
         tool_call_id="tool-2c",
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -836,8 +837,8 @@ def test_publish_terminal_notifications_creates_notification(runtime):
         description="completed task",
         tool_call_id="tool-3",
         command="echo done",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -884,8 +885,8 @@ def test_publish_terminal_notifications_marks_timeout_distinctly(runtime):
         description="timed out task",
         tool_call_id="tool-3b",
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=1,
     )
@@ -922,8 +923,8 @@ def test_reconcile_recovers_and_publishes_lost_notification(runtime):
         description="recovered lost task",
         tool_call_id="tool-3c",
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -957,8 +958,8 @@ def test_reconcile_marks_task_lost_when_runtime_json_is_corrupted(runtime):
         tool_call_id="tool-3e",
         created_at=time.time() - 60,
         command="sleep 10",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -985,8 +986,8 @@ def test_reconcile_does_not_republish_same_terminal_notification(runtime):
         description="one-shot completed task",
         tool_call_id="tool-3d",
         command="echo done",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -1023,8 +1024,8 @@ def test_publish_terminal_notifications_limit_skips_deduped_results(runtime, mon
             description=f"completed task {index}",
             tool_call_id=f"tool-3e-{index}",
             command="echo done",
-            shell_name="bash",
-            shell_path="/bin/bash",
+            shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
             cwd=str(runtime.session.work_dir),
             timeout_s=60,
         )
@@ -1082,8 +1083,8 @@ def test_completion_event_set_on_publish(runtime):
         description="event test task",
         tool_call_id="tool-ev1",
         command="echo done",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -1115,8 +1116,8 @@ def test_completion_event_set_on_publish(runtime):
         description="event test task 2",
         tool_call_id="tool-ev2",
         command="echo ok",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -1139,12 +1140,12 @@ async def test_manager_launches_real_worker_and_waits(runtime):
     manager = runtime.background_tasks
 
     view = manager.create_bash_task(
-        command="python3 -c \"print('bg-ok')\"",
+        command="python -c \"print(\'bg-ok\')\"",
         description="real worker smoke",
         timeout_s=30,
         tool_call_id="tool-7",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
     )
     waited = await manager.wait(view.spec.id, timeout_s=10)
@@ -1153,18 +1154,24 @@ async def test_manager_launches_real_worker_and_waits(runtime):
     assert waited.runtime.exit_code == 0
     assert "bg-ok" in manager.store.output_path(view.spec.id).read_text(encoding="utf-8")
 
+    import asyncio
+    await asyncio.sleep(0.1)
+
+    import asyncio
+    await asyncio.sleep(0.1)
+
 
 @pytest.mark.asyncio
 async def test_manager_surfaces_timeout_failure(runtime):
     manager = runtime.background_tasks
 
     view = manager.create_bash_task(
-        command="sleep 2",
+        command="python -c \"import time; time.sleep(2)\"",
         description="real worker timeout",
         timeout_s=1,
         tool_call_id="tool-8",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        shell_name=runtime.environment.shell_name,
+        shell_path=str(runtime.environment.shell_path),
         cwd=str(runtime.session.work_dir),
     )
     waited = await manager.wait(view.spec.id, timeout_s=10)
@@ -1173,3 +1180,9 @@ async def test_manager_surfaces_timeout_failure(runtime):
     assert waited.runtime.interrupted is True
     assert waited.runtime.timed_out is True
     assert waited.runtime.failure_reason == "Command timed out after 1s"
+
+    import asyncio
+    await asyncio.sleep(0.1)
+
+    import asyncio
+    await asyncio.sleep(0.1)

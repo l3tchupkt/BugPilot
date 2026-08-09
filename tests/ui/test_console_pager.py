@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 from rich.pager import Pager
 
-from kimi_cli.ui.shell.console import _KimiPager, console
+from bugpilot.ui.shell.console import _BugPilotPager, console
 
 
 class TestConsolePagerIgnoresManpager:
@@ -19,7 +19,7 @@ class TestConsolePagerIgnoresManpager:
     man-specific pipeline such as ``sh -c 'col -bx | bat -l man -p'``.
     """
 
-    def test_pager_context_uses_kimi_pager_by_default(self):
+    def test_pager_context_uses_bugpilot_pager_by_default(self):
         """console.pager() should inject our custom pager, not SystemPager."""
         ctx = console.pager(styles=True)
         from rich.pager import SystemPager
@@ -30,8 +30,8 @@ class TestConsolePagerIgnoresManpager:
 
     @patch.dict(os.environ, {"MANPAGER": "sh -c 'col -bx | bat -l man -p'"})
     def test_manpager_stripped_during_pydoc_pager(self):
-        """When MANPAGER is set, _KimiPager must strip it before calling pydoc.pager()."""
-        pager = _KimiPager()
+        """When MANPAGER is set, _BugPilotPager must strip it before calling pydoc.pager()."""
+        pager = _BugPilotPager()
 
         def assert_no_manpager(content: str) -> None:
             assert "MANPAGER" not in os.environ, "MANPAGER must be stripped during pydoc.pager()"
@@ -44,7 +44,7 @@ class TestConsolePagerIgnoresManpager:
     @patch.dict(os.environ, {"MANPAGER": "bat -l man -p"})
     def test_manpager_restored_after_pager_call(self):
         """MANPAGER must be restored after pydoc.pager() returns."""
-        pager = _KimiPager()
+        pager = _BugPilotPager()
 
         with patch("pydoc.pager"):
             pager.show("test content")
@@ -54,7 +54,7 @@ class TestConsolePagerIgnoresManpager:
     @patch.dict(os.environ, {"MANPAGER": "bat -l man -p"})
     def test_manpager_restored_on_exception(self):
         """MANPAGER must be restored even if pydoc.pager() raises."""
-        pager = _KimiPager()
+        pager = _BugPilotPager()
 
         with (
             patch("pydoc.pager", side_effect=RuntimeError("boom")),
@@ -68,7 +68,7 @@ class TestConsolePagerIgnoresManpager:
         """If MANPAGER was never set, it should not appear after show()."""
         env = os.environ.copy()
         env.pop("MANPAGER", None)
-        pager = _KimiPager()
+        pager = _BugPilotPager()
 
         with patch.dict(os.environ, env, clear=True), patch("pydoc.pager"):
             pager.show("test content")

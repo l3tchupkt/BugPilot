@@ -10,7 +10,7 @@ import asyncio
 
 import pytest
 
-from kimi_cli.utils.aioqueue import QueueShutDown
+from bugpilot.utils.aioqueue import QueueShutDown
 
 
 @pytest.mark.asyncio
@@ -19,11 +19,11 @@ async def test_watcher_survives_handler_exception(runtime, tmp_path) -> None:
     and process subsequent messages instead of dying silently."""
     from kosong.tooling.empty import EmptyToolset
 
-    from kimi_cli.soul.agent import Agent
-    from kimi_cli.soul.context import Context
-    from kimi_cli.soul.kimisoul import KimiSoul
-    from kimi_cli.ui.shell import Shell
-    from kimi_cli.wire.types import ApprovalRequest
+    from bugpilot.soul.agent import Agent
+    from bugpilot.soul.context import Context
+    from bugpilot.soul.agent_loop import Agent
+    from bugpilot.ui.shell import Shell
+    from bugpilot.wire.types import ApprovalRequest
 
     agent = Agent(
         name="Test",
@@ -31,7 +31,7 @@ async def test_watcher_survives_handler_exception(runtime, tmp_path) -> None:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = KimiSoul(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
+    soul = Agent(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
     shell = Shell(soul)
 
     hub = runtime.root_wire_hub
@@ -93,10 +93,10 @@ async def test_watcher_exits_gracefully_on_queue_shutdown(runtime, tmp_path) -> 
     not raise an unhandled QueueShutDown exception."""
     from kosong.tooling.empty import EmptyToolset
 
-    from kimi_cli.soul.agent import Agent
-    from kimi_cli.soul.context import Context
-    from kimi_cli.soul.kimisoul import KimiSoul
-    from kimi_cli.ui.shell import Shell
+    from bugpilot.soul.agent import Agent
+    from bugpilot.soul.context import Context
+    from bugpilot.soul.agent_loop import Agent
+    from bugpilot.ui.shell import Shell
 
     agent = Agent(
         name="Test",
@@ -104,7 +104,7 @@ async def test_watcher_exits_gracefully_on_queue_shutdown(runtime, tmp_path) -> 
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = KimiSoul(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
+    soul = Agent(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
     shell = Shell(soul)
 
     watcher_task = asyncio.create_task(shell._watch_root_wire_hub())

@@ -1,17 +1,18 @@
 from __future__ import annotations
+import sys
 
 import asyncio
 import time
 
 import pytest
 
-from kimi_cli.background import (
+from bugpilot.background import (
     BackgroundTaskStore,
     TaskControl,
     TaskSpec,
     run_background_task_worker,
 )
-from kimi_cli.background.worker import terminate_process_tree_windows
+from bugpilot.background.worker import terminate_process_tree_windows
 
 
 @pytest.mark.asyncio
@@ -23,9 +24,9 @@ async def test_worker_completes_successfully(runtime):
         session_id=runtime.session.id,
         description="echo hello",
         tool_call_id="tool-4",
-        command="echo hello",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        command="python -c \"print('hello')\"",
+        shell_name="cmd" if sys.platform == "win32" else "bash",
+        shell_path="cmd.exe" if sys.platform == "win32" else "/bin/bash",
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -48,9 +49,9 @@ async def test_worker_respects_kill_control(runtime):
         session_id=runtime.session.id,
         description="sleep task",
         tool_call_id="tool-5",
-        command="sleep 5",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        command="python -c \"import time; time.sleep(5)\"",
+        shell_name="cmd" if sys.platform == "win32" else "bash",
+        shell_path="cmd.exe" if sys.platform == "win32" else "/bin/bash",
         cwd=str(runtime.session.work_dir),
         timeout_s=60,
     )
@@ -90,9 +91,9 @@ async def test_worker_marks_timeout_as_failed(runtime):
         session_id=runtime.session.id,
         description="timeout task",
         tool_call_id="tool-6",
-        command="sleep 2",
-        shell_name="bash",
-        shell_path="/bin/bash",
+        command="python -c \"import time; time.sleep(2)\"",
+        shell_name="cmd" if sys.platform == "win32" else "bash",
+        shell_path="cmd.exe" if sys.platform == "win32" else "/bin/bash",
         cwd=str(runtime.session.work_dir),
         timeout_s=1,
     )
@@ -119,7 +120,7 @@ def test_terminate_process_tree_windows_uses_taskkill_tree(monkeypatch):
         calls.append(args)
         return None
 
-    monkeypatch.setattr("kimi_cli.background.worker.subprocess.run", _run)
+    monkeypatch.setattr("bugpilot.background.worker.subprocess.run", _run)
 
     terminate_process_tree_windows(1234, force=False)
     terminate_process_tree_windows(1234, force=True)

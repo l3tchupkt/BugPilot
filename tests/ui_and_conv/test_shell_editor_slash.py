@@ -8,12 +8,12 @@ from unittest.mock import Mock
 
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.config import get_default_config
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.ui.shell import Shell
-from kimi_cli.ui.shell import slash as shell_slash
+from bugpilot.config import get_default_config
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.ui.shell import Shell
+from bugpilot.ui.shell import slash as shell_slash
 
 
 def _make_shell_app(runtime: Runtime, tmp_path: Path) -> SimpleNamespace:
@@ -23,7 +23,7 @@ def _make_shell_app(runtime: Runtime, tmp_path: Path) -> SimpleNamespace:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = KimiSoul(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     return SimpleNamespace(soul=soul)
 
 

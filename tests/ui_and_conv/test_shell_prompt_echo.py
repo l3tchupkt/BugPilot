@@ -3,13 +3,13 @@ from typing import cast
 
 from kosong.message import Message
 
-import kimi_cli.ui.shell as shell_module
-from kimi_cli.soul import Soul
-from kimi_cli.ui.shell import Shell
-from kimi_cli.ui.shell.echo import render_user_echo
-from kimi_cli.ui.shell.prompt import PromptMode, UserInput
-from kimi_cli.utils.slashcmd import SlashCommand, SlashCommandCall
-from kimi_cli.wire.types import AudioURLPart, ImageURLPart, TextPart, VideoURLPart
+import bugpilot.ui.shell as shell_module
+from bugpilot.soul import Soul
+from bugpilot.ui.shell import Shell
+from bugpilot.ui.shell.echo import render_user_echo
+from bugpilot.ui.shell.prompt import PromptMode, UserInput
+from bugpilot.utils.slashcmd import SlashCommand, SlashCommandCall
+from bugpilot.wire.types import AudioURLPart, ImageURLPart, TextPart, VideoURLPart
 
 
 def _make_user_input(command: str, *, mode: PromptMode = PromptMode.AGENT) -> UserInput:

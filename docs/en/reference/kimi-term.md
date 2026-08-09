@@ -36,6 +36,6 @@ For the full list of options, see [`kimi` command](./kimi-command.md).
 `kimi term` requires Python 3.14+. If you installed Kimi Code CLI with an older Python version, you need to reinstall with Python 3.14:
 
 ```sh
-uv tool install --python 3.14 kimi-cli
+uv tool install --python 3.14 bugpilot
 ```
 :::

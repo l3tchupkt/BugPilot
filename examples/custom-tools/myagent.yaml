@@ -2,14 +2,14 @@ version: 1
 agent:
   extend: default
   tools:
-    - "kimi_cli.tools.multiagent:Task"
-    - "kimi_cli.tools.todo:SetTodoList"
-    - "kimi_cli.tools.shell:Shell"
-    - "kimi_cli.tools.file:ReadFile"
-    - "kimi_cli.tools.file:Glob"
-    - "kimi_cli.tools.file:Grep"
-    - "kimi_cli.tools.file:WriteFile"
-    - "kimi_cli.tools.file:StrReplaceFile"
-    - "kimi_cli.tools.web:SearchWeb"
-    - "kimi_cli.tools.web:FetchURL"
+    - "bugpilot.tools.multiagent:Task"
+    - "bugpilot.tools.todo:SetTodoList"
+    - "bugpilot.tools.shell:Shell"
+    - "bugpilot.tools.file:ReadFile"
+    - "bugpilot.tools.file:Glob"
+    - "bugpilot.tools.file:Grep"
+    - "bugpilot.tools.file:WriteFile"
+    - "bugpilot.tools.file:StrReplaceFile"
+    - "bugpilot.tools.web:SearchWeb"
+    - "bugpilot.tools.web:FetchURL"
     - "my_tools.ls:Ls" # custom tool

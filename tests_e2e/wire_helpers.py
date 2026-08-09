@@ -14,8 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Any
 
-TRACE_ENV = "KIMI_TEST_TRACE"
-WIRE_COMMAND_ENV = "KIMI_E2E_WIRE_CMD"
+TRACE_ENV = "BUGPILOT_TEST_TRACE"
+WIRE_COMMAND_ENV = "BUGPILOT_E2E_WIRE_CMD"
 DEFAULT_TIMEOUT = 5.0
 _PATH_REPLACEMENTS: dict[str, str] = {}
 
@@ -48,12 +48,12 @@ def make_env(home_dir: Path) -> dict[str, str]:
     env = os.environ.copy()
     env["HOME"] = str(home_dir)
     env["USERPROFILE"] = str(home_dir)
-    env["KIMI_SHARE_DIR"] = str(share_dir(home_dir))
+    env["BUGPILOT_SHARE_DIR"] = str(share_dir(home_dir))
     return env
 
 
 def share_dir(home_dir: Path) -> Path:
-    return home_dir / ".kimi"
+    return home_dir / ".bugpilot"
 
 
 def register_path_replacements(
@@ -107,7 +107,7 @@ def write_scripted_config(
                 "type": "_scripted_echo",
                 "base_url": "",
                 "api_key": "",
-                "env": {"KIMI_SCRIPTED_ECHO_SCRIPTS": str(scripts_path)},
+                "env": {"BUGPILOT_SCRIPTED_ECHO_SCRIPTS": str(scripts_path)},
             }
         },
     }
@@ -485,7 +485,7 @@ def _normalize_server_version(value: Any) -> Any:
     """Normalize the server version in initialize response to '<VERSION>'."""
     if isinstance(value, dict):
         value = {k: _normalize_server_version(v) for k, v in value.items()}
-        if value.get("name") == "Kimi Code CLI" and "version" in value:
+        if value.get("name") == "BugPilot" and "version" in value:
             value = {**value, "version": "<VERSION>"}
     elif isinstance(value, list):
         value = [_normalize_server_version(v) for v in value]
@@ -509,7 +509,7 @@ def base_command() -> list[str]:
     override = os.getenv(WIRE_COMMAND_ENV)
     if override is not None:
         override = override.strip()
-    parts = shlex.split(override, posix=os.name != "nt") if override else ["uv", "run", "kimi"]
+    parts = shlex.split(override, posix=os.name != "nt") if override else ["uv", "run", "bugpilot"]
     return [part for part in parts if part != "--wire"]
 
 

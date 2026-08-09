@@ -10,15 +10,15 @@ from unittest.mock import Mock
 import pytest
 from kosong.tooling.empty import EmptyToolset
 
-from kimi_cli.cli import Reload
-from kimi_cli.config import Config, get_default_config
-from kimi_cli.exception import ConfigError
-from kimi_cli.soul.agent import Agent, Runtime
-from kimi_cli.soul.context import Context
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.ui.shell import Shell
-from kimi_cli.ui.shell import slash as shell_slash
-from kimi_cli.ui.theme import (
+from bugpilot.cli import Reload
+from bugpilot.config import Config, get_default_config
+from bugpilot.exception import ConfigError
+from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.context import Context
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.ui.shell import Shell
+from bugpilot.ui.shell import slash as shell_slash
+from bugpilot.ui.theme import (
     get_active_theme,
     get_diff_colors,
     get_mcp_prompt_colors,
@@ -48,7 +48,7 @@ def _make_shell_app(runtime: Runtime, tmp_path: Path) -> SimpleNamespace:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = KimiSoul(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     return SimpleNamespace(soul=soul)
 
 
@@ -104,7 +104,7 @@ def test_ptk_styles_valid_for_both_themes(theme: str):
 
 
 def test_theme_command_registered_in_both_registries():
-    from kimi_cli.ui.shell.slash import registry, shell_mode_registry
+    from bugpilot.ui.shell.slash import registry, shell_mode_registry
 
     agent_cmds = {c.name for c in registry.list_commands()}
     shell_cmds = {c.name for c in shell_mode_registry.list_commands()}
@@ -273,8 +273,8 @@ async def test_shell_startup_initializes_theme_from_config(
     """Shell.run() should call set_active_theme with config.theme."""
     runtime.config.theme = "light"
 
-    from kimi_cli.ui import theme as theme_mod
-    from kimi_cli.ui.shell import Shell as RealShell
+    from bugpilot.ui import theme as theme_mod
+    from bugpilot.ui.shell import Shell as RealShell
 
     agent = Agent(
         name="Test Agent",
@@ -282,7 +282,7 @@ async def test_shell_startup_initializes_theme_from_config(
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = KimiSoul(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     shell = RealShell(soul)
 
     set_theme_mock = Mock(side_effect=set_active_theme)
@@ -303,7 +303,7 @@ async def test_shell_startup_initializes_theme_from_config(
 def test_render_diff_panel_both_themes():
     from rich.console import Console
 
-    from kimi_cli.utils.rich.diff_render import (
+    from bugpilot.utils.rich.diff_render import (
         DiffLine,
         DiffLineKind,
         render_diff_panel,

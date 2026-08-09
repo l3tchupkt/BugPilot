@@ -1,6 +1,6 @@
 """Integration test: Print mode background wait with real task/notification stores.
 
-Unlike the unit tests in test_kimisoul_background_wait.py (which mock
+Unlike the unit tests in test_agent_loop_background_wait.py (which mock
 has_active_tasks/reconcile/has_pending_for_sink independently), this test
 exercises the **real** reconcile → publish_terminal_notifications →
 has_pending_for_sink chain with file-backed stores.  It verifies that the
@@ -17,14 +17,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from kimi_cli.background.manager import BackgroundTaskManager
-from kimi_cli.background.models import TaskRuntime, TaskSpec
-from kimi_cli.cli import ExitCode
-from kimi_cli.config import BackgroundConfig, NotificationConfig
-from kimi_cli.notifications.manager import NotificationManager
-from kimi_cli.soul.kimisoul import KimiSoul
-from kimi_cli.ui.print import Print
-from kimi_cli.wire.file import WireFile
+from bugpilot.background.manager import BackgroundTaskManager
+from bugpilot.background.models import TaskRuntime, TaskSpec
+from bugpilot.cli import ExitCode
+from bugpilot.config import BackgroundConfig, NotificationConfig
+from bugpilot.notifications.manager import NotificationManager
+from bugpilot.soul.agent_loop import Agent
+from bugpilot.ui.print import Print
+from bugpilot.wire.file import WireFile
 
 
 def _make_session(tmp_path: Path) -> MagicMock:
@@ -105,7 +105,7 @@ async def test_real_reconcile_publishes_notification_and_triggers_reentry(
     assert not notifications.has_pending_for_sink("llm")
 
     # Build a mock soul whose .runtime exposes the real manager/notifications
-    soul = AsyncMock(spec=KimiSoul)
+    soul = AsyncMock(spec=Agent)
     soul.runtime = MagicMock()
     soul.runtime.role = "root"
     soul.runtime.config.background.keep_alive_on_exit = False
@@ -137,7 +137,7 @@ async def test_real_reconcile_publishes_notification_and_triggers_reentry(
             for view in notifications.claim_for_sink("llm"):
                 notifications.ack("llm", view.event.id)
 
-    with patch("kimi_cli.ui.print.run_soul", side_effect=fake_run_soul):
+    with patch("bugpilot.ui.print.run_soul", side_effect=fake_run_soul):
         code = await asyncio.wait_for(p.run(command="do work"), timeout=10.0)
 
     assert code == ExitCode.SUCCESS
@@ -170,7 +170,7 @@ async def test_real_reconcile_no_reentry_when_task_completes_without_notificatio
 
     _create_running_task(manager, "b-int-00002")
 
-    soul = AsyncMock(spec=KimiSoul)
+    soul = AsyncMock(spec=Agent)
     soul.runtime = MagicMock()
     soul.runtime.role = "root"
     soul.runtime.config.background.keep_alive_on_exit = False
@@ -199,7 +199,7 @@ async def test_real_reconcile_no_reentry_when_task_completes_without_notificatio
             for view in notifications.claim_for_sink("llm"):
                 notifications.ack("llm", view.event.id)
 
-    with patch("kimi_cli.ui.print.run_soul", side_effect=fake_run_soul):
+    with patch("bugpilot.ui.print.run_soul", side_effect=fake_run_soul):
         code = await asyncio.wait_for(p.run(command="drain test"), timeout=10.0)
 
     assert code == ExitCode.SUCCESS
@@ -222,7 +222,7 @@ async def test_real_reconcile_multiple_tasks(
     _create_running_task(manager, "b-int-00003")
     _create_running_task(manager, "b-int-00004")
 
-    soul = AsyncMock(spec=KimiSoul)
+    soul = AsyncMock(spec=Agent)
     soul.runtime = MagicMock()
     soul.runtime.role = "root"
     soul.runtime.config.background.keep_alive_on_exit = False
@@ -253,7 +253,7 @@ async def test_real_reconcile_multiple_tasks(
             # Re-entry after task 003's notification: complete task 004
             _complete_task(manager, "b-int-00004")
 
-    with patch("kimi_cli.ui.print.run_soul", side_effect=fake_run_soul):
+    with patch("bugpilot.ui.print.run_soul", side_effect=fake_run_soul):
         code = await asyncio.wait_for(p.run(command="two tasks"), timeout=15.0)
 
     assert code == ExitCode.SUCCESS
@@ -304,7 +304,7 @@ async def test_race_window_worker_finishes_between_reconcile_and_active_check(
 
     manager.has_active_tasks = racy_has_active  # type: ignore[method-assign]
 
-    soul = AsyncMock(spec=KimiSoul)
+    soul = AsyncMock(spec=Agent)
     soul.runtime = MagicMock()
     soul.runtime.role = "root"
     soul.runtime.config.background.keep_alive_on_exit = False
@@ -329,7 +329,7 @@ async def test_race_window_worker_finishes_between_reconcile_and_active_check(
             for view in notifications.claim_for_sink("llm"):
                 notifications.ack("llm", view.event.id)
 
-    with patch("kimi_cli.ui.print.run_soul", side_effect=fake_run_soul):
+    with patch("bugpilot.ui.print.run_soul", side_effect=fake_run_soul):
         code = await asyncio.wait_for(p.run(command="race"), timeout=10.0)
 
     assert code == ExitCode.SUCCESS

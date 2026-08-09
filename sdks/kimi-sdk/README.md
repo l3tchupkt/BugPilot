@@ -183,5 +183,5 @@ asyncio.run(main())
 
 ## Environment variables
 
-- `KIMI_API_KEY`: API key for the Kimi API.
-- `KIMI_BASE_URL`: Override the API base URL (defaults to `https://api.moonshot.ai/v1`).
+- `BUGPILOT_API_KEY`: API key for the Kimi API.
+- `BUGPILOT_BASE_URL`: Override the API base URL (defaults to `https://api.moonshot.ai/v1`).

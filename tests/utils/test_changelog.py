@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from kimi_cli.utils.changelog import ReleaseEntry, parse_changelog
+from bugpilot.utils.changelog import ReleaseEntry, parse_changelog
 
 
 def test_changelog_parser():

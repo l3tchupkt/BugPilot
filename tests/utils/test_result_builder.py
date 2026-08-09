@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from kimi_cli.tools.utils import ToolResultBuilder
+from bugpilot.tools.utils import ToolResultBuilder
 
 
 def test_basic_functionality():

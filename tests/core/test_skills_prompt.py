@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 from kaos.path import KaosPath
 
-from kimi_cli.skill import (
+from bugpilot.skill import (
     Skill,
     format_skills_for_prompt,
 )
@@ -132,13 +132,13 @@ def test_format_skills_for_prompt_sorts_within_scope():
 @pytest.mark.asyncio
 async def test_discovered_skills_carry_scope(tmp_path, monkeypatch):
     """End-to-end: scoped discovery stamps each skill with its origin scope."""
-    from kimi_cli.skill import (
+    from bugpilot.skill import (
         discover_skills_from_roots,
         resolve_skills_roots,
     )
 
     home_dir = tmp_path / "home"
-    user_brand = home_dir / ".kimi" / "skills"
+    user_brand = home_dir / ".bugpilot" / "skills"
     user_brand.mkdir(parents=True)
     (user_brand / "user-skill").mkdir()
     (user_brand / "user-skill" / "SKILL.md").write_text(
@@ -146,10 +146,10 @@ async def test_discovered_skills_carry_scope(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setattr(Path, "home", lambda: home_dir)
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path / "share"))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path / "share"))
 
     work_dir = tmp_path / "project"
-    proj_brand = work_dir / ".kimi" / "skills"
+    proj_brand = work_dir / ".bugpilot" / "skills"
     proj_brand.mkdir(parents=True)
     (proj_brand / "proj-skill").mkdir()
     (proj_brand / "proj-skill" / "SKILL.md").write_text(
@@ -177,12 +177,12 @@ async def test_end_to_end_project_override_renders_correctly(tmp_path, monkeypat
     version wins and the other three are not exposed to the model at all.
 
     This is the smoke test that proves the user-reported pain point
-    ("kimi cli 居然不支持 proj scope skills") is fixed: when a project-local
+    ("bugpilot cli 居然不支持 proj scope skills") is fixed: when a project-local
     skill shares a name with skills at other scopes, the project version is
     the one injected into the system prompt, grouped under ``### Project``.
     """
-    import kimi_cli.skill as skill_mod
-    from kimi_cli.skill import (
+    import bugpilot.skill as skill_mod
+    from bugpilot.skill import (
         discover_skills_from_roots,
         resolve_skills_roots,
     )
@@ -199,7 +199,7 @@ async def test_end_to_end_project_override_renders_correctly(tmp_path, monkeypat
 
     # 2. User scope (via monkeypatched home dir)
     home_dir = tmp_path / "home"
-    user_brand = home_dir / ".kimi" / "skills"
+    user_brand = home_dir / ".bugpilot" / "skills"
     user_brand.mkdir(parents=True)
     (user_brand / "foo").mkdir()
     (user_brand / "foo" / "SKILL.md").write_text(
@@ -207,11 +207,11 @@ async def test_end_to_end_project_override_renders_correctly(tmp_path, monkeypat
         encoding="utf-8",
     )
     monkeypatch.setattr(Path, "home", lambda: home_dir)
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path / "share"))
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path / "share"))
 
     # 3. Project scope
     work_dir = tmp_path / "project"
-    proj_brand = work_dir / ".kimi" / "skills"
+    proj_brand = work_dir / ".bugpilot" / "skills"
     proj_brand.mkdir(parents=True)
     (proj_brand / "foo").mkdir()
     proj_foo_md = proj_brand / "foo" / "SKILL.md"

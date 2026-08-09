@@ -16,49 +16,42 @@ from kaos.path import KaosPath
 from kosong.chat_provider.mock import MockChatProvider
 from pydantic import SecretStr
 
-from kimi_cli.auth.oauth import OAuthManager
-from kimi_cli.background import BackgroundTaskManager
-from kimi_cli.config import Config, MoonshotSearchConfig, get_default_config
-from kimi_cli.llm import ALL_MODEL_CAPABILITIES, LLM
-from kimi_cli.metadata import WorkDirMeta
-from kimi_cli.notifications import NotificationManager
-from kimi_cli.session import Session
-from kimi_cli.session_state import SessionState
-from kimi_cli.soul.agent import BuiltinSystemPromptArgs, LaborMarket, Runtime
-from kimi_cli.soul.approval import Approval
-from kimi_cli.soul.denwarenji import DenwaRenji
-from kimi_cli.soul.toolset import KimiToolset
-from kimi_cli.subagents import AgentTypeDefinition, ToolPolicy
-from kimi_cli.tools.agent import Agent as AgentTool
-from kimi_cli.tools.background import (
+from bugpilot.background import BackgroundTaskManager
+from bugpilot.config import Config, get_default_config
+from bugpilot.llm import ALL_MODEL_CAPABILITIES, LLM
+from bugpilot.metadata import WorkDirMeta
+from bugpilot.notifications import NotificationManager
+from bugpilot.session import Session
+from bugpilot.session_state import SessionState
+from bugpilot.soul.agent import BuiltinSystemPromptArgs, LaborMarket, Runtime
+from bugpilot.soul.approval import Approval
+from bugpilot.soul.denwarenji import DenwaRenji
+from bugpilot.soul.toolset import Toolset
+from bugpilot.subagents import AgentTypeDefinition, ToolPolicy
+from bugpilot.tools.agent import Agent as AgentTool
+from bugpilot.tools.background import (
     TaskList,
     TaskOutput,
     TaskStop,
 )
-from kimi_cli.tools.dmail import SendDMail
-from kimi_cli.tools.file.glob import Glob
-from kimi_cli.tools.file.grep_local import Grep
-from kimi_cli.tools.file.read import ReadFile
-from kimi_cli.tools.file.read_media import ReadMediaFile
-from kimi_cli.tools.file.replace import StrReplaceFile
-from kimi_cli.tools.file.write import WriteFile
-from kimi_cli.tools.shell import Shell
-from kimi_cli.tools.think import Think
-from kimi_cli.tools.todo import SetTodoList
-from kimi_cli.tools.web.fetch import FetchURL
-from kimi_cli.tools.web.search import SearchWeb
-from kimi_cli.utils.environment import Environment
-from kimi_cli.wire.file import WireFile
+from bugpilot.tools.dmail import SendDMail
+from bugpilot.tools.file.glob import Glob
+from bugpilot.tools.file.grep_local import Grep
+from bugpilot.tools.file.read import ReadFile
+from bugpilot.tools.file.read_media import ReadMediaFile
+from bugpilot.tools.file.replace import StrReplaceFile
+from bugpilot.tools.file.write import WriteFile
+from bugpilot.tools.shell import Shell
+from bugpilot.tools.think import Think
+from bugpilot.tools.todo import SetTodoList
+from bugpilot.utils.environment import Environment
+from bugpilot.wire.file import WireFile
 
 
 @pytest.fixture
 def config() -> Config:
     """Create a Config instance."""
     conf = get_default_config()
-    conf.services.moonshot_search = MoonshotSearchConfig(
-        base_url="https://api.kimi.com/coding/v1/search",
-        api_key=SecretStr("test-api-key"),
-    )
     return conf
 
 
@@ -98,14 +91,14 @@ def temp_share_dir() -> Generator[Path]:
 def builtin_args(temp_work_dir: KaosPath) -> BuiltinSystemPromptArgs:
     """Create builtin arguments with temporary work directory."""
     return BuiltinSystemPromptArgs(
-        KIMI_NOW="1970-01-01T00:00:00+00:00",
-        KIMI_WORK_DIR=temp_work_dir,
-        KIMI_WORK_DIR_LS="Test ls content",
-        KIMI_AGENTS_MD="Test agents content",
-        KIMI_SKILLS="No skills found.",
-        KIMI_ADDITIONAL_DIRS_INFO="",
-        KIMI_OS="macOS",
-        KIMI_SHELL="bash (`/bin/bash`)",
+        BUGPILOT_NOW="1970-01-01T00:00:00+00:00",
+        BUGPILOT_WORK_DIR=temp_work_dir,
+        BUGPILOT_WORK_DIR_LS="Test ls content",
+        BUGPILOT_AGENTS_MD="Test agents content",
+        BUGPILOT_SKILLS="No skills found.",
+        BUGPILOT_ADDITIONAL_DIRS_INFO="",
+        BUGPILOT_OS="macOS",
+        BUGPILOT_SHELL="bash (`/bin/bash`)",
     )
 
 
@@ -194,7 +187,7 @@ def runtime(
             notifications=notifications,
         ),
         skills={},
-        oauth=OAuthManager(config),
+#         oauth=OAuthManager(config),
         additional_dirs=[],
         skills_dirs=[],
         role="root",
@@ -211,15 +204,15 @@ def runtime(
 
 
 @pytest.fixture
-def toolset() -> KimiToolset:
-    return KimiToolset()
+def toolset() -> Toolset:
+    return Toolset()
 
 
 @contextmanager
 def tool_call_context(tool_name: str) -> Generator[None]:
     """Create a tool call context."""
-    from kimi_cli.soul.toolset import current_tool_call
-    from kimi_cli.wire.types import ToolCall
+    from bugpilot.soul.toolset import current_tool_call
+    from bugpilot.wire.types import ToolCall
 
     token = current_tool_call.set(
         ToolCall(id="test", function=ToolCall.FunctionBody(name=tool_name, arguments=None))
@@ -317,16 +310,7 @@ def str_replace_file_tool(runtime: Runtime, approval: Approval) -> Generator[Str
         yield StrReplaceFile(runtime, approval)
 
 
-@pytest.fixture
-def search_web_tool(config: Config, runtime: Runtime) -> SearchWeb:
-    """Create a SearchWeb tool instance."""
-    return SearchWeb(config, runtime)
 
-
-@pytest.fixture
-def fetch_url_tool(config: Config, runtime: Runtime) -> FetchURL:
-    """Create a FetchURL tool instance."""
-    return FetchURL(config, runtime)
 
 
 # misc fixtures

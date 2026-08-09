@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock, Mock
 
 from kosong.message import Message
 
-from kimi_cli.soul import slash as soul_slash
-from kimi_cli.wire.types import TextPart
+from bugpilot.soul import slash as soul_slash
+from bugpilot.wire.types import TextPart
 
 
 def _make_soul(work_dir: Path) -> Mock:
-    from kimi_cli.soul.kimisoul import KimiSoul
+    from bugpilot.soul.agent_loop import Agent
 
-    soul = Mock(spec=KimiSoul)
+    soul = Mock(spec=Agent)
     soul.runtime.session.work_dir = work_dir
     soul.runtime.session.id = "soul-session-id"
     soul.context.history = []
@@ -61,7 +61,7 @@ async def test_export_writes_file_and_sends_wire(tmp_path: Path, monkeypatch) ->
 
     assert output.exists()
     content = output.read_text(encoding="utf-8")
-    assert "# Kimi Session Export" in content
+    assert "# BugPilot Session Export" in content
     assert "Hello" in content
 
     # Should send export path + sensitive info warning
@@ -89,7 +89,7 @@ async def test_import_file_sends_wire_markers(tmp_path: Path, monkeypatch) -> No
     imported_msg = soul.context.append_message.await_args.args[0]
     assert imported_msg.role == "user"
 
-    # No direct wire_file writes — KimiSoul.run() handles TurnBegin/TurnEnd
+    # No direct wire_file writes — Agent.run() handles TurnBegin/TurnEnd
     assert soul.wire_file.append_message.await_count == 0
 
     # Success message sent

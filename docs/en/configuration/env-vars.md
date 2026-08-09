@@ -10,8 +10,8 @@ The following environment variables take effect when using `kimi` type providers
 
 | Environment Variable | Description |
 | --- | --- |
-| `KIMI_BASE_URL` | API base URL |
-| `KIMI_API_KEY` | API key |
+| `BUGPILOT_BASE_URL` | API base URL |
+| `BUGPILOT_API_KEY` | API key |
 | `KIMI_MODEL_NAME` | Model identifier |
 | `KIMI_MODEL_MAX_CONTEXT_SIZE` | Maximum context length (in tokens) |
 | `KIMI_MODEL_CAPABILITIES` | Model capabilities, comma-separated (e.g., `thinking,image_in`) |
@@ -21,20 +21,20 @@ The following environment variables take effect when using `kimi` type providers
 | `KIMI_MODEL_MAX_TOKENS` | Compatibility alias for `KIMI_MODEL_MAX_COMPLETION_TOKENS` |
 | `KIMI_MODEL_THINKING_KEEP` | Moonshot `thinking.keep` switch for preserved thinking (only applied when thinking mode is active) |
 
-### `KIMI_BASE_URL`
+### `BUGPILOT_BASE_URL`
 
 Overrides the provider's `base_url` field in the configuration file.
 
 ```sh
-export KIMI_BASE_URL="https://api.moonshot.cn/v1"
+export BUGPILOT_BASE_URL="https://api.moonshot.cn/v1"
 ```
 
-### `KIMI_API_KEY`
+### `BUGPILOT_API_KEY`
 
 Overrides the provider's `api_key` field in the configuration file. Used to inject API keys without modifying the configuration file, suitable for CI/CD environments.
 
 ```sh
-export KIMI_API_KEY="sk-xxx"
+export BUGPILOT_API_KEY="sk-xxx"
 ```
 
 ### `KIMI_MODEL_NAME`

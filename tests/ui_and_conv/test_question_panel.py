@@ -6,8 +6,8 @@ from io import StringIO
 
 from rich.console import Console
 
-from kimi_cli.ui.shell.visualize import QuestionRequestPanel
-from kimi_cli.wire.types import QuestionItem, QuestionOption, QuestionRequest
+from bugpilot.ui.shell.visualize import QuestionRequestPanel
+from bugpilot.wire.types import QuestionItem, QuestionOption, QuestionRequest
 
 
 def _render_to_str(panel: QuestionRequestPanel) -> str:

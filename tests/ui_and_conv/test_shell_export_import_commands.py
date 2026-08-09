@@ -6,15 +6,15 @@ from unittest.mock import AsyncMock, Mock
 
 from kosong.message import Message
 
-from kimi_cli.session import Session
-from kimi_cli.ui.shell import export_import as shell_export_import
-from kimi_cli.wire.types import TextPart, TurnBegin, TurnEnd
+from bugpilot.session import Session
+from bugpilot.ui.shell import export_import as shell_export_import
+from bugpilot.wire.types import TextPart, TurnBegin, TurnEnd
 
 
 def _make_shell_app(work_dir: Path) -> Mock:
-    from kimi_cli.soul.kimisoul import KimiSoul
+    from bugpilot.soul.agent_loop import Agent
 
-    soul = Mock(spec=KimiSoul)
+    soul = Mock(spec=Agent)
     soul.runtime.session.work_dir = work_dir
     soul.runtime.session.id = "curr-session-id"
     soul.context.history = []
@@ -40,7 +40,7 @@ async def test_export_writes_markdown_file(tmp_path: Path) -> None:
 
     assert output.exists()
     content = output.read_text(encoding="utf-8")
-    assert "# Kimi Session Export" in content
+    assert "# BugPilot Session Export" in content
     assert "session_id: curr-session-id" in content
     assert "Hello" in content
     assert "Hi!" in content

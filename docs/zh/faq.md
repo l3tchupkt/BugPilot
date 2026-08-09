@@ -15,7 +15,7 @@ API 密钥无效可能的原因：
 
 - **密钥输入错误**：检查是否有多余的空格或遗漏的字符。
 - **密钥已过期或被撤销**：在平台控制台确认密钥状态。
-- **环境变量覆盖**：检查是否有 `KIMI_API_KEY` 或 `OPENAI_API_KEY` 环境变量覆盖了配置文件中的密钥。可以运行 `echo $KIMI_API_KEY` 检查。
+- **环境变量覆盖**：检查是否有 `BUGPILOT_API_KEY` 或 `OPENAI_API_KEY` 环境变量覆盖了配置文件中的密钥。可以运行 `echo $BUGPILOT_API_KEY` 检查。
 
 ### 会员过期或配额用尽
 
@@ -134,7 +134,7 @@ macOS 的 Gatekeeper 安全机制会在首次运行新程序时进行检查，�
 使用 uv 升级到最新版本：
 
 ```sh
-uv tool upgrade kimi-cli --no-cache
+uv tool upgrade bugpilot --no-cache
 ```
 
 添加 `--no-cache` 参数可以确保获取最新版本。

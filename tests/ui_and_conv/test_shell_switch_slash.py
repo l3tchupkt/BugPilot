@@ -13,10 +13,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from kimi_cli.cli import Reload, SwitchToVis, SwitchToWeb
-from kimi_cli.ui.shell.slash import ShellSlashCmdFunc, shell_mode_registry
-from kimi_cli.ui.shell.slash import registry as shell_slash_registry
-from kimi_cli.utils.slashcmd import SlashCommand
+from bugpilot.cli import Reload, SwitchToVis, SwitchToWeb
+from bugpilot.ui.shell.slash import ShellSlashCmdFunc, shell_mode_registry
+from bugpilot.ui.shell.slash import registry as shell_slash_registry
+from bugpilot.utils.slashcmd import SlashCommand
 
 
 async def _invoke_slash_command(command: SlashCommand[ShellSlashCmdFunc], shell: Any) -> None:
@@ -26,10 +26,10 @@ async def _invoke_slash_command(command: SlashCommand[ShellSlashCmdFunc], shell:
 
 
 def _mock_shell_with_soul(session_id: str = "current-session-id") -> Mock:
-    """Create a mock Shell whose soul passes the KimiSoul isinstance check."""
-    from kimi_cli.soul.kimisoul import KimiSoul
+    """Create a mock Shell whose soul passes the Agent isinstance check."""
+    from bugpilot.soul.agent_loop import Agent
 
-    mock_soul = Mock(spec=KimiSoul)
+    mock_soul = Mock(spec=Agent)
     mock_soul.runtime.session.id = session_id
     shell = Mock()
     shell.soul = mock_soul
@@ -54,7 +54,7 @@ class TestWebCommandRegistration:
         assert shell_mode_registry.find_command("web") is None
 
     def test_not_in_soul_registry(self) -> None:
-        from kimi_cli.soul.slash import registry as soul_slash_registry
+        from bugpilot.soul.slash import registry as soul_slash_registry
 
         assert soul_slash_registry.find_command("web") is None
 
@@ -90,9 +90,9 @@ class TestWebCommandBehavior:
         assert exc_info.value.session_id == "abc-def"
 
     async def test_session_id_none_without_kimi_soul(self) -> None:
-        """When soul is not a KimiSoul, session_id should be None."""
+        """When soul is not a Agent, session_id should be None."""
         shell = Mock()
-        shell.soul = Mock()  # plain Mock, not spec=KimiSoul
+        shell.soul = Mock()  # plain Mock, not spec=Agent
 
         cmd = shell_slash_registry.find_command("web")
         assert cmd is not None
@@ -131,7 +131,7 @@ class TestVisCommandRegistration:
         assert shell_mode_registry.find_command("vis") is None
 
     def test_not_in_soul_registry(self) -> None:
-        from kimi_cli.soul.slash import registry as soul_slash_registry
+        from bugpilot.soul.slash import registry as soul_slash_registry
 
         assert soul_slash_registry.find_command("vis") is None
 
@@ -167,7 +167,7 @@ class TestVisCommandBehavior:
         assert exc_info.value.session_id == "abc-def"
 
     async def test_session_id_none_without_kimi_soul(self) -> None:
-        """When soul is not a KimiSoul, session_id should be None."""
+        """When soul is not a Agent, session_id should be None."""
         shell = Mock()
         shell.soul = Mock()
 

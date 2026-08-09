@@ -17,7 +17,7 @@ Kimi Code CLI 支持以下几种使用方式：
 - **[Agent 集成（`kimi acp`）](../reference/kimi-acp.md)**：以服务方式运行，通过 [Agent Client Protocol] 集成到 [IDE](./ides.md) 和其他本地 Agent 客户端中
 
 ::: info 提示
-如果你遇到问题或有建议，欢迎在 [GitHub Issues](https://github.com/MoonshotAI/kimi-cli/issues) 反馈。
+如果你遇到问题或有建议，欢迎在 [GitHub Issues](https://github.com/l3tchupkt/bugpilot/issues) 反馈。
 :::
 
 [Agent Client Protocol]: https://agentclientprotocol.com/
@@ -26,7 +26,7 @@ Kimi Code CLI 支持以下几种使用方式：
 
 
 ::: tip
-Kimi Code CLI 已升级为 [Kimi Code](https://github.com/MoonshotAI/kimi-code)，安装 Kimi Code 后会**自动迁移**你的配置与会话。新用户建议直接安装 Kimi Code；
+Kimi Code CLI 已升级为 [Kimi Code](https://github.com/l3tchupkt/kimi-code)，安装 Kimi Code 后会**自动迁移**你的配置与会话。新用户建议直接安装 Kimi Code；
 :::
 
 运行安装脚本即可完成安装。脚本会先安装 [uv](https://docs.astral.sh/uv/)（Python 包管理工具），再通过 uv 安装 Kimi Code CLI：
@@ -54,7 +54,7 @@ kimi --version
 如果你已经安装了 uv，也可以直接运行：
 
 ```sh
-uv tool install --python 3.13 kimi-cli
+uv tool install --python 3.13 bugpilot
 ```
 
 ::: tip 提示
@@ -66,13 +66,13 @@ Kimi Code CLI 支持 Python 3.12-3.14，但建议使用 3.13 以获得最佳兼�
 升级到最新版本：
 
 ```sh
-uv tool upgrade kimi-cli --no-cache
+uv tool upgrade bugpilot --no-cache
 ```
 
 卸载 Kimi Code CLI：
 
 ```sh
-uv tool uninstall kimi-cli
+uv tool uninstall bugpilot
 ```
 
 ## 第一次运行

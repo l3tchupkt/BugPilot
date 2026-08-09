@@ -82,7 +82,7 @@ def _make_scripted_config(
                 "type": "_scripted_echo",
                 "base_url": "",
                 "api_key": "",
-                "env": {"KIMI_SCRIPTED_ECHO_SCRIPTS": str(scripts_path)},
+                "env": {"BUGPILOT_SCRIPTED_ECHO_SCRIPTS": str(scripts_path)},
             }
         },
     }
@@ -107,7 +107,7 @@ def _start_wire(config_path: Path, work_dir: Path) -> subprocess.Popen[str]:
     cmd = [
         "uv",
         "run",
-        "kimi",
+        "bugpilot",
         "--wire",
         "--yolo",
         "--config-file",

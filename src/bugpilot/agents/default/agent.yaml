@@ -1,0 +1,34 @@
+version: 1
+agent:
+  name: ""
+  system_prompt_path: ./system.md
+  system_prompt_args:
+    ROLE_ADDITIONAL: ""
+  tools:
+    - "bugpilot.tools.agent:Agent"
+    # - "bugpilot.tools.dmail:SendDMail"
+    # - "bugpilot.tools.think:Think"
+    - "bugpilot.tools.ask_user:AskUserQuestion"
+    - "bugpilot.tools.todo:SetTodoList"
+    - "bugpilot.tools.shell:Shell"
+    - "bugpilot.tools.background:TaskList"
+    - "bugpilot.tools.background:TaskOutput"
+    - "bugpilot.tools.background:TaskStop"
+    - "bugpilot.tools.file:ReadFile"
+    - "bugpilot.tools.file:ReadMediaFile"
+    - "bugpilot.tools.file:Glob"
+    - "bugpilot.tools.file:Grep"
+    - "bugpilot.tools.file:WriteFile"
+    - "bugpilot.tools.file:StrReplaceFile"
+    - "bugpilot.tools.plan:ExitPlanMode"
+    - "bugpilot.tools.plan.enter:EnterPlanMode"
+  subagents:
+    coder:
+      path: ./coder.yaml
+      description: "Good at general software engineering tasks."
+    explore:
+      path: ./explore.yaml
+      description: "Fast codebase exploration with prompt-enforced read-only behavior."
+    plan:
+      path: ./plan.yaml
+      description: "Read-only implementation planning and architecture design."

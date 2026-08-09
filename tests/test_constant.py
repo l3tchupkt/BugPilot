@@ -1,10 +1,10 @@
-"""Tests for src/kimi_cli.constant.py."""
+"""Tests for src/bugpilot.constant.py."""
 
 from __future__ import annotations
 
 import pytest
 
-from kimi_cli.constant import _normalize_remote, get_build_sha
+from bugpilot.constant import _normalize_remote, get_build_sha
 
 
 class TestNormalizeRemote:
@@ -34,7 +34,7 @@ class TestNormalizeRemote:
 
 class TestGetBuildSha:
     def test_env_var_takes_priority(self, monkeypatch) -> None:
-        monkeypatch.setenv("KIMI_BUILD_SHA", "env_override")
+        monkeypatch.setenv("BUGPILOT_BUILD_SHA", "env_override")
         get_build_sha.cache_clear()
         try:
             assert get_build_sha() == "env_override"
@@ -42,7 +42,7 @@ class TestGetBuildSha:
             get_build_sha.cache_clear()
 
     def test_env_var_empty_falls_through(self, monkeypatch) -> None:
-        monkeypatch.setenv("KIMI_BUILD_SHA", "")
+        monkeypatch.setenv("BUGPILOT_BUILD_SHA", "")
         get_build_sha.cache_clear()
         try:
             result = get_build_sha()

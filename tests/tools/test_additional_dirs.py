@@ -10,16 +10,16 @@ from pathlib import Path
 import pytest
 from kaos.path import KaosPath
 
-from kimi_cli.soul.agent import Runtime
-from kimi_cli.soul.approval import Approval
-from kimi_cli.tools.file.glob import Glob
-from kimi_cli.tools.file.glob import Params as GlobParams
-from kimi_cli.tools.file.read import Params as ReadParams
-from kimi_cli.tools.file.read import ReadFile
-from kimi_cli.tools.file.replace import Edit, StrReplaceFile
-from kimi_cli.tools.file.replace import Params as ReplaceParams
-from kimi_cli.tools.file.write import Params as WriteParams
-from kimi_cli.tools.file.write import WriteFile
+from bugpilot.soul.agent import Runtime
+from bugpilot.soul.approval import Approval
+from bugpilot.tools.file.glob import Glob
+from bugpilot.tools.file.glob import Params as GlobParams
+from bugpilot.tools.file.read import Params as ReadParams
+from bugpilot.tools.file.read import ReadFile
+from bugpilot.tools.file.replace import Edit, StrReplaceFile
+from bugpilot.tools.file.replace import Params as ReplaceParams
+from bugpilot.tools.file.write import Params as WriteParams
+from bugpilot.tools.file.write import WriteFile
 from tests.conftest import tool_call_context
 
 

@@ -4,9 +4,9 @@ from inline_snapshot import snapshot
 from kosong.chat_provider import TokenUsage
 from kosong.message import AudioURLPart, ImageURLPart, Message, VideoURLPart
 
-import kimi_cli.prompts as prompts
-from kimi_cli.soul.compaction import CompactionResult, SimpleCompaction, should_auto_compact
-from kimi_cli.wire.types import TextPart, ThinkPart
+import bugpilot.prompts as prompts
+from bugpilot.soul.compaction import CompactionResult, SimpleCompaction, should_auto_compact
+from bugpilot.wire.types import TextPart, ThinkPart
 
 
 def test_prepare_returns_original_when_not_enough_messages():
@@ -221,8 +221,8 @@ def test_prepare_only_keeps_text_parts_in_compaction():
     Non-text parts (media, think, etc.) are filtered out because the compaction
     API endpoint only supports text content.
 
-    Fixes: https://github.com/MoonshotAI/kimi-cli/issues/1395
-    Fixes: https://github.com/MoonshotAI/kimi-cli/issues/1390
+    Fixes: https://github.com/l3tchupkt/bugpilot/issues/1395
+    Fixes: https://github.com/l3tchupkt/bugpilot/issues/1390
     """
     messages = [
         Message(

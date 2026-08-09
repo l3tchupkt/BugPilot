@@ -2,17 +2,24 @@ from __future__ import annotations
 
 import contextlib
 import errno
-import fcntl
+import sys
+try:
+    import fcntl
+    import pty
+    import termios
+except ImportError:
+    fcntl = None
+    pty = None
+    termios = None
 import hashlib
 import json
 import os
-import pty
 import re
 import select
 import struct
 import subprocess
 import sys
-import termios
+
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -222,7 +229,7 @@ def start_shell_pty(
     os.set_blocking(master_fd, False)
 
     env = make_env(home_dir)
-    env["KIMI_CLI_NO_AUTO_UPDATE"] = "1"
+    env["BUGPILOT_CLI_NO_AUTO_UPDATE"] = "1"
     env["COLUMNS"] = str(columns)
     env["LINES"] = str(lines)
     env["TERM"] = "xterm-256color"
@@ -230,7 +237,7 @@ def start_shell_pty(
     env["PROMPT_TOOLKIT_NO_CPR"] = "1"
     env.pop("NO_COLOR", None)
 
-    cmd = [sys.executable, "-m", "kimi_cli.cli"]
+    cmd = [sys.executable, "-m", "bugpilot.cli"]
     if yolo:
         cmd.append("--yolo")
     cmd.extend(["--config-file", str(config_path), "--work-dir", str(work_dir)])
@@ -253,7 +260,7 @@ def start_shell_pty(
 
 def find_session_dir(home_dir: Path, work_dir: Path) -> Path:
     path_md5 = hashlib.md5(str(work_dir.resolve()).encode("utf-8")).hexdigest()
-    sessions_root = home_dir / ".kimi" / "sessions" / path_md5
+    sessions_root = home_dir / ".bugpilot" / "sessions" / path_md5
     session_dirs = [path for path in sessions_root.iterdir() if path.is_dir()]
     if len(session_dirs) != 1:
         raise AssertionError(f"Expected exactly one session dir, got {session_dirs!r}")

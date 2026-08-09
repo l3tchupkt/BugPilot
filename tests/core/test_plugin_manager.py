@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import SecretStr
 
-from kimi_cli.plugin import PluginError
-from kimi_cli.plugin.manager import (
+from bugpilot.plugin import PluginError
+from bugpilot.plugin.manager import (
     collect_host_values,
     install_plugin,
     list_plugins,
@@ -52,7 +52,7 @@ def test_install_plugin(tmp_path: Path):
         source=src,
         plugins_dir=plugins_dir,
         host_values={"api_key": "sk-real"},
-        host_name="kimi-code",
+        host_name="bugpilot-code",
         host_version="1.22.0",
     )
 
@@ -66,7 +66,7 @@ def test_install_plugin(tmp_path: Path):
 
     # Check runtime in plugin.json
     pj = json.loads((installed / "plugin.json").read_text())
-    assert pj["runtime"]["host"] == "kimi-code"
+    assert pj["runtime"]["host"] == "bugpilot-code"
     assert pj["runtime"]["host_version"] == "1.22.0"
 
 
@@ -79,7 +79,7 @@ def test_install_plugin_missing_plugin_json(tmp_path: Path):
             source=src,
             plugins_dir=tmp_path / "plugins",
             host_values={},
-            host_name="kimi-code",
+            host_name="bugpilot-code",
             host_version="1.0.0",
         )
 
@@ -94,7 +94,7 @@ def test_install_plugin_rollback_on_failure(tmp_path: Path):
             source=src,
             plugins_dir=plugins_dir,
             host_values={},  # missing api_key
-            host_name="kimi-code",
+            host_name="bugpilot-code",
             host_version="1.0.0",
         )
 
@@ -109,14 +109,14 @@ def test_reinstall_plugin(tmp_path: Path):
         source=src,
         plugins_dir=plugins_dir,
         host_values={"api_key": "sk-old"},
-        host_name="kimi-code",
+        host_name="bugpilot-code",
         host_version="1.20.0",
     )
     install_plugin(
         source=src,
         plugins_dir=plugins_dir,
         host_values={"api_key": "sk-new"},
-        host_name="kimi-code",
+        host_name="bugpilot-code",
         host_version="1.22.0",
     )
 
@@ -135,7 +135,7 @@ def test_list_plugins(tmp_path: Path):
         source=src,
         plugins_dir=plugins_dir,
         host_values={"api_key": "k"},
-        host_name="kimi-code",
+        host_name="bugpilot-code",
         host_version="1.0.0",
     )
 
@@ -156,7 +156,7 @@ def test_remove_plugin(tmp_path: Path):
         source=src,
         plugins_dir=plugins_dir,
         host_values={"api_key": "k"},
-        host_name="kimi-code",
+        host_name="bugpilot-code",
         host_version="1.0.0",
     )
     assert (plugins_dir / "test-plugin").exists()
@@ -184,7 +184,7 @@ def test_install_rejects_path_traversal_name(tmp_path: Path):
             source=src,
             plugins_dir=tmp_path / "plugins",
             host_values={},
-            host_name="kimi-code",
+            host_name="bugpilot-code",
             host_version="1.0.0",
         )
 
@@ -194,7 +194,7 @@ async def test_skill_discovery_includes_plugins_dir(tmp_path: Path, monkeypatch)
     """Plugins dir should be included in skill discovery roots."""
     from kaos.path import KaosPath
 
-    from kimi_cli.skill import resolve_skills_roots
+    from bugpilot.skill import resolve_skills_roots
 
     plugins_dir = tmp_path / "plugins"
     plugins_dir.mkdir()
@@ -211,8 +211,8 @@ async def test_skill_discovery_includes_plugins_dir(tmp_path: Path, monkeypatch)
         encoding="utf-8",
     )
 
-    # Point KIMI_SHARE_DIR to tmp_path so get_plugins_dir() returns tmp_path/plugins
-    monkeypatch.setenv("KIMI_SHARE_DIR", str(tmp_path))
+    # Point BUGPILOT_SHARE_DIR to tmp_path so get_plugins_dir() returns tmp_path/plugins
+    monkeypatch.setenv("BUGPILOT_SHARE_DIR", str(tmp_path))
 
     scoped = await resolve_skills_roots(KaosPath(str(tmp_path)))
     root_strs = [str(s.root) for s in scoped]

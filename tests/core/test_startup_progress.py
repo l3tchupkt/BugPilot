@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-import kimi_cli.app as app_module
-import kimi_cli.ui.shell.startup as startup_module
-from kimi_cli.app import KimiCLI
-from kimi_cli.ui.shell.startup import ShellStartupProgress
+import bugpilot.app as app_module
+import bugpilot.ui.shell.startup as startup_module
+from bugpilot.app import BugPilotCLI
+from bugpilot.ui.shell.startup import ShellStartupProgress
 
 
 def test_shell_startup_progress_starts_once_and_updates_messages(monkeypatch) -> None:
@@ -64,7 +64,7 @@ def test_shell_startup_progress_is_noop_when_disabled(monkeypatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_create_reports_startup_phases(session, config, monkeypatch) -> None:
+async def test_bugpilot_create_reports_startup_phases(session, config, monkeypatch) -> None:
     phases: list[str] = []
     fake_runtime = SimpleNamespace(
         session=session,
@@ -104,11 +104,11 @@ async def test_kimi_cli_create_reports_startup_phases(session, config, monkeypat
         def set_hook_engine(self, engine):
             pass
 
-    monkeypatch.setattr(app_module, "KimiSoul", _FakeSoul)
+    monkeypatch.setattr(app_module, "Agent", _FakeSoul)
 
-    cli = await KimiCLI.create(session, config=config, startup_progress=phases.append)
+    cli = await BugPilotCLI.create(session, config=config, startup_progress=phases.append)
 
-    assert isinstance(cli, KimiCLI)
+    assert isinstance(cli, BugPilotCLI)
     assert phases == [
         "Loading configuration...",
         "Scanning workspace...",
@@ -120,11 +120,11 @@ async def test_kimi_cli_create_reports_startup_phases(session, config, monkeypat
 
 @pytest.mark.asyncio
 async def test_run_shell_adds_kimi_code_migration_card(runtime, monkeypatch) -> None:
-    from kimi_cli.ui.shell import WelcomeInfoItem
+    from bugpilot.ui.shell import WelcomeInfoItem
 
     # Not installed -> the welcome screen shows the upgrade card (deterministic).
     monkeypatch.setattr(
-        "kimi_cli.ui.shell.migration_nudge.kimi_code_installed", lambda home=None: False
+        "bugpilot.ui.shell.migration_nudge.kimi_code_installed", lambda home=None: False
     )
 
     captured: dict[str, object] = {}
@@ -143,10 +143,10 @@ async def test_run_shell_adds_kimi_code_migration_card(runtime, monkeypatch) -> 
     async def fake_env():
         yield
 
-    monkeypatch.setattr("kimi_cli.ui.shell.Shell", FakeShell)
+    monkeypatch.setattr("bugpilot.ui.shell.Shell", FakeShell)
 
-    soul = SimpleNamespace(model_name="kimi-code", name="Kimi Code CLI")
-    cli = KimiCLI(soul, runtime, {})  # type: ignore[arg-type]
+    soul = SimpleNamespace(model_name="bugpilot-code", name="BugPilot")
+    cli = BugPilotCLI(soul, runtime, {})  # type: ignore[arg-type]
     monkeypatch.setattr(cli, "_env", fake_env)
 
     assert await cli.run_shell(command="status") is True
@@ -159,7 +159,7 @@ async def test_run_shell_adds_kimi_code_migration_card(runtime, monkeypatch) -> 
 
 
 @pytest.mark.asyncio
-async def test_kimi_cli_create_cleans_stale_running_foreground_subagents(
+async def test_bugpilot_create_cleans_stale_running_foreground_subagents(
     session, config, monkeypatch
 ) -> None:
     update_instance = Mock()
@@ -209,8 +209,8 @@ async def test_kimi_cli_create_cleans_stale_running_foreground_subagents(
         def set_hook_engine(self, engine):
             pass
 
-    monkeypatch.setattr(app_module, "KimiSoul", _FakeSoul)
+    monkeypatch.setattr(app_module, "Agent", _FakeSoul)
 
-    await KimiCLI.create(session, config=config)
+    await BugPilotCLI.create(session, config=config)
 
     update_instance.assert_called_once_with("afg1", status="failed")

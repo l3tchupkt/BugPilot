@@ -62,7 +62,7 @@ Kimi Code CLI 的配置可以通过多种方式设置，不同来源的配置按
 示例：
 
 ```sh
-KIMI_API_KEY="sk-xxx" KIMI_MODEL_NAME="kimi-k2-thinking-turbo" kimi
+BUGPILOT_API_KEY="sk-xxx" KIMI_MODEL_NAME="kimi-k2-thinking-turbo" kimi
 ```
 
 ## 配置优先级示例
@@ -88,6 +88,6 @@ max_context_size = 262144
 | 场景 | `base_url` | `api_key` | `model` |
 | --- | --- | --- | --- |
 | `kimi` | 配置文件 | 配置文件 | 配置文件 |
-| `KIMI_API_KEY=sk-env kimi` | 配置文件 | 环境变量 | 配置文件 |
+| `BUGPILOT_API_KEY=sk-env kimi` | 配置文件 | 环境变量 | 配置文件 |
 | `kimi --model other` | 配置文件 | 配置文件 | CLI 参数 |
 | `KIMI_MODEL_NAME=k2 kimi` | 配置文件 | 配置文件 | 环境变量 |

@@ -4,10 +4,10 @@ import platform
 
 import pytest
 
-from kimi_cli.agentspec import DEFAULT_AGENT_FILE
-from kimi_cli.soul.agent import load_agent
-from kimi_cli.subagents.builder import SubagentBuilder
-from kimi_cli.subagents.models import AgentLaunchSpec, AgentTypeDefinition, ToolPolicy
+from bugpilot.agentspec import DEFAULT_AGENT_FILE
+from bugpilot.soul.agent import load_agent
+from bugpilot.subagents.builder import SubagentBuilder
+from bugpilot.subagents.models import AgentLaunchSpec, AgentTypeDefinition, ToolPolicy
 
 
 @pytest.mark.skipif(platform.system() == "Windows", reason="Skipping test on Windows")
@@ -97,7 +97,7 @@ async def test_builder_model_priority_prefers_override_then_type_default_then_in
         return llm
 
     monkeypatch.setattr(
-        "kimi_cli.subagents.builder.clone_llm_with_model_alias",
+        "bugpilot.subagents.builder.clone_llm_with_model_alias",
         fake_clone_llm_with_model_alias,
     )
 
