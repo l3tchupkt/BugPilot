@@ -4,7 +4,7 @@
 Agent Tracing Visualizer is currently in Technical Preview and may be unstable. Features and interface may change in future releases.
 :::
 
-Agent Tracing Visualizer is a browser-based visualization dashboard for inspecting and analyzing Kimi Code CLI session traces. It helps you understand agent behavior, view Wire event timelines, analyze context usage, and browse historical sessions.
+Agent Tracing Visualizer is a browser-based visualization dashboard for inspecting and analyzing BugPilot session traces. It helps you understand agent behavior, view Wire event timelines, analyze context usage, and browse historical sessions.
 
 ## Launch
 

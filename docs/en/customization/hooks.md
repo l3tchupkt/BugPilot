@@ -20,7 +20,7 @@ Example use cases:
 
 ## Supported Hook Events
 
-Kimi Code CLI supports 13 lifecycle events:
+BugPilot supports 13 lifecycle events:
 
 | Event | Trigger | Matcher Filter | Available Context |
 |-------|---------|----------------|-------------------|

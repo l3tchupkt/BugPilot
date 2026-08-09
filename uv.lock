@@ -9,7 +9,7 @@ resolution-markers = [
 [manifest]
 members = [
     "bugpilot",
-    "kimi-sdk",
+    "bugpilot-sdk",
     "kosong",
     "pykaos",
 ]
@@ -410,6 +410,41 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
     { name = "ruff", specifier = ">=0.14.10" },
     { name = "ty", specifier = ">=0.0.9" },
+]
+
+[[package]]
+name = "bugpilot-sdk"
+version = "0.2.1"
+source = { editable = "sdks/bugpilot-sdk" }
+dependencies = [
+    { name = "kosong" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "httpx" },
+    { name = "inline-snapshot", extra = ["black"] },
+    { name = "pdoc" },
+    { name = "pyright" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "ruff" },
+    { name = "ty" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "kosong", editable = "packages/kosong" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "httpx", specifier = ">=0.28.1,<0.29.0" },
+    { name = "inline-snapshot", extras = ["black"], specifier = ">=0.31.1" },
+    { name = "pdoc", specifier = ">=16.0.0" },
+    { name = "pyright", specifier = ">=1.1.407" },
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-asyncio", specifier = ">=1.3.0" },
+    { name = "ruff", specifier = ">=0.14.10" },
+    { name = "ty", specifier = ">=0.0.7" },
 ]
 
 [[package]]
@@ -1294,41 +1329,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/43/4b/674af6ef2f97d56f0ab5153bf0bfa28ccb6c3ed4d1babf4305449668807b/keyring-25.7.0.tar.gz", hash = "sha256:fe01bd85eb3f8fb3dd0405defdeac9a5b4f6f0439edbb3149577f244a2e8245b", size = 63516, upload-time = "2025-11-16T16:26:09.482Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/81/db/e655086b7f3a705df045bf0933bdd9c2f79bb3c97bfef1384598bb79a217/keyring-25.7.0-py3-none-any.whl", hash = "sha256:be4a0b195f149690c166e850609a477c532ddbfbaed96a404d4e43f8d5e2689f", size = 39160, upload-time = "2025-11-16T16:26:08.402Z" },
-]
-
-[[package]]
-name = "kimi-sdk"
-version = "0.2.1"
-source = { editable = "sdks/kimi-sdk" }
-dependencies = [
-    { name = "kosong" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "httpx" },
-    { name = "inline-snapshot", extra = ["black"] },
-    { name = "pdoc" },
-    { name = "pyright" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "ruff" },
-    { name = "ty" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "kosong", editable = "packages/kosong" }]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "httpx", specifier = ">=0.28.1,<0.29.0" },
-    { name = "inline-snapshot", extras = ["black"], specifier = ">=0.31.1" },
-    { name = "pdoc", specifier = ">=16.0.0" },
-    { name = "pyright", specifier = ">=1.1.407" },
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-asyncio", specifier = ">=1.3.0" },
-    { name = "ruff", specifier = ">=0.14.10" },
-    { name = "ty", specifier = ">=0.0.7" },
 ]
 
 [[package]]

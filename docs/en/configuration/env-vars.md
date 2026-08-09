@@ -1,6 +1,6 @@
 # Environment Variables
 
-Kimi Code CLI supports overriding configuration or controlling runtime behavior through environment variables. This page lists all supported environment variables.
+BugPilot supports overriding configuration or controlling runtime behavior through environment variables. This page lists all supported environment variables.
 
 For detailed information on how environment variables override configuration files, see [Config Overrides](./overrides.md).
 
@@ -80,7 +80,7 @@ export KIMI_MODEL_TOP_P="0.9"
 ### `KIMI_MODEL_MAX_COMPLETION_TOKENS`
 
 Sets an explicit hard cap for the generation parameter `max_completion_tokens`. When unset,
-Kimi Code CLI uses the model's remaining context window. The value is dynamically clamped to
+BugPilot uses the model's remaining context window. The value is dynamically clamped to
 `max_context_size - input_tokens` for every request.
 
 ```sh
@@ -143,7 +143,7 @@ export OPENAI_API_KEY="sk-xxx"
 
 ### `KIMI_SHARE_DIR`
 
-Customize the share directory path for Kimi Code CLI. The default path is `~/.kimi`, where configuration, sessions, logs, and other runtime data are stored.
+Customize the share directory path for BugPilot. The default path is `~/.kimi`, where configuration, sessions, logs, and other runtime data are stored.
 
 ```sh
 export KIMI_SHARE_DIR="/path/to/custom/kimi"
@@ -164,7 +164,7 @@ export KIMI_CLI_NO_AUTO_UPDATE="1"
 ```
 
 ::: tip
-If you installed Kimi Code CLI via Nix or other package managers, this environment variable is typically set automatically since updates are handled by the package manager.
+If you installed BugPilot via Nix or other package managers, this environment variable is typically set automatically since updates are handled by the package manager.
 :::
 
 ### `KIMI_CLI_PASTE_CHAR_THRESHOLD`

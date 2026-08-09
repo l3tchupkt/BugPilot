@@ -1,19 +1,19 @@
-# Kimi SDK
+# BugPilot SDK
 
-Kimi SDK provides a convenient way to access the Kimi API and build agent workflows in Python.
+BugPilot SDK provides a convenient way to access the BugPilot API and build agent workflows in Python.
 
 ## Installation
 
-Kimi SDK requires Python 3.12 or higher. We recommend using uv as the package manager.
+BugPilot SDK requires Python 3.12 or higher. We recommend using uv as the package manager.
 
 ```bash
 uv init --python 3.12  # or higher
 ```
 
-Then add Kimi SDK as a dependency:
+Then add BugPilot SDK as a dependency:
 
 ```bash
-uv add kimi-sdk
+uv add bugpilot-sdk
 ```
 
 ## Examples
@@ -23,11 +23,11 @@ uv add kimi-sdk
 ```python
 import asyncio
 
-from kimi_sdk import Kimi, Message, generate
+from bugpilot_sdk import BugPilot, Message, generate
 
 
 async def main() -> None:
-    kimi = Kimi(
+    kimi = BugPilot(
         base_url="https://api.moonshot.ai/v1",
         api_key="your_kimi_api_key_here",
         model="kimi-k2-turbo-preview",
@@ -55,11 +55,11 @@ asyncio.run(main())
 ```python
 import asyncio
 
-from kimi_sdk import Kimi, Message, StreamedMessagePart, generate
+from bugpilot_sdk import BugPilot, Message, StreamedMessagePart, generate
 
 
 async def main() -> None:
-    kimi = Kimi(
+    kimi = BugPilot(
         base_url="https://api.moonshot.ai/v1",
         api_key="your_kimi_api_key_here",
         model="kimi-k2-turbo-preview",
@@ -91,11 +91,11 @@ asyncio.run(main())
 ```python
 import asyncio
 from pathlib import Path
-from kimi_sdk import Kimi, Message, TextPart, generate
+from bugpilot_sdk import BugPilot, Message, TextPart, generate
 
 
 async def main() -> None:
-    kimi = Kimi(
+    kimi = BugPilot(
         base_url="https://api.moonshot.ai/v1",
         api_key="your_kimi_api_key_here",
         model="kimi-k2-turbo-preview",
@@ -137,7 +137,7 @@ import asyncio
 
 from pydantic import BaseModel
 
-from kimi_sdk import CallableTool2, Kimi, Message, SimpleToolset, StepResult, ToolOk, ToolReturnValue, step
+from bugpilot_sdk import CallableTool2, BugPilot, Message, SimpleToolset, StepResult, ToolOk, ToolReturnValue, step
 
 
 class AddToolParams(BaseModel):
@@ -155,7 +155,7 @@ class AddTool(CallableTool2[AddToolParams]):
 
 
 async def main() -> None:
-    kimi = Kimi(
+    kimi = BugPilot(
         base_url="https://api.moonshot.ai/v1",
         api_key="your_kimi_api_key_here",
         model="kimi-k2-turbo-preview",
@@ -183,5 +183,5 @@ asyncio.run(main())
 
 ## Environment variables
 
-- `BUGPILOT_API_KEY`: API key for the Kimi API.
+- `BUGPILOT_API_KEY`: API key for the BugPilot API.
 - `BUGPILOT_BASE_URL`: Override the API base URL (defaults to `https://api.moonshot.ai/v1`).

@@ -1,6 +1,6 @@
 # Config Overrides
 
-Kimi Code CLI configuration can be set through multiple methods, with different sources overriding each other by priority.
+BugPilot configuration can be set through multiple methods, with different sources overriding each other by priority.
 
 ## Priority
 

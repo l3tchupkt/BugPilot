@@ -1,16 +1,16 @@
 # Agent Skills
 
-[Agent Skills](https://agentskills.io/) 是一个开放格式，用于为 AI Agent 添加专业知识和工作流程。Kimi Code CLI 支持加载 Agent Skills，扩展 AI 的能力。
+[Agent Skills](https://agentskills.io/) 是一个开放格式，用于为 AI Agent 添加专业知识和工作流程。BugPilot 支持加载 Agent Skills，扩展 AI 的能力。
 
 ## Agent Skills 是什么
 
-一个 Skill 就是一个包含 `SKILL.md` 文件的目录。Kimi Code CLI 启动时会发现所有 Skills，并将它们的名称、路径和描述注入到系统提示词中。AI 会根据当前任务的需要，自行决定是否读取具体的 `SKILL.md` 文件来获取详细指引。
+一个 Skill 就是一个包含 `SKILL.md` 文件的目录。BugPilot 启动时会发现所有 Skills，并将它们的名称、路径和描述注入到系统提示词中。AI 会根据当前任务的需要，自行决定是否读取具体的 `SKILL.md` 文件来获取详细指引。
 
 例如，你可以创建一个「代码风格」Skill，告诉 AI 你项目的命名规范、注释风格等；或者创建一个「安全审计」Skill，让 AI 在审查代码时关注特定的安全问题。
 
 **Skills 与插件的区别**
 
-Kimi Code CLI 支持两种扩展机制：
+BugPilot 支持两种扩展机制：
 
 - **Skills**：通过 `SKILL.md` 提供知识性指导，AI 读取后遵循其中的规范。适合定义代码风格、工作流程、最佳实践等。
 - **插件**：通过 `plugin.json` 声明可执行工具，AI 可以直接调用工具获取结果。适合封装脚本、API 调用、数据库查询等。
@@ -19,7 +19,7 @@ Kimi Code CLI 支持两种扩展机制：
 
 ## Skill 发现
 
-Kimi Code CLI 采用分层加载机制发现 Skills。当同名 Skill 存在于多个作用域时，越具体的作用域优先：
+BugPilot 采用分层加载机制发现 Skills。当同名 Skill 存在于多个作用域时，越具体的作用域优先：
 
 **Project > User > Extra > Built-in**
 
@@ -117,9 +117,9 @@ Skills 路径独立于 [`KIMI_SHARE_DIR`](../configuration/env-vars.md#kimi-shar
 
 ## 内置 Skills
 
-Kimi Code CLI 内置了以下 Skills：
+BugPilot 内置了以下 Skills：
 
-- **bugpilot-help**：Kimi Code CLI 帮助。解答关于 Kimi Code CLI 安装、配置、斜杠命令、键盘快捷键、MCP 集成、供应商、环境变量等问题。
+- **bugpilot-help**：BugPilot 帮助。解答关于 BugPilot 安装、配置、斜杠命令、键盘快捷键、MCP 集成、供应商、环境变量等问题。
 - **skill-creator**：Skill 创建指南。当你需要创建新的 Skill（或更新现有 Skill）来扩展 Kimi 的能力时，可以使用此 Skill 获取详细的创建指导和最佳实践。
 
 ## 创建 Skill
@@ -251,7 +251,7 @@ description: Git 提交信息规范，使用 Conventional Commits 格式
 
 ## 使用斜杠命令加载 Skill
 
-`/skill:<name>` 斜杠命令让你可以将常用的提示词模板保存为 Skill，需要时快速调用。输入命令后，Kimi Code CLI 会读取对应的 `SKILL.md` 文件内容，并将其作为提示词发送给 Agent。
+`/skill:<name>` 斜杠命令让你可以将常用的提示词模板保存为 Skill，需要时快速调用。输入命令后，BugPilot 会读取对应的 `SKILL.md` 文件内容，并将其作为提示词发送给 Agent。
 
 例如：
 

@@ -1,6 +1,6 @@
 # 环境变量
 
-Kimi Code CLI 支持通过环境变量覆盖配置或控制运行行为。本页列出所有支持的环境变量。
+BugPilot 支持通过环境变量覆盖配置或控制运行行为。本页列出所有支持的环境变量。
 
 关于环境变量如何覆盖配置文件的详细说明，请参阅 [配置覆盖](./overrides.md)。
 
@@ -79,7 +79,7 @@ export KIMI_MODEL_TOP_P="0.9"
 
 ### `KIMI_MODEL_MAX_COMPLETION_TOKENS`
 
-设置生成参数 `max_completion_tokens` 的显式硬上限。未设置时，Kimi Code CLI 使用模型的
+设置生成参数 `max_completion_tokens` 的显式硬上限。未设置时，BugPilot 使用模型的
 剩余上下文窗口；每次请求都会将实际值动态限制为
 `max_context_size - input_tokens`。
 
@@ -143,7 +143,7 @@ export OPENAI_API_KEY="sk-xxx"
 
 ### `KIMI_SHARE_DIR`
 
-自定义 Kimi Code CLI 的共享目录路径。默认路径为 `~/.kimi`，配置、会话、日志等运行时数据存储在此目录下。
+自定义 BugPilot 的共享目录路径。默认路径为 `~/.kimi`，配置、会话、日志等运行时数据存储在此目录下。
 
 ```sh
 export KIMI_SHARE_DIR="/path/to/custom/kimi"
@@ -164,7 +164,7 @@ export KIMI_CLI_NO_AUTO_UPDATE="1"
 ```
 
 ::: tip 提示
-如果你通过 Nix 或其他包管理器安装 Kimi Code CLI，通常会自动设置此环境变量，因为更新由包管理器处理。
+如果你通过 Nix 或其他包管理器安装 BugPilot，通常会自动设置此环境变量，因为更新由包管理器处理。
 :::
 
 ### `KIMI_CLI_PASTE_CHAR_THRESHOLD`

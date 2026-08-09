@@ -24,8 +24,8 @@ prepare-build: download-deps ## Sync dependencies for releases without workspace
 
 
 
-.PHONY: format format-bugpilot format-kosong format-pykaos format-kimi-sdk
-format: format-bugpilot format-kosong format-pykaos format-kimi-sdk ## Auto-format all workspace packages.
+.PHONY: format format-bugpilot format-kosong format-pykaos format-bugpilot-sdk
+format: format-bugpilot format-kosong format-pykaos format-bugpilot-sdk ## Auto-format all workspace packages.
 format-bugpilot: ## Auto-format BugPilot sources with ruff.
 	@echo "==> Formatting BugPilot sources"
 	@uv run ruff check --fix
@@ -38,12 +38,12 @@ format-pykaos: ## Auto-format pykaos sources with ruff.
 	@echo "==> Formatting pykaos sources"
 	@uv run --project packages/kaos --directory packages/kaos ruff check --fix
 	@uv run --project packages/kaos --directory packages/kaos ruff format
-format-kimi-sdk: ## Auto-format kimi-sdk sources with ruff.
-	@echo "==> Formatting kimi-sdk sources"
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk ruff check --fix
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk ruff format
-.PHONY: check check-bugpilot check-kosong check-pykaos check-kimi-sdk
-check: check-bugpilot check-kosong check-pykaos check-kimi-sdk ## Run linting and type checks for all packages.
+format-bugpilot-sdk: ## Auto-format bugpilot-sdk sources with ruff.
+	@echo "==> Formatting bugpilot-sdk sources"
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk ruff check --fix
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk ruff format
+.PHONY: check check-bugpilot check-kosong check-pykaos check-bugpilot-sdk
+check: check-bugpilot check-kosong check-pykaos check-bugpilot-sdk ## Run linting and type checks for all packages.
 check-bugpilot: ## Run linting and type checks for BugPilot.
 	@echo "==> Checking BugPilot (ruff + pyright + ty; ty is non-blocking)"
 	@uv run ruff check
@@ -62,14 +62,14 @@ check-pykaos: ## Run linting and type checks for pykaos.
 	@uv run --project packages/kaos --directory packages/kaos ruff format --check
 	@uv run --project packages/kaos --directory packages/kaos pyright
 	@uv run --project packages/kaos --directory packages/kaos ty check || true
-check-kimi-sdk: ## Run linting and type checks for kimi-sdk.
-	@echo "==> Checking kimi-sdk (ruff + pyright + ty; ty is non-blocking)"
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk ruff check
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk ruff format --check
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk pyright
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk ty check || true
-.PHONY: test test-bugpilot test-kosong test-pykaos test-kimi-sdk
-test: test-bugpilot test-kosong test-pykaos test-kimi-sdk ## Run all test suites.
+check-bugpilot-sdk: ## Run linting and type checks for bugpilot-sdk.
+	@echo "==> Checking bugpilot-sdk (ruff + pyright + ty; ty is non-blocking)"
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk ruff check
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk ruff format --check
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk pyright
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk ty check || true
+.PHONY: test test-bugpilot test-kosong test-pykaos test-bugpilot-sdk
+test: test-bugpilot test-kosong test-pykaos test-bugpilot-sdk ## Run all test suites.
 test-bugpilot: ## Run BugPilot tests.
 	@echo "==> Running BugPilot tests"
 	@uv run pytest tests -vv
@@ -80,11 +80,11 @@ test-kosong: ## Run kosong tests (including doctests).
 test-pykaos: ## Run pykaos tests.
 	@echo "==> Running pykaos tests"
 	@uv run --project packages/kaos --directory packages/kaos pytest tests -vv
-test-kimi-sdk: ## Run kimi-sdk tests.
-	@echo "==> Running kimi-sdk tests"
-	@uv run --project sdks/kimi-sdk --directory sdks/kimi-sdk pytest tests -vv
-.PHONY: build build-bugpilot build-kosong build-pykaos build-kimi-sdk build-bin build-bin-onedir
-build: build-bugpilot build-kosong build-pykaos build-kimi-sdk ## Build Python packages for release.
+test-bugpilot-sdk: ## Run bugpilot-sdk tests.
+	@echo "==> Running bugpilot-sdk tests"
+	@uv run --project sdks/bugpilot-sdk --directory sdks/bugpilot-sdk pytest tests -vv
+.PHONY: build build-bugpilot build-kosong build-pykaos build-bugpilot-sdk build-bin build-bin-onedir
+build: build-bugpilot build-kosong build-pykaos build-bugpilot-sdk ## Build Python packages for release.
 build-bugpilot: ## Build the bugpilot and bugpilot sdists and wheels.
 	@echo "==> Injecting build SHA"
 	@uv run scripts/inject_build_sha.py
@@ -96,9 +96,9 @@ build-kosong: ## Build the kosong sdist and wheel.
 build-pykaos: ## Build the pykaos sdist and wheel.
 	@echo "==> Building pykaos distributions"
 	@uv build --package pykaos --no-sources --out-dir dist/pykaos
-build-kimi-sdk: ## Build the kimi-sdk sdist and wheel.
-	@echo "==> Building kimi-sdk distributions"
-	@uv build --package kimi-sdk --no-sources --out-dir dist/bugpilot-sdk
+build-bugpilot-sdk: ## Build the bugpilot-sdk sdist and wheel.
+	@echo "==> Building bugpilot-sdk distributions"
+	@uv build --package bugpilot-sdk --no-sources --out-dir dist/bugpilot-sdk
 build-bin: ## Build the standalone executable with PyInstaller (one-file mode).
 	@echo "==> Injecting build SHA"
 	@BUGPILOT_BUILD_SHA=$$(git rev-parse HEAD 2>/dev/null | cut -c1-12) uv run scripts/inject_build_sha.py
