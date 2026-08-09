@@ -265,9 +265,31 @@ class BugPilotCLI:
                 base_url="",
             )
         else:
-            provider_instance = ProviderRegistry.create(
-                config, model_name or config.default_model or "", session_id=session.id
-            )
+            try:
+                provider_instance = ProviderRegistry.create(
+                    config, model_name or config.default_model or "", session_id=session.id
+                )
+            except Exception as e:
+                if "api_key" in str(e).lower() and ui_mode == "shell":
+                    import rich.prompt
+                    import rich.console
+                    from pydantic import SecretStr
+                    from bugpilot.config import save_config
+                    
+                    console = rich.console.Console(stderr=True)
+                    provider_key = model.provider
+                    console.print(f"\n[yellow]API key for '{provider_key}' is missing.[/yellow]")
+                    api_key_input = rich.prompt.Prompt.ask("Please enter your API key (input is hidden)", password=True)
+                    if api_key_input:
+                        provider.api_key = SecretStr(api_key_input)
+                        save_config(config, config.source_file)
+                        provider_instance = ProviderRegistry.create(
+                            config, model_name or config.default_model or "", session_id=session.id
+                        )
+                    else:
+                        raise e
+                else:
+                    raise e
         llm = LLM(
             provider=provider_instance,
             max_context_size=model.max_context_size,
