@@ -108,6 +108,7 @@ class BackgroundAgentRunner:
             self._manager._mark_task_killed(self._task_id, "Run was cancelled")
             output.stage("cancelled")
         except Exception as exc:
+            print(f"==== BACKGROUND_AGENT EXCEPTION: {exc} ====", flush=True)
             logger.exception("Background agent runner failed")
             self._runtime.subagent_store.update_instance(self._agent_id, status="failed")
             self._manager._mark_task_failed(self._task_id, str(exc))
