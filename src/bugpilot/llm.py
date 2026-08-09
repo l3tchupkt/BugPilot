@@ -48,6 +48,10 @@ class LLM:
     model_config: LLMModel | None = None
     provider_config: ConfigLLMProvider | None = None
 
+    @property
+    def model_name(self) -> str:
+        return self.model_config.model if self.model_config else ""
+
 
 def compute_max_completion_tokens(
     *,

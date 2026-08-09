@@ -25,7 +25,7 @@ class KosongAdapter(LLMProvider):
         self, messages: list[Message], tools: list[Tool] | None = None, **kwargs: Any
     ) -> LLMResponse:
         # We simulate generate by consuming the stream
-        stream = await self.stream(messages, tools, **kwargs)
+        stream = self.stream(messages, tools, **kwargs)
 
         content = ""
         reasoning_content = ""

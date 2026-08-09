@@ -41,6 +41,9 @@ class ProviderRegistry:
         if not api_key and provider_config.api_key:
             api_key = provider_config.api_key.get_secret_value()
 
+        if not api_key:
+            api_key = "missing_api_key"
+            
         provider_type = provider_config.type
 
         # Instantiate appropriate provider
