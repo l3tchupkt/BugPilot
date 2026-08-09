@@ -52,6 +52,10 @@ class LLM:
     def model_name(self) -> str:
         return self.model_config.model if self.model_config else ""
 
+    @property
+    def chat_provider(self) -> Any:
+        return getattr(self.provider, "_chat_provider", self.provider)
+
 
 def compute_max_completion_tokens(
     *,
