@@ -70,12 +70,12 @@ git diff main --stat
 
 ## 以非交互模式隔离运行 CLI
 
-使用 `/tmp` 下的一次性目录作为 `--work-dir`，实现 session 隔离。CLI 的 session 路径由 `~/.kimi/sessions/<md5(work_dir)>/` 决定，不同的 work-dir 自动产生独立的 session 命名空间，不会污染正常项目的 session。认证状态保留在 `~/.kimi` 下，无需额外配置。
+使用 `/tmp` 下的一次性目录作为 `--work-dir`，实现 session 隔离。CLI 的 session 路径由 `~/.bugpilot/sessions/<md5(work_dir)>/` 决定，不同的 work-dir 自动产生独立的 session 命名空间，不会污染正常项目的 session。认证状态保留在 `~/.bugpilot` 下，无需额外配置。
 
 ### 环境准备
 
 ```sh
-SMOKE_DIR="$(mktemp -d /tmp/kimi-smoke-XXXXXX)"
+SMOKE_DIR="$(mktemp -d /tmp/bugpilot-smoke-XXXXXX)"
 ```
 
 如果功能需要仓库上下文（读取代码、git 信息等），把仓库文件复制或软链到 `SMOKE_DIR`。如果功能会编辑文件，绝不要用活跃仓库作为 work-dir。
@@ -123,14 +123,14 @@ echo "exit_code=$?"
 
 首先检查：
 
-- `~/.kimi/sessions/.../context.jsonl`
-- `~/.kimi/sessions/.../wire.jsonl`
+- `~/.bugpilot/sessions/.../context.jsonl`
+- `~/.bugpilot/sessions/.../wire.jsonl`
 - 功能创建的 session 级文件
 
 使用 `scripts/inspect_session.py` 查找并汇总最新 session：
 
 ```sh
-uv run python .agents/skills/feature-smoke-test/scripts/inspect_session.py --share-dir ~/.kimi
+uv run python .agents/skills/feature-smoke-test/scripts/inspect_session.py --share-dir ~/.bugpilot
 ```
 
 脚本退出码含义：0 = 正常汇总，1 = session 目录缺失或无法解析。

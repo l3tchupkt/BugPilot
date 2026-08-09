@@ -112,7 +112,7 @@ build-bin-onedir: ## Build the standalone executable with PyInstaller (one-dir m
 	@echo "==> Building PyInstaller binary (one-dir)"
 	@rm -rf dist/onedir dist/bugpilot
 	@BUGPILOT_BUILD_SHA=$$(git rev-parse HEAD 2>/dev/null | cut -c1-12) PYINSTALLER_ONEDIR=1 uv run pyinstaller bugpilot.spec
-	@if [ -f dist/bugpilot/bugpilot-exe.exe ]; then mv dist/bugpilot/bugpilot-exe.exe dist/bugpilot/bugpilot.exe; elif [ -f dist/bugpilot/bugpilot-exe ]; then mv dist/bugpilot/bugpilot-exe dist/bugpilot/kimi; fi
+	@if [ -f dist/bugpilot/bugpilot-exe.exe ]; then mv dist/bugpilot/bugpilot-exe.exe dist/bugpilot/bugpilot.exe; elif [ -f dist/bugpilot/bugpilot-exe ]; then mv dist/bugpilot/bugpilot-exe dist/bugpilot/bugpilot; fi
 	@mkdir -p dist/onedir && mv dist/bugpilot dist/onedir/
 .PHONY: ai-test
 ai-test: ## Run the test suite with BugPilot.

@@ -27,10 +27,10 @@ from bugpilot_sdk import BugPilot, Message, generate
 
 
 async def main() -> None:
-    kimi = BugPilot(
-        base_url="https://api.moonshot.ai/v1",
-        api_key="your_kimi_api_key_here",
-        model="kimi-k2-turbo-preview",
+    bugpilot = BugPilot(
+        base_url="https://api.bugpilot.ai/v1",
+        api_key="your_bugpilot_api_key_here",
+        model="bugpilot-k2-turbo-preview",
     )
 
     history = [
@@ -38,7 +38,7 @@ async def main() -> None:
     ]
 
     result = await generate(
-        chat_provider=kimi,
+        chat_provider=bugpilot,
         system_prompt="You are a helpful assistant.",
         tools=[],
         history=history,
@@ -59,10 +59,10 @@ from bugpilot_sdk import BugPilot, Message, StreamedMessagePart, generate
 
 
 async def main() -> None:
-    kimi = BugPilot(
-        base_url="https://api.moonshot.ai/v1",
-        api_key="your_kimi_api_key_here",
-        model="kimi-k2-turbo-preview",
+    bugpilot = BugPilot(
+        base_url="https://api.bugpilot.ai/v1",
+        api_key="your_bugpilot_api_key_here",
+        model="bugpilot-k2-turbo-preview",
     )
 
     history = [
@@ -73,7 +73,7 @@ async def main() -> None:
         print(message_part)
 
     result = await generate(
-        chat_provider=kimi,
+        chat_provider=bugpilot,
         system_prompt="You are a helpful assistant.",
         tools=[],
         history=history,
@@ -95,14 +95,14 @@ from bugpilot_sdk import BugPilot, Message, TextPart, generate
 
 
 async def main() -> None:
-    kimi = BugPilot(
-        base_url="https://api.moonshot.ai/v1",
-        api_key="your_kimi_api_key_here",
-        model="kimi-k2-turbo-preview",
+    bugpilot = BugPilot(
+        base_url="https://api.bugpilot.ai/v1",
+        api_key="your_bugpilot_api_key_here",
+        model="bugpilot-k2-turbo-preview",
     )
 
     video_path = Path("demo.mp4")
-    video_part = await kimi.files.upload_video(
+    video_part = await bugpilot.files.upload_video(
         data=video_path.read_bytes(),
         mime_type="video/mp4",
     )
@@ -118,7 +118,7 @@ async def main() -> None:
     ]
 
     result = await generate(
-        chat_provider=kimi,
+        chat_provider=bugpilot,
         system_prompt="You are a helpful assistant.",
         tools=[],
         history=history,
@@ -155,10 +155,10 @@ class AddTool(CallableTool2[AddToolParams]):
 
 
 async def main() -> None:
-    kimi = BugPilot(
-        base_url="https://api.moonshot.ai/v1",
-        api_key="your_kimi_api_key_here",
-        model="kimi-k2-turbo-preview",
+    bugpilot = BugPilot(
+        base_url="https://api.bugpilot.ai/v1",
+        api_key="your_bugpilot_api_key_here",
+        model="bugpilot-k2-turbo-preview",
     )
 
     toolset = SimpleToolset()
@@ -169,7 +169,7 @@ async def main() -> None:
     ]
 
     result: StepResult = await step(
-        chat_provider=kimi,
+        chat_provider=bugpilot,
         system_prompt="You are a precise math tutor.",
         toolset=toolset,
         history=history,
@@ -184,4 +184,4 @@ asyncio.run(main())
 ## Environment variables
 
 - `BUGPILOT_API_KEY`: API key for the BugPilot API.
-- `BUGPILOT_BASE_URL`: Override the API base URL (defaults to `https://api.moonshot.ai/v1`).
+- `BUGPILOT_BASE_URL`: Override the API base URL (defaults to `https://api.bugpilot.ai/v1`).

@@ -23,8 +23,8 @@ from bugpilot.session import Session
 from bugpilot.share import get_share_dir
 from bugpilot.soul import RunCancelled, run_soul
 from bugpilot.soul.agent import Runtime, load_agent
-from bugpilot.soul.context import Context
 from bugpilot.soul.agent_loop import Agent
+from bugpilot.soul.context import Context
 from bugpilot.soul.toolset import Toolset
 from bugpilot.utils.aioqueue import QueueShutDown
 from bugpilot.utils.logging import logger, open_original_stderr, redirect_stderr_to_logger
@@ -88,7 +88,6 @@ def _write_original_stderr(text: str) -> None:
 
 
 async def _refresh_managed_models_silent(config: Config) -> None:
-
     try:
         pass
     except Exception as exc:
@@ -200,7 +199,7 @@ class BugPilotCLI:
         logger.info("Loaded config: {config}", config=config)
 
         _phase_t = time.monotonic()
-#         oauth = OAuthManager(config)
+        #         oauth = OAuthManager(config)
 
         bg_refresh_task = asyncio.create_task(_refresh_managed_models_silent(config))
 
@@ -210,7 +209,9 @@ class BugPilotCLI:
         # resolve active provider configuration
         if config.provider:
             provider = config.providers.get(config.provider.name)
-            model = LLMModel(provider=config.provider.name, model=config.provider.model, max_context_size=128000)
+            model = LLMModel(
+                provider=config.provider.name, model=config.provider.model, max_context_size=128000
+            )
         else:
             if not model_name and config.default_model:
                 model = config.models.get(config.default_model)
@@ -239,18 +240,20 @@ class BugPilotCLI:
         if not resumed:
             plan_mode = plan_mode if plan_mode else config.default_plan_mode
 
+        from bugpilot.llm import LLM, derive_model_capabilities
         from bugpilot.providers.registry import ProviderRegistry
-        from bugpilot.llm import derive_model_capabilities, LLM
-        
-        provider_instance = ProviderRegistry.create(config, model_name or config.default_model or "", session_id=session.id)
+
+        provider_instance = ProviderRegistry.create(
+            config, model_name or config.default_model or "", session_id=session.id
+        )
         llm = LLM(
             provider=provider_instance,
             max_context_size=model.max_context_size,
             capabilities=derive_model_capabilities(model),
             model_config=model,
-            provider_config=provider
+            provider_config=provider,
         )
-        
+
         if llm is not None:
             logger.info("Using LLM provider: {provider}", provider=provider)
             logger.info("Using LLM model: {model}", model=model)
@@ -332,10 +335,9 @@ class BugPilotCLI:
         # --- Initialize telemetry ---
         telemetry_disabled = True
 
-
         # App init finished — enter runtime phase and hook asyncio crashes.
-#         install_asyncio_handler()
-#         set_phase("runtime")
+        #         install_asyncio_handler()
+        #         set_phase("runtime")
 
         pass
 
@@ -732,7 +734,7 @@ class BugPilotCLI:
                 )
         from bugpilot.ui.shell.migration_nudge import (
             already_installed_text,
-            kimi_code_installed,
+            bugpilot_code_installed,
             welcome_card_text,
         )
 
@@ -741,7 +743,7 @@ class BugPilotCLI:
                 name="\n* Update",
                 value=(
                     already_installed_text(sys.platform)
-                    if kimi_code_installed()
+                    if bugpilot_code_installed()
                     else welcome_card_text()
                 ),
                 level=WelcomeInfoItem.Level.WARN,

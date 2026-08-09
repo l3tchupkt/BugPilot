@@ -104,8 +104,8 @@ type ToolCallKey = tuple[str, str]
 
 if TYPE_CHECKING:
 
-    def type_check(kimi_toolset: Toolset):
-        _: Toolset = kimi_toolset
+    def type_check(bugpilot_toolset: Toolset):
+        _: Toolset = bugpilot_toolset
 
 
 _REMINDER_TEXT_1 = (
@@ -364,7 +364,6 @@ class Toolset:
 
             # Same-step dedup: wait for the original task and copy its result.
             if call_key in self._current_step_tasks:
-
                 original_task = self._current_step_tasks[call_key]
 
                 async def _await_dup() -> ToolResult:
@@ -390,12 +389,16 @@ class Toolset:
                         dup_kwargs["error_type"] = "error"
                         dup_kwargs["error_class"] = type(dup_error).__name__
 
+                    return ToolResult(
+                        tool_call_id=tool_call.id,
+                        return_value=original_result.return_value,
+                    )
+
                 return asyncio.create_task(_await_dup())
 
             is_cross_step_dup = call_key in self._seen_call_keys
             reminder_text: str | None = None
             if is_cross_step_dup:
-
                 repeat_count = self._projected_streak_for_call(call_index)
                 action, reminder_text = _build_repeat_reminder(
                     repeat_count, tool_name, canonical_args
@@ -438,7 +441,6 @@ class Toolset:
                 try:
                     ret = await tool.call(arguments)
                 except asyncio.CancelledError:
-
                     raise
                 except Exception as e:
                     tool_elapsed = time.monotonic() - t0

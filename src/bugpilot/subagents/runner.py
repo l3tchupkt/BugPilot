@@ -15,7 +15,6 @@ from bugpilot.approval_runtime import (
     set_current_approval_source,
 )
 from bugpilot.soul import MaxStepsReached, RunCancelled, UILoopFn, get_wire_or_none, run_soul
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.toolset import get_current_tool_call_or_none
 from bugpilot.subagents.builder import SubagentBuilder
 from bugpilot.subagents.core import SubagentRunSpec, prepare_soul
@@ -382,7 +381,7 @@ class ForegroundSubagentRunner:
             ),
         )
 
-#         track("subagent_created")
+        #         track("subagent_created")
         return PreparedInstance(
             record=record,
             actual_type=actual_type,

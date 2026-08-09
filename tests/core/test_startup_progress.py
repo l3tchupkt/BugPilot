@@ -119,12 +119,12 @@ async def test_bugpilot_create_reports_startup_phases(session, config, monkeypat
 
 
 @pytest.mark.asyncio
-async def test_run_shell_adds_kimi_code_migration_card(runtime, monkeypatch) -> None:
+async def test_run_shell_adds_bugpilot_code_migration_card(runtime, monkeypatch) -> None:
     from bugpilot.ui.shell import WelcomeInfoItem
 
     # Not installed -> the welcome screen shows the upgrade card (deterministic).
     monkeypatch.setattr(
-        "bugpilot.ui.shell.migration_nudge.kimi_code_installed", lambda home=None: False
+        "bugpilot.ui.shell.migration_nudge.bugpilot_code_installed", lambda home=None: False
     )
 
     captured: dict[str, object] = {}

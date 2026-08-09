@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 from pathlib import Path
 
 import pytest
@@ -9,7 +10,6 @@ from kosong.tooling.empty import EmptyToolset
 
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.slash import plan
 from bugpilot.tools.plan.heroes import _slug_cache
 from bugpilot.wire.types import TextPart
@@ -22,17 +22,17 @@ def _clear_slug_cache():
     _slug_cache.clear()
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> AgentLoop:
     agent = Agent(
         name="Test Agent",
         system_prompt="Test system prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
-async def _run_plan(soul: Agent, args: str) -> None:
+async def _run_plan(soul: AgentLoop, args: str) -> None:
     result = plan(soul, args)
     if result is not None:
         await result

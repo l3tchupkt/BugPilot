@@ -14,7 +14,7 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-def _run_kimi(args: list[str], *, share_dir: Path) -> subprocess.CompletedProcess[str]:
+def _run_bugpilot(args: list[str], *, share_dir: Path) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env["BUGPILOT_SHARE_DIR"] = str(share_dir)
     # Stabilize rich/Click formatting across environments for snapshot tests.
@@ -59,7 +59,7 @@ def _normalize_cli_error_output(text: str) -> str:
 
 def test_config_option_requires_argument_is_reported(tmp_path: Path) -> None:
     share_dir = tmp_path / "share"
-    result = _run_kimi(["--config"], share_dir=share_dir)
+    result = _run_bugpilot(["--config"], share_dir=share_dir)
     assert result.returncode == snapshot(2)
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
@@ -72,7 +72,7 @@ Option '--config' requires an argument.
 
 def test_config_option_help_value_is_reported(tmp_path: Path) -> None:
     share_dir = tmp_path / "share"
-    result = _run_kimi(["--config", "--help"], share_dir=share_dir)
+    result = _run_bugpilot(["--config", "--help"], share_dir=share_dir)
     assert result.returncode == snapshot(2)
     assert result.stdout == snapshot("")
     normalized = _normalize_cli_error_output(result.stderr)
@@ -95,7 +95,7 @@ def test_invalid_config_toml_is_reported(tmp_path: Path) -> None:
     config_path = tmp_path / "bad-config.toml"
     config_path.write_text("this is not toml =\n", encoding="utf-8")
 
-    result = _run_kimi(
+    result = _run_bugpilot(
         ["--print", "--yolo", "--prompt", "hello", "--config-file", str(config_path)],
         share_dir=share_dir,
     )
@@ -114,7 +114,7 @@ Run with --debug for full traceback, or run bugpilot export to share diagnostics
 
 def test_session_and_continue_conflict_is_reported(tmp_path: Path) -> None:
     share_dir = tmp_path / "share"
-    result = _run_kimi(["--session", "abc", "--continue"], share_dir=share_dir)
+    result = _run_bugpilot(["--session", "abc", "--continue"], share_dir=share_dir)
     assert result.returncode == snapshot(2)
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
@@ -129,7 +129,7 @@ Invalid value for --continue: Cannot combine --continue, --session.
 
 def test_session_picker_with_print_mode_is_reported(tmp_path: Path) -> None:
     share_dir = tmp_path / "share"
-    result = _run_kimi(["--session", "--print", "--prompt", "hi"], share_dir=share_dir)
+    result = _run_bugpilot(["--session", "--print", "--prompt", "hi"], share_dir=share_dir)
     assert result.returncode == snapshot(2)
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
@@ -144,7 +144,7 @@ Invalid value for --session: --session without a session ID is only supported fo
 
 def test_resume_alias_and_continue_conflict_is_reported(tmp_path: Path) -> None:
     share_dir = tmp_path / "share"
-    result = _run_kimi(["--resume", "abc", "--continue"], share_dir=share_dir)
+    result = _run_bugpilot(["--resume", "abc", "--continue"], share_dir=share_dir)
     assert result.returncode == snapshot(2)
     assert result.stdout == snapshot("")
     assert _normalize_cli_error_output(result.stderr) == snapshot(
@@ -167,7 +167,7 @@ def test_continue_without_previous_session_is_reported(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    result = _run_kimi(
+    result = _run_bugpilot(
         [
             "--continue",
             "--print",

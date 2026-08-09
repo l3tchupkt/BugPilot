@@ -10,6 +10,7 @@ import asyncio
 
 import pytest
 
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.utils.aioqueue import QueueShutDown
 
 
@@ -21,7 +22,6 @@ async def test_watcher_survives_handler_exception(runtime, tmp_path) -> None:
 
     from bugpilot.soul.agent import Agent
     from bugpilot.soul.context import Context
-    from bugpilot.soul.agent_loop import Agent
     from bugpilot.ui.shell import Shell
     from bugpilot.wire.types import ApprovalRequest
 
@@ -31,7 +31,7 @@ async def test_watcher_survives_handler_exception(runtime, tmp_path) -> None:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
     shell = Shell(soul)
 
     hub = runtime.root_wire_hub
@@ -94,8 +94,6 @@ async def test_watcher_exits_gracefully_on_queue_shutdown(runtime, tmp_path) -> 
     from kosong.tooling.empty import EmptyToolset
 
     from bugpilot.soul.agent import Agent
-    from bugpilot.soul.context import Context
-    from bugpilot.soul.agent_loop import Agent
     from bugpilot.ui.shell import Shell
 
     agent = Agent(
@@ -104,7 +102,7 @@ async def test_watcher_exits_gracefully_on_queue_shutdown(runtime, tmp_path) -> 
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "h.jsonl"))
     shell = Shell(soul)
 
     watcher_task = asyncio.create_task(shell._watch_root_wire_hub())

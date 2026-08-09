@@ -10,7 +10,7 @@ from prompt_toolkit.document import Document
 from prompt_toolkit.layout.containers import ConditionalContainer, FloatContainer, HSplit, Window
 from prompt_toolkit.utils import get_cwidth
 
-import bugpilot.ui.shell.prompt as prompt_mod
+import bugpilot.ui.shell as prompt_mod
 from bugpilot.ui.shell.prompt import (
     SlashCommandCompleter,
     SlashCommandMenuControl,

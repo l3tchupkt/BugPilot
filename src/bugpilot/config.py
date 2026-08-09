@@ -57,9 +57,9 @@ class LLMProvider(BaseModel):
 
 class ActiveProviderConfig(BaseModel):
     """Configuration for the currently active provider and model."""
+
     name: str
     model: str
-
 
 
 class LLMModel(BaseModel):
@@ -130,11 +130,8 @@ class NotificationConfig(BaseModel):
     claim_stale_after_ms: int = Field(default=15_000, ge=1000)
 
 
-
-
 class Services(BaseModel):
     """Services configuration."""
-
 
 
 class MCPClientConfig(BaseModel):

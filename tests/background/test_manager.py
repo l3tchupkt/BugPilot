@@ -67,7 +67,7 @@ def test_create_bash_task_respects_max_running_tasks(runtime, monkeypatch):
             timeout_s=10,
             tool_call_id="tool-1b",
             shell_name=runtime.environment.shell_name,
-        shell_path=str(runtime.environment.shell_path),
+            shell_path=str(runtime.environment.shell_path),
             cwd=str(runtime.session.work_dir),
         )
 
@@ -122,7 +122,7 @@ def test_create_bash_task_records_failed_runtime_when_worker_launch_fails(runtim
             timeout_s=10,
             tool_call_id="tool-launch-fail",
             shell_name=runtime.environment.shell_name,
-        shell_path=str(runtime.environment.shell_path),
+            shell_path=str(runtime.environment.shell_path),
             cwd=str(runtime.session.work_dir),
         )
 
@@ -1025,7 +1025,7 @@ def test_publish_terminal_notifications_limit_skips_deduped_results(runtime, mon
             tool_call_id=f"tool-3e-{index}",
             command="echo done",
             shell_name=runtime.environment.shell_name,
-        shell_path=str(runtime.environment.shell_path),
+            shell_path=str(runtime.environment.shell_path),
             cwd=str(runtime.session.work_dir),
             timeout_s=60,
         )
@@ -1140,7 +1140,7 @@ async def test_manager_launches_real_worker_and_waits(runtime):
     manager = runtime.background_tasks
 
     view = manager.create_bash_task(
-        command="python -c \"print(\'bg-ok\')\"",
+        command="python -c \"print('bg-ok')\"",
         description="real worker smoke",
         timeout_s=30,
         tool_call_id="tool-7",
@@ -1155,9 +1155,11 @@ async def test_manager_launches_real_worker_and_waits(runtime):
     assert "bg-ok" in manager.store.output_path(view.spec.id).read_text(encoding="utf-8")
 
     import asyncio
+
     await asyncio.sleep(0.1)
 
     import asyncio
+
     await asyncio.sleep(0.1)
 
 
@@ -1166,7 +1168,7 @@ async def test_manager_surfaces_timeout_failure(runtime):
     manager = runtime.background_tasks
 
     view = manager.create_bash_task(
-        command="python -c \"import time; time.sleep(2)\"",
+        command='python -c "import time; time.sleep(2)"',
         description="real worker timeout",
         timeout_s=1,
         tool_call_id="tool-8",
@@ -1182,7 +1184,9 @@ async def test_manager_surfaces_timeout_failure(runtime):
     assert waited.runtime.failure_reason == "Command timed out after 1s"
 
     import asyncio
+
     await asyncio.sleep(0.1)
 
     import asyncio
+
     await asyncio.sleep(0.1)

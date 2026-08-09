@@ -15,9 +15,9 @@ from kosong.tooling.empty import EmptyToolset
 from pydantic import SecretStr
 
 from bugpilot.config import LLMProvider, OAuthRef
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.ui.shell import Shell
 from bugpilot.ui.shell import slash as shell_slash
 from bugpilot.ui.shell.slash import registry as shell_slash_registry
@@ -31,7 +31,7 @@ def _make_shell_app(runtime: Runtime, tmp_path: Path) -> SimpleNamespace:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
     return SimpleNamespace(soul=soul)
 
 
@@ -102,7 +102,7 @@ class TestFeedbackRegistration:
 
 
 class TestFeedbackGuards:
-    async def test_fallback_when_no_kimi_soul(self, monkeypatch) -> None:
+    async def test_fallback_when_no_bugpilot_soul(self, monkeypatch) -> None:
         """When soul is not Agent, should fallback to GitHub issues."""
         shell = Mock()
         shell.soul = Mock()  # not spec=Agent

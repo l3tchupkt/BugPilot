@@ -117,7 +117,7 @@ class ReadMediaFile(CallableTool2[Params]):
                 image_size = _extract_image_size(data)
             case "video":
                 data = await path.read_bytes()
-                if (llm := self._runtime.llm) and isinstance(llm.chat_provider, Kimi):
+                if (llm := self._runtime.llm) and isinstance(llm.chat_provider, BugPilot):
                     part = await llm.chat_provider.files.upload_video(
                         data=data,
                         mime_type=file_type.mime_type,

@@ -11,7 +11,7 @@ def _chat_completion_response() -> dict[str, object]:
         "id": "chatcmpl-test123",
         "object": "chat.completion",
         "created": 1234567890,
-        "model": "kimi-k2-turbo-preview",
+        "model": "bugpilot-k2-turbo-preview",
         "choices": [
             {
                 "index": 0,
@@ -32,7 +32,7 @@ async def test_generate_smoke() -> None:
     transport = httpx.MockTransport(handler)
     async with httpx.AsyncClient(transport=transport) as http_client:
         bugpilot = BugPilot(
-            model="kimi-k2-turbo-preview",
+            model="bugpilot-k2-turbo-preview",
             api_key="test-key",
             stream=False,
             http_client=http_client,

@@ -58,11 +58,11 @@ async def test_uppercase_over_lowercase(temp_work_dir: KaosPath):
 # ---------------------------------------------------------------------------
 
 
-async def test_kimi_dir_and_root_both_loaded(temp_work_dir: KaosPath):
+async def test_bugpilot_dir_and_root_both_loaded(temp_work_dir: KaosPath):
     """.bugpilot/AGENTS.md and AGENTS.md in the same dir are both loaded; .bugpilot/ first."""
-    kimi_dir = temp_work_dir / ".bugpilot"
-    await kimi_dir.mkdir()
-    await (kimi_dir / "AGENTS.md").write_text("bugpilot agents")
+    bugpilot_dir = temp_work_dir / ".bugpilot"
+    await bugpilot_dir.mkdir()
+    await (bugpilot_dir / "AGENTS.md").write_text("bugpilot agents")
     await (temp_work_dir / "AGENTS.md").write_text("root agents")
 
     content = await load_agents_md(temp_work_dir)
@@ -72,12 +72,12 @@ async def test_kimi_dir_and_root_both_loaded(temp_work_dir: KaosPath):
     assert content.count("<!-- From:") == 2
 
 
-async def test_kimi_dir_in_parent(temp_work_dir: KaosPath):
+async def test_bugpilot_dir_in_parent(temp_work_dir: KaosPath):
     """.bugpilot/AGENTS.md in a parent directory is discovered via hierarchy."""
     await (temp_work_dir / ".git").mkdir()
-    kimi_dir = temp_work_dir / ".bugpilot"
-    await kimi_dir.mkdir()
-    await (kimi_dir / "AGENTS.md").write_text("parent bugpilot")
+    bugpilot_dir = temp_work_dir / ".bugpilot"
+    await bugpilot_dir.mkdir()
+    await (bugpilot_dir / "AGENTS.md").write_text("parent bugpilot")
 
     child = temp_work_dir / "pkg"
     await child.mkdir()

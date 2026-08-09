@@ -23,36 +23,36 @@ Difference between plugins and Agent Skills:
 
 ## Installing plugins
 
-Use the `kimi plugin` command to manage plugins.
+Use the `bugpilot plugin` command to manage plugins.
 
 **Install from a local directory**
 
 ```sh
-kimi plugin install /path/to/my-plugin
+bugpilot plugin install /path/to/my-plugin
 ```
 
 **Install from a ZIP file**
 
 ```sh
 # Local ZIP file
-kimi plugin install my-plugin.zip
+bugpilot plugin install my-plugin.zip
 
 # Remote ZIP URL (including GitHub/GitLab archive download links)
-kimi plugin install https://example.com/my-plugin.zip
-kimi plugin install https://github.com/user/repo/archive/refs/heads/main.zip
+bugpilot plugin install https://example.com/my-plugin.zip
+bugpilot plugin install https://github.com/user/repo/archive/refs/heads/main.zip
 ```
 
 **Install from a Git repository**
 
 ```sh
 # Install the root plugin
-kimi plugin install https://github.com/user/repo.git
+bugpilot plugin install https://github.com/user/repo.git
 
 # Install a plugin from a subdirectory (multi-plugin repo)
-kimi plugin install https://github.com/user/repo.git/plugins/my-plugin
+bugpilot plugin install https://github.com/user/repo.git/plugins/my-plugin
 
 # Specify a branch (use browser-style GitHub URL without .git)
-kimi plugin install https://github.com/user/repo/tree/develop/plugins/my-plugin
+bugpilot plugin install https://github.com/user/repo/tree/develop/plugins/my-plugin
 ```
 
 When a Git repository has no `plugin.json` at the root, BugPilot checks the root and its immediate subdirectories, then lists available plugins for you to choose from.
@@ -60,19 +60,19 @@ When a Git repository has no `plugin.json` at the root, BugPilot checks the root
 **List installed plugins**
 
 ```sh
-kimi plugin list
+bugpilot plugin list
 ```
 
 **View plugin details**
 
 ```sh
-kimi plugin info my-plugin
+bugpilot plugin info my-plugin
 ```
 
 **Remove a plugin**
 
 ```sh
-kimi plugin remove my-plugin
+bugpilot plugin remove my-plugin
 ```
 
 ## Creating a plugin
@@ -306,7 +306,7 @@ rl.on("close", () => {
 
 ## Plugin installation location
 
-Plugins are installed in the `~/.kimi/plugins/` directory. Each plugin is an independent subdirectory containing the complete `plugin.json` and script files.
+Plugins are installed in the `~/.bugpilot/plugins/` directory. Each plugin is an independent subdirectory containing the complete `plugin.json` and script files.
 
 ::: info Note
 Plugins and MCP servers are complementary extension mechanisms:

@@ -8,7 +8,6 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, cast
 
-import kosong
 import tenacity
 from kosong import StepResult
 from kosong.chat_provider import (
@@ -38,9 +37,6 @@ from bugpilot.llm import (
     ModelCapability,
     compute_max_completion_tokens,
     estimate_request_tokens,
-    find_kimi_provider,
-    with_kimi_generation_overrides,
-    with_trace_callback,
 )
 from bugpilot.notifications import (
     NotificationView,
@@ -102,7 +98,7 @@ from bugpilot.wire.types import (
 
 if TYPE_CHECKING:
 
-    def type_check(soul: Agent):
+    def type_check(soul: AgentLoop):
         _: Soul = soul
 
 
@@ -186,7 +182,6 @@ def _track_api_error(
     duration_ms: int,
     input_tokens: int | None = None,
 ) -> None:
-
     error_type, status_code = classify_api_error(error)
     properties: dict[str, Any] = {
         "error_type": error_type,
@@ -199,6 +194,8 @@ def _track_api_error(
         properties["status_code"] = status_code
     if input_tokens is not None and input_tokens > 0:
         properties["input_tokens"] = input_tokens
+
+
 #     trace_id = getattr(error, "trace_id", None) or get_current_trace_id()
 #     track("api_error", **properties)
 
@@ -222,7 +219,7 @@ class TurnOutcome:
     step_count: int
 
 
-class Agent:
+class AgentLoop:
     """The soul of BugPilot."""
 
     def __init__(
@@ -335,8 +332,7 @@ class Agent:
         return self._root_trace_id if self.is_root else None
 
     def _set_trace_id(self, trace_id: str | None) -> None:
-
-#         set_current_trace_id(trace_id)
+        #         set_current_trace_id(trace_id)
         if self.is_root:
             self._root_trace_id = trace_id
 
@@ -783,7 +779,6 @@ class Agent:
             interrupt_reason = "error"
             raise
         finally:
-
             if turn_started and not turn_finished:
                 wire_send(TurnEnd())
 
@@ -898,8 +893,7 @@ class Agent:
 
     def _make_skill_runner(self, skill: Skill) -> Callable[[Agent, str], None | Awaitable[None]]:
         async def _run_skill(soul: Agent, args: str, *, _skill: Skill = skill) -> None:
-
-#             track("skill_invoked", skill_name=_skill.name)
+            #             track("skill_invoked", skill_name=_skill.name)
             skill_text = await read_skill_text(_skill)
             if skill_text is None:
                 wire_send(
@@ -950,7 +944,6 @@ class Agent:
                 await self.wait_for_background_mcp_loading()
                 # Track MCP connection result
                 if loading:
-
                     mcp_snap = self._mcp_status_snapshot()
                     if mcp_snap:
                         if mcp_snap.connected > 0:
@@ -1167,13 +1160,15 @@ class Agent:
             # ── 2e.4.2. Stream LLM Provider ───────────────────────────────────────────
             messages = []
             if self._agent.system_prompt:
-                messages.append(Message(role="system", content=[TextPart(text=self._agent.system_prompt)]))
+                messages.append(
+                    Message(role="system", content=[TextPart(text=self._agent.system_prompt)])
+                )
             messages.extend(effective_history)
-            
+
             tool_calls = []
             tool_result_futures = {}
             message = Message(role="assistant", content=[])
-            
+
             def future_done_callback(future):
                 try:
                     res = future.result()
@@ -1185,7 +1180,7 @@ class Agent:
                 messages=messages,
                 tools=self._agent.toolset.tools,
             )
-            
+
             usage = None
             async for chunk in stream:
                 if chunk.usage:
@@ -1205,19 +1200,21 @@ class Agent:
                     message.tool_calls.append(tc)
                     tool_calls.append(tc)
                     wire_send(tc)
-                    
+
                     tool_result = self._agent.toolset.handle(tc)
                     if hasattr(tool_result, "add_done_callback"):
                         tool_result.add_done_callback(future_done_callback)
                         tool_result_futures[tc.id] = tool_result
                     else:
                         from kosong.tooling import ToolResultFuture
+
                         future = ToolResultFuture()
                         future.add_done_callback(future_done_callback)
                         future.set_result(tool_result)
                         tool_result_futures[tc.id] = future
-                        
+
             from kosong import StepResult
+
             return StepResult(
                 id=None,
                 message=message,
@@ -1348,8 +1345,7 @@ class Agent:
             )
 
         if isinstance(self._agent.toolset, Toolset) and self._agent.toolset.force_stop_turn:
-
-#             track("turn_force_stopped", reason="tool_call_repeat", step_no=self._current_step_no)
+            #             track("turn_force_stopped", reason="tool_call_repeat", step_no=self._current_step_no)
             return StepOutcome(stop_reason="tool_call_repeat", assistant_message=result.message)
 
         if result.tool_calls:
@@ -1373,11 +1369,11 @@ class Agent:
         stays attached to the single instance owned by ``Runtime.llm`` — retry recovery
         in ``BugPilot.on_retryable_error`` therefore affects subsequent steps as intended.
         """
-        kimi_provider = find_kimi_provider(chat_provider)
-        if kimi_provider is None:
+        bugpilot_provider = find_bugpilot_provider(chat_provider)
+        if bugpilot_provider is None:
             return None
 
-        parameters = kimi_provider.model_parameters
+        parameters = bugpilot_provider.model_parameters
         configured_budget = parameters.get("max_completion_tokens")
         if "max_completion_tokens" in parameters and configured_budget is None:
             return None
@@ -1489,14 +1485,8 @@ class Agent:
         async def _run_compaction_once() -> CompactionResult:
             if self._runtime.llm is None:
                 raise LLMNotSet()
-            request_provider = with_kimi_generation_overrides(
-                self._runtime.llm.chat_provider,
-                compaction_overrides,
-            )
-            request_provider = with_trace_callback(
-                request_provider,
-                self._set_trace_id,
-            )
+            request_provider = self._runtime.llm.chat_provider
+
             compaction_llm = replace(
                 self._runtime.llm,
                 chat_provider=request_provider,
@@ -1553,7 +1543,6 @@ class Agent:
         try:
             compaction_result = await _compact_with_retry()
         except Exception as _compact_exc:
-
             if isinstance(_compact_exc, ChatProviderError) and self._runtime.llm is not None:
                 _track_api_error(
                     _compact_exc,
@@ -1612,7 +1601,6 @@ class Agent:
 
         wire_send(CompactionEnd())
 
-
         duration_ms = int((time.monotonic() - start_time) * 1000)
         track_kwargs = dict(
             source="auto" if trigger_reason == "auto" else "manual",
@@ -1633,7 +1621,7 @@ class Agent:
             track_kwargs["output_tokens"] = compaction_result.usage.output
         if compaction_result.trace_id is not None:
             track_kwargs["trace_id"] = compaction_result.trace_id
-#         track("compaction_finished", **track_kwargs)
+        #         track("compaction_finished", **track_kwargs)
 
         _hook_task = asyncio.create_task(
             self._hook_engine.trigger(
@@ -1652,7 +1640,7 @@ class Agent:
     @staticmethod
     def _is_retryable_error(exception: BaseException) -> bool:
         if isinstance(exception, (APIConnectionError, APITimeoutError)):
-            return not bool(getattr(exception, "_kimi_recovery_exhausted", False))
+            return not bool(getattr(exception, "_bugpilot_recovery_exhausted", False))
         if isinstance(exception, APIEmptyResponseError):
             return True
         return isinstance(exception, APIStatusError) and exception.status_code in (
@@ -1682,7 +1670,7 @@ class Agent:
                     error_type=type(error).__name__,
                     error=error,
                 )
-                error._kimi_recovery_exhausted = True  # type: ignore[attr-defined]
+                error._bugpilot_recovery_exhausted = True  # type: ignore[attr-defined]
                 raise
             if not isinstance(chat_provider, RetryableChatProvider):
                 raise

@@ -14,7 +14,7 @@ BugPilot 内置了一些工具（文件读写、Shell 命令、网页抓取等�
 
 ## MCP 服务器管理
 
-使用 [`kimi mcp`](../reference/kimi-mcp.md) 命令管理 MCP 服务器。
+使用 [`bugpilot mcp`](../reference/bugpilot-mcp.md) 命令管理 MCP 服务器。
 
 **添加服务器**
 
@@ -22,26 +22,26 @@ BugPilot 内置了一些工具（文件读写、Shell 命令、网页抓取等�
 
 ```sh
 # 基本用法
-kimi mcp add --transport http context7 https://mcp.context7.com/mcp
+bugpilot mcp add --transport http context7 https://mcp.context7.com/mcp
 
 # 带 Header
-kimi mcp add --transport http context7 https://mcp.context7.com/mcp \
+bugpilot mcp add --transport http context7 https://mcp.context7.com/mcp \
   --header "CONTEXT7_API_KEY: your-key"
 
 # 使用 OAuth 认证
-kimi mcp add --transport http --auth oauth linear https://mcp.linear.app/mcp
+bugpilot mcp add --transport http --auth oauth linear https://mcp.linear.app/mcp
 ```
 
 添加 stdio 服务器（本地进程）：
 
 ```sh
-kimi mcp add --transport stdio chrome-devtools -- npx chrome-devtools-mcp@latest
+bugpilot mcp add --transport stdio chrome-devtools -- npx chrome-devtools-mcp@latest
 ```
 
 **列出服务器**
 
 ```sh
-kimi mcp list
+bugpilot mcp list
 ```
 
 在 BugPilot 运行时，也可以输入 `/mcp` 查看已连接的服务器和加载的工具。
@@ -49,7 +49,7 @@ kimi mcp list
 **移除服务器**
 
 ```sh
-kimi mcp remove context7
+bugpilot mcp remove context7
 ```
 
 **OAuth 授权**
@@ -57,22 +57,22 @@ kimi mcp remove context7
 对于使用 OAuth 的服务器，需要先完成授权：
 
 ```sh
-kimi mcp auth linear
+bugpilot mcp auth linear
 ```
 
 这会打开浏览器完成 OAuth 流程。授权成功后，BugPilot 会保存 token 供后续使用。
 
-MCP OAuth token 存储在 `~/.kimi/mcp-oauth/`。从使用 FastMCP 2.x 的旧版本升级后，旧的 token 缓存不会自动迁移；如果 `kimi mcp list` 显示某个 OAuth 服务器需要授权，重新运行 `kimi mcp auth <name>` 即可。
+MCP OAuth token 存储在 `~/.bugpilot/mcp-oauth/`。从使用 FastMCP 2.x 的旧版本升级后，旧的 token 缓存不会自动迁移；如果 `bugpilot mcp list` 显示某个 OAuth 服务器需要授权，重新运行 `bugpilot mcp auth <name>` 即可。
 
 **测试服务器**
 
 ```sh
-kimi mcp test context7
+bugpilot mcp test context7
 ```
 
 ## MCP 配置文件
 
-MCP 服务器配置存储在 `~/.kimi/mcp.json`，格式与其他 MCP 客户端兼容：
+MCP 服务器配置存储在 `~/.bugpilot/mcp.json`，格式与其他 MCP 客户端兼容：
 
 ```json
 {
@@ -99,13 +99,13 @@ MCP 服务器配置存储在 `~/.kimi/mcp.json`，格式与其他 MCP 客户端�
 使用 `--mcp-config-file` 参数可以加载其他位置的配置文件：
 
 ```sh
-kimi --mcp-config-file /path/to/mcp.json
+bugpilot --mcp-config-file /path/to/mcp.json
 ```
 
 使用 `--mcp-config` 参数可以直接传入 JSON 配置：
 
 ```sh
-kimi --mcp-config '{"mcpServers": {"test": {"url": "https://..."}}}'
+bugpilot --mcp-config '{"mcpServers": {"test": {"url": "https://..."}}}'
 ```
 
 ## 加载状态

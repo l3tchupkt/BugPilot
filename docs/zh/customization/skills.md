@@ -32,7 +32,7 @@ BugPilot 采用分层加载机制发现 Skills。当同名 Skill 存在于多个
 存放在用户主目录中，在所有项目中生效。候选目录分为两组，每组内按优先级选取第一个存在的目录，两组的结果独立合并（品牌组特异性更高，优先级更高）：
 
 - **品牌组**（互斥选一）：
-  1. `~/.kimi/skills/`
+  1. `~/.bugpilot/skills/`
   2. `~/.claude/skills/`
   3. `~/.codex/skills/`
 - **通用组**（互斥选一）：
@@ -41,14 +41,14 @@ BugPilot 采用分层加载机制发现 Skills。当同名 Skill 存在于多个
 
 两组分别选出目录后合并加载。当同名 Skill 同时存在于品牌组和通用组时，品牌组的版本优先。
 
-默认情况下，**所有存在的品牌目录都会被加载并合并**，同名 Skill 按 kimi > claude > codex 的优先级解析（通用组不受影响）。这一行为由 `merge_all_available_skills` 控制，其默认值为 `true`：
+默认情况下，**所有存在的品牌目录都会被加载并合并**，同名 Skill 按 bugpilot > claude > codex 的优先级解析（通用组不受影响）。这一行为由 `merge_all_available_skills` 控制，其默认值为 `true`：
 
 ```toml
 # 默认值；合并所有已存在的品牌目录。
 merge_all_available_skills = true
 ```
 
-如需恢复旧的"仅取优先级最高的那个品牌目录"行为（例如只使用 kimi，缺失时回退到 claude，再缺失时回退到 codex），可将其显式设为 `false`：
+如需恢复旧的"仅取优先级最高的那个品牌目录"行为（例如只使用 bugpilot，缺失时回退到 claude，再缺失时回退到 codex），可将其显式设为 `false`：
 
 ```toml
 merge_all_available_skills = false
@@ -59,7 +59,7 @@ merge_all_available_skills = false
 存放在项目目录中，在该项目内生效。候选路径以**项目根**为起点（即工作目录向上最近的包含 `.git` 的祖先目录；找不到时回退到工作目录本身），这样即使从 monorepo 的某个子 package 内启动 bugpilot，仓库根目录下的 Skills 也能被正确识别。同样分为两组独立查找：
 
 - **品牌组**（互斥选一）：
-  1. `.kimi/skills/`
+  1. `.bugpilot/skills/`
   2. `.claude/skills/`
   3. `.codex/skills/`
 - **通用组**：`.agents/skills/`
@@ -69,7 +69,7 @@ merge_all_available_skills = false
 你也可以通过 `--skills-dir` 参数指定额外的 Skills 目录。该参数可重复指定，指定后将替代自动发现的用户级和项目级目录：
 
 ```sh
-kimi --skills-dir /path/to/my-skills --skills-dir /path/to/more-skills
+bugpilot --skills-dir /path/to/my-skills --skills-dir /path/to/more-skills
 ```
 
 **额外 Skills 目录（追加式）**
@@ -112,7 +112,7 @@ extra_skill_dirs = [
 3. `"No description provided."`（兜底）
 
 ::: tip 提示
-Skills 路径独立于 [`KIMI_SHARE_DIR`](../configuration/env-vars.md#kimi-share-dir)。`KIMI_SHARE_DIR` 用于自定义配置、会话、日志等运行时数据的存储位置，不影响 Skills 的搜索路径。Skills 是跨工具共享的能力扩展（支持 Kimi CLI、Claude、Codex 等多个工具共用），与应用运行时数据是不同类型的数据。如需自定义 Skills 路径，请使用 `--skills-dir` 参数或 `extra_skill_dirs` 配置。
+Skills 路径独立于 [`BUGPILOT_SHARE_DIR`](../configuration/env-vars.md#bugpilot-share-dir)。`BUGPILOT_SHARE_DIR` 用于自定义配置、会话、日志等运行时数据的存储位置，不影响 Skills 的搜索路径。Skills 是跨工具共享的能力扩展（支持 BugPilot、Claude、Codex 等多个工具共用），与应用运行时数据是不同类型的数据。如需自定义 Skills 路径，请使用 `--skills-dir` 参数或 `extra_skill_dirs` 配置。
 :::
 
 ## 内置 Skills
@@ -120,7 +120,7 @@ Skills 路径独立于 [`KIMI_SHARE_DIR`](../configuration/env-vars.md#kimi-shar
 BugPilot 内置了以下 Skills：
 
 - **bugpilot-help**：BugPilot 帮助。解答关于 BugPilot 安装、配置、斜杠命令、键盘快捷键、MCP 集成、供应商、环境变量等问题。
-- **skill-creator**：Skill 创建指南。当你需要创建新的 Skill（或更新现有 Skill）来扩展 Kimi 的能力时，可以使用此 Skill 获取详细的创建指导和最佳实践。
+- **skill-creator**：Skill 创建指南。当你需要创建新的 Skill（或更新现有 Skill）来扩展 BugPilot 的能力时，可以使用此 Skill 获取详细的创建指导和最佳实践。
 
 ## 创建 Skill
 

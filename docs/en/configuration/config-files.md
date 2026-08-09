@@ -4,18 +4,18 @@ BugPilot uses configuration files to manage API providers, models, services, and
 
 ## Config file location
 
-The default configuration file is located at `~/.kimi/config.toml`. On first run, if the configuration file doesn't exist, BugPilot will automatically create a default configuration file.
+The default configuration file is located at `~/.bugpilot/config.toml`. On first run, if the configuration file doesn't exist, BugPilot will automatically create a default configuration file.
 
 You can specify a different configuration file (TOML or JSON format) with the `--config-file` flag:
 
 ```sh
-kimi --config-file /path/to/config.toml
+bugpilot --config-file /path/to/config.toml
 ```
 
 When calling BugPilot programmatically, you can also pass the complete configuration content directly via the `--config` flag:
 
 ```sh
-kimi --config '{"default_model": "kimi-for-coding", "providers": {...}, "models": {...}}'
+bugpilot --config '{"default_model": "bugpilot-for-coding", "providers": {...}, "models": {...}}'
 ```
 
 ## Config items
@@ -44,7 +44,7 @@ The configuration file contains the following top-level configuration items:
 ### Complete configuration example
 
 ```toml
-default_model = "kimi-for-coding"
+default_model = "bugpilot-for-coding"
 default_thinking = false
 default_yolo = false
 skip_afk_prompt_injection = false
@@ -55,14 +55,14 @@ show_thinking_stream = true
 merge_all_available_skills = true
 telemetry = true
 
-[providers.kimi-for-coding]
-type = "kimi"
-base_url = "https://api.kimi.com/coding/v1"
+[providers.bugpilot-for-coding]
+type = "bugpilot"
+base_url = "https://api.bugpilot.com/coding/v1"
 api_key = "sk-xxx"
 
-[models.kimi-for-coding]
-provider = "kimi-for-coding"
-model = "kimi-for-coding"
+[models.bugpilot-for-coding]
+provider = "bugpilot-for-coding"
+model = "bugpilot-for-coding"
 max_context_size = 262144
 
 [loop_control]
@@ -77,12 +77,12 @@ max_running_tasks = 4
 keep_alive_on_exit = false
 agent_task_timeout_s = 900
 
-[services.moonshot_search]
-base_url = "https://api.kimi.com/coding/v1/search"
+[services.bugpilot_search]
+base_url = "https://api.bugpilot.com/coding/v1/search"
 api_key = "sk-xxx"
 
-[services.moonshot_fetch]
-base_url = "https://api.kimi.com/coding/v1/fetch"
+[services.bugpilot_fetch]
+base_url = "https://api.bugpilot.com/coding/v1/fetch"
 api_key = "sk-xxx"
 
 [mcp.client]
@@ -104,9 +104,9 @@ tool_call_timeout_ms = 60000
 Example:
 
 ```toml
-[providers.moonshot-cn]
-type = "kimi"
-base_url = "https://api.moonshot.cn/v1"
+[providers.bugpilot-cn]
+type = "bugpilot"
+base_url = "https://api.bugpilot.ai/v1"
 api_key = "sk-xxx"
 custom_headers = { "X-Custom-Header" = "value" }
 ```
@@ -130,9 +130,9 @@ If a `providers` or `models` key contains `.`, you must use a quoted TOML key. O
 Example:
 
 ```toml
-[models.kimi-k2-thinking-turbo]
-provider = "moonshot-cn"
-model = "kimi-k2-thinking-turbo"
+[models.bugpilot-k2-thinking-turbo]
+provider = "bugpilot-cn"
+model = "bugpilot-k2-thinking-turbo"
 max_context_size = 262144
 capabilities = ["thinking", "image_in"]
 ```
@@ -175,7 +175,7 @@ capabilities = ["thinking"]
 
 `services` configures external services used by BugPilot.
 
-#### `moonshot_search`
+#### `bugpilot_search`
 
 Configures web search service. When enabled, the `SearchWeb` tool becomes available.
 
@@ -185,7 +185,7 @@ Configures web search service. When enabled, the `SearchWeb` tool becomes availa
 | `api_key` | `string` | Yes | API key |
 | `custom_headers` | `table` | No | Custom HTTP headers to attach to requests |
 
-#### `moonshot_fetch`
+#### `bugpilot_fetch`
 
 Configures web fetch service. When enabled, the `FetchURL` tool prioritizes using this service to fetch webpage content.
 
@@ -196,7 +196,7 @@ Configures web fetch service. When enabled, the `FetchURL` tool prioritizes usin
 | `custom_headers` | `table` | No | Custom HTTP headers to attach to requests |
 
 ::: tip
-When configuring the Kimi Code platform using the `/login` command, search and fetch services are automatically configured.
+When configuring the BugPilot platform using the `/login` command, search and fetch services are automatically configured.
 :::
 
 ### `mcp`
@@ -217,7 +217,7 @@ Use the `[[hooks]]` array syntax to define multiple hooks:
 [[hooks]]
 event = "PreToolUse"
 matcher = "Shell"
-command = ".kimi/hooks/safety-check.sh"
+command = ".bugpilot/hooks/safety-check.sh"
 timeout = 10
 
 [[hooks]]
@@ -235,6 +235,6 @@ command = "prettier --write"
 
 ## JSON configuration migration
 
-If `~/.kimi/config.toml` doesn't exist but `~/.kimi/config.json` exists, BugPilot will automatically migrate the JSON configuration to TOML format and backup the original file as `config.json.bak`.
+If `~/.bugpilot/config.toml` doesn't exist but `~/.bugpilot/config.json` exists, BugPilot will automatically migrate the JSON configuration to TOML format and backup the original file as `config.json.bak`.
 
 `--config-file` specified configuration files are parsed based on file extension. `--config` passed configuration content is first attempted as JSON, then falls back to TOML if that fails.

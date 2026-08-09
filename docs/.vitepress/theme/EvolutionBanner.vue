@@ -2,8 +2,8 @@
 import { useData } from 'vitepress'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
-const STORAGE_KEY = 'kimi-cli-evolution-banner-dismissed'
-const TARGET_URL = 'https://github.com/l3tchupkt/kimi-code'
+const STORAGE_KEY = 'bugpilot-evolution-banner-dismissed'
+const TARGET_URL = 'https://github.com/l3tchupkt/bugpilot'
 const HTML_CLASS = 'has-evolution-banner'
 
 const { lang } = useData()

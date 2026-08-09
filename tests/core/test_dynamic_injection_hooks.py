@@ -8,10 +8,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from kosong.tooling.empty import EmptyToolset
 
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.context import Context
 from bugpilot.soul.dynamic_injection import DynamicInjection, DynamicInjectionProvider
-from bugpilot.soul.agent_loop import Agent
 
 
 class _BoomProvider(DynamicInjectionProvider):
@@ -47,7 +47,7 @@ async def test_compacted_hook_isolates_provider_failures(runtime: Runtime, tmp_p
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
     recorder = _RecordingProvider()
     soul._injection_providers = [_BoomProvider(), recorder]  # pyright: ignore[reportPrivateUsage]

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 from pathlib import Path
 
 import pytest
@@ -10,13 +11,12 @@ from kosong.tooling.empty import EmptyToolset
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.context import Context
 from bugpilot.soul.dynamic_injection import DynamicInjection, DynamicInjectionProvider
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.slash import afk as afk_slash
 from bugpilot.soul.slash import yolo as yolo_slash
 from bugpilot.wire.types import TextPart
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> AgentLoop:
     # The shared `approval` fixture in conftest defaults to yolo=True; reset both
     # flags so each test starts from a clean state.
     runtime.approval.set_yolo(False)
@@ -27,10 +27,10 @@ def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
-async def _run(fn, soul: Agent, args: str = "") -> None:
+async def _run(fn, soul: AgentLoop, args: str = "") -> None:
     result = fn(soul, args)
     if result is not None:
         await result

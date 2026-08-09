@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from kaos.path import KaosPath
 
 from bugpilot.ui.shell.console import console
-from bugpilot.ui.shell.slash import ensure_kimi_soul, registry, shell_mode_registry
+from bugpilot.ui.shell.slash import ensure_bugpilot_soul, registry, shell_mode_registry
 from bugpilot.utils.export import is_sensitive_file
 from bugpilot.utils.path import sanitize_cli_path, shorten_home
 from bugpilot.wire.types import TurnBegin, TurnEnd
@@ -26,7 +26,7 @@ async def export(app: Shell, args: str):
     """Export current session context to a markdown file"""
     from bugpilot.utils.export import perform_export
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -45,7 +45,7 @@ async def export(app: Shell, args: str):
 
     output, count = result
 
-#     track("export")
+    #     track("export")
     display = shorten_home(KaosPath(str(output)))
     console.print(f"[green]Exported {count} messages to {display}[/green]")
     console.print(
@@ -65,7 +65,7 @@ async def import_context(app: Shell, args: str):
     """Import context from a file or session ID"""
     from bugpilot.utils.export import perform_import
 
-    soul = ensure_kimi_soul(app)
+    soul = ensure_bugpilot_soul(app)
     if soul is None:
         return
 
@@ -96,7 +96,7 @@ async def import_context(app: Shell, args: str):
 
     source_desc, content_len = result
 
-#     track("import")
+    #     track("import")
 
     # Write to wire file so the import appears in session replay
     await soul.wire_file.append_message(

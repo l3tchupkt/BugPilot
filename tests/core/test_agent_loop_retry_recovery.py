@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bugpilot.soul.agent_loop import AgentLoop
 import asyncio
 from collections.abc import AsyncIterator, Sequence
 from pathlib import Path
@@ -24,7 +25,6 @@ from bugpilot.llm import LLM
 from bugpilot.soul import run_soul
 from bugpilot.soul.agent import Agent, Runtime
 from bugpilot.soul.context import Context
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.utils.aioqueue import QueueShutDown
 from bugpilot.wire import Wire
 from bugpilot.wire.types import StepBegin, StepRetry
@@ -316,7 +316,7 @@ def _make_soul(runtime: Runtime, llm: LLM, tmp_path: Path) -> tuple[Agent, Conte
         runtime=_runtime_with_llm(runtime, llm),
     )
     context = Context(file_backend=tmp_path / "history.jsonl")
-    return Agent(agent, context=context), context
+    return AgentLoop(agent, context=context), context
 
 
 async def _drain_ui_messages(wire: Wire) -> None:
@@ -342,7 +342,7 @@ async def test_step_retry_recovers_retryable_provider(runtime: Runtime, tmp_path
     runtime.config.loop_control.max_retries_per_step = 2
     provider = RecoveringSequenceProvider()
     llm = LLM(
-        chat_provider=provider,
+        provider=provider,
         max_context_size=100_000,
         capabilities=set(),
     )
@@ -362,7 +362,7 @@ async def test_step_connection_error_recovery_only_retries_once(
     runtime.config.loop_control.max_retries_per_step = 5
     provider = AlwaysConnectionErrorProvider()
     llm = LLM(
-        chat_provider=provider,
+        provider=provider,
         max_context_size=100_000,
         capabilities=set(),
     )
@@ -383,7 +383,7 @@ async def test_step_status_error_still_uses_tenacity_retries(
     runtime.config.loop_control.max_retries_per_step = 3
     provider = StatusErrorThenSuccessProvider(status_code=status_code)
     llm = LLM(
-        chat_provider=provider,
+        provider=provider,
         max_context_size=100_000,
         capabilities=set(),
     )
@@ -401,7 +401,7 @@ async def test_step_retry_event_after_partial_stream(runtime: Runtime, tmp_path:
     runtime.config.loop_control.max_retries_per_step = 2
     provider = PartialStreamThenStatusErrorProvider(status_code=429)
     llm = LLM(
-        chat_provider=provider,
+        provider=provider,
         max_context_size=100_000,
         capabilities=set(),
     )
@@ -439,7 +439,7 @@ async def test_step_non_retryable_provider_keeps_tenacity_connection_retries(
     runtime.config.loop_control.max_retries_per_step = 2
     provider = NonRetryableConnectionProvider()
     llm = LLM(
-        chat_provider=provider,
+        provider=provider,
         max_context_size=100_000,
         capabilities=set(),
     )
@@ -473,7 +473,7 @@ async def test_step_connection_recovery_then_401_triggers_oauth_refresh(
 
     provider = ConnectionThen401ThenSuccessProvider()
     llm = LLM(
-        chat_provider=provider,
+        provider=provider,
         max_context_size=100_000,
         capabilities=set(),
         model_config=oauth_model,

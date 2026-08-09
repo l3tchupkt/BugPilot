@@ -12,8 +12,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 
-from bugpilot.soul.context import Context
 from bugpilot.soul.agent_loop import Agent
+from bugpilot.soul.context import Context
 from bugpilot.subagents.builder import SubagentBuilder
 from bugpilot.subagents.models import AgentLaunchSpec, AgentTypeDefinition
 from bugpilot.subagents.store import SubagentStore

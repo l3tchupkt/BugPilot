@@ -1,19 +1,19 @@
 # Data Locations
 
-BugPilot stores all data in the `~/.kimi/` directory under the user's home directory. This page describes the locations and purposes of various data files.
+BugPilot stores all data in the `~/.bugpilot/` directory under the user's home directory. This page describes the locations and purposes of various data files.
 
 ::: tip
-You can customize the share directory path by setting the `KIMI_SHARE_DIR` environment variable. See [Environment Variables](./env-vars.md#kimi-share-dir) for details.
+You can customize the share directory path by setting the `BUGPILOT_SHARE_DIR` environment variable. See [Environment Variables](./env-vars.md#bugpilot-share-dir) for details.
 
-Note: `KIMI_SHARE_DIR` only affects the storage location of the runtime data listed above, not the [Agent Skills](../customization/skills.md) search paths. Skills, as cross-tool shared capability extensions, are a different type of data from application runtime data.
+Note: `BUGPILOT_SHARE_DIR` only affects the storage location of the runtime data listed above, not the [Agent Skills](../customization/skills.md) search paths. Skills, as cross-tool shared capability extensions, are a different type of data from application runtime data.
 :::
 
 ## Directory structure
 
 ```
-~/.kimi/
+~/.bugpilot/
 ├── config.toml           # Main configuration file
-├── kimi.json             # Metadata
+├── bugpilot.json             # Metadata
 ├── mcp.json              # MCP server configuration
 ├── credentials/          # OAuth credentials
 │   └── <provider>.json
@@ -24,7 +24,7 @@ Note: `KIMI_SHARE_DIR` only affects the storage location of the runtime data lis
 │           ├── context.jsonl
 │           ├── wire.jsonl
 │           └── state.json
-├── imported_sessions/    # Imported session data (via kimi vis)
+├── imported_sessions/    # Imported session data (via bugpilot vis)
 │   └── <session-id>/
 │       ├── context.jsonl
 │       ├── wire.jsonl
@@ -34,7 +34,7 @@ Note: `KIMI_SHARE_DIR` only affects the storage location of the runtime data lis
 ├── user-history/         # Input history
 │   └── <work-dir-hash>.jsonl
 └── logs/                 # Logs
-    └── kimi.log
+    └── bugpilot.log
 ```
 
 ## Configuration and metadata
@@ -45,7 +45,7 @@ Main configuration file, stores providers, models, services, and runtime paramet
 
 You can specify a configuration file at a different location with the `--config-file` flag.
 
-### `kimi.json`
+### `bugpilot.json`
 
 Metadata file, stores BugPilot's runtime state, including:
 
@@ -56,7 +56,7 @@ This file is automatically managed by BugPilot and typically doesn't need manual
 
 ### `mcp.json`
 
-MCP server configuration file, stores MCP servers added via the `kimi mcp add` command. See [MCP](../customization/mcp.md) for details.
+MCP server configuration file, stores MCP servers added via the `bugpilot mcp add` command. See [MCP](../customization/mcp.md) for details.
 
 Example structure:
 
@@ -76,15 +76,15 @@ Example structure:
 
 ## Credentials
 
-OAuth credentials are stored in the `~/.kimi/credentials/` directory. After logging in to your Kimi account via `/login`, OAuth tokens are saved in this directory.
+OAuth credentials are stored in the `~/.bugpilot/credentials/` directory. After logging in to your BugPilot account via `/login`, OAuth tokens are saved in this directory.
 
-OAuth tokens for MCP servers are stored separately in `~/.kimi/mcp-oauth/`. After authorizing an MCP server added with `--auth oauth` via `kimi mcp auth <name>`, later sessions reuse the tokens from this directory. Use `kimi mcp reset-auth <name>` to clear the MCP OAuth token for one server.
+OAuth tokens for MCP servers are stored separately in `~/.bugpilot/mcp-oauth/`. After authorizing an MCP server added with `--auth oauth` via `bugpilot mcp auth <name>`, later sessions reuse the tokens from this directory. Use `bugpilot mcp reset-auth <name>` to clear the MCP OAuth token for one server.
 
 Files in the `credentials/` directory have permissions set to read/write for the current user only (600) to protect sensitive information.
 
 ## Session data
 
-Session data is grouped by working directory and stored under `~/.kimi/sessions/`. Each working directory corresponds to a subdirectory named with the path's MD5 hash, and each session corresponds to a subdirectory named with the session ID.
+Session data is grouped by working directory and stored under `~/.bugpilot/sessions/`. Each working directory corresponds to a subdirectory named with the path's MD5 hash, and each session corresponds to a subdirectory named with the session ID.
 
 ### `context.jsonl`
 
@@ -106,7 +106,7 @@ Session state file, stores the session's runtime state, including:
 - `approval`: Approval decision state (YOLO and AFK mode on/off, auto-approved operation types)
 - `plan_mode`: Plan mode on/off status
 - `plan_session_id`: Unique identifier for the current plan session, used to associate the plan file
-- `plan_slug`: The file path identifier for the plan (the slug in `~/.kimi/plans/<slug>.md`), preserved so restarts resume the same file
+- `plan_slug`: The file path identifier for the plan (the slug in `~/.bugpilot/plans/<slug>.md`), preserved so restarts resume the same file
 - `subagent_instances`: Subagent instance state and metadata
 - `additional_dirs`: Additional workspace directories added via `--add-dir` or `/add-dir`
 
@@ -126,35 +126,35 @@ When resuming a session, subagent instance context and state are automatically r
 
 ## Plan files
 
-Plan mode plan files are stored in the `~/.kimi/plans/` directory. Each plan session corresponds to a randomly named Markdown file (e.g. `<slug>.md`).
+Plan mode plan files are stored in the `~/.bugpilot/plans/` directory. Each plan session corresponds to a randomly named Markdown file (e.g. `<slug>.md`).
 
 The `plan_slug` is saved in `state.json`, so the same plan file is resumed after a process restart. Use `/plan clear` to delete the current plan session's file.
 
 ## Input history
 
-User input history is stored in the `~/.kimi/user-history/` directory. Each working directory corresponds to a `.jsonl` file named with the path's MD5 hash.
+User input history is stored in the `~/.bugpilot/user-history/` directory. Each working directory corresponds to a `.jsonl` file named with the path's MD5 hash.
 
 Input history is used for history browsing (up/down arrow keys) and search (Ctrl-R) in shell mode.
 
 ## Logs
 
-Runtime logs are stored in `~/.kimi/logs/kimi.log`. Default log level is INFO, use the `--debug` flag to enable TRACE level.
+Runtime logs are stored in `~/.bugpilot/logs/bugpilot.log`. Default log level is INFO, use the `--debug` flag to enable TRACE level.
 
 Log files are used for troubleshooting. When reporting bugs, please include relevant log content.
 
 ## Cleaning data
 
-Deleting the share directory (default `~/.kimi/`, or the path specified by `KIMI_SHARE_DIR`) completely clears all BugPilot data, including configuration, sessions, and history.
+Deleting the share directory (default `~/.bugpilot/`, or the path specified by `BUGPILOT_SHARE_DIR`) completely clears all BugPilot data, including configuration, sessions, and history.
 
 To clean only specific data:
 
 | Need | Action |
 | --- | --- |
-| Reset configuration | Delete `~/.kimi/config.toml` |
-| Clear all sessions | Delete `~/.kimi/sessions/` directory |
+| Reset configuration | Delete `~/.bugpilot/config.toml` |
+| Clear all sessions | Delete `~/.bugpilot/sessions/` directory |
 | Clear sessions for specific working directory | Use `/sessions` in shell mode to view and delete |
-| Clear plan files | Delete `~/.kimi/plans/` directory, or use `/plan clear` in plan mode |
-| Clear input history | Delete `~/.kimi/user-history/` directory |
-| Clear logs | Delete `~/.kimi/logs/` directory |
-| Clear MCP configuration | Delete `~/.kimi/mcp.json` or use `kimi mcp remove` |
-| Clear login credentials | Delete `~/.kimi/credentials/` directory or use `/logout` |
+| Clear plan files | Delete `~/.bugpilot/plans/` directory, or use `/plan clear` in plan mode |
+| Clear input history | Delete `~/.bugpilot/user-history/` directory |
+| Clear logs | Delete `~/.bugpilot/logs/` directory |
+| Clear MCP configuration | Delete `~/.bugpilot/mcp.json` or use `bugpilot mcp remove` |
+| Clear login credentials | Delete `~/.bugpilot/credentials/` directory or use `/logout` |

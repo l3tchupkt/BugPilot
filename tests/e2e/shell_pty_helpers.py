@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import errno
 import sys
+
 try:
     import fcntl
     import pty
@@ -18,8 +19,6 @@ import re
 import select
 import struct
 import subprocess
-import sys
-
 import time
 from dataclasses import dataclass, field
 from pathlib import Path

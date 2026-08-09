@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Currently, Kimi CLI only provides security support for the latest version.
+Currently, BugPilot only provides security support for the latest version.
 
 ## Reporting a Vulnerability
 

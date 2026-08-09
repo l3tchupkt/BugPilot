@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import json
 import os
-from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Protocol, Self, cast, get_args
+from typing import TYPE_CHECKING, Literal, cast, get_args
 
-from kosong.chat_provider import ChatProvider, StreamedMessage, ThinkingEffort
 from kosong.message import (
     AudioURLPart,
     ImageURLPart,
@@ -17,14 +16,10 @@ from kosong.message import (
     VideoURLPart,
 )
 from kosong.tooling import Tool
-from kosong.utils.aio import Callback, callback
-from pydantic import SecretStr
-
-from bugpilot.constant import USER_AGENT
-from bugpilot.utils.logging import logger
 
 if TYPE_CHECKING:
-    from bugpilot.config import Config, LLMModel, LLMProvider as ConfigLLMProvider
+    from bugpilot.config import Config, LLMModel
+    from bugpilot.config import LLMProvider as ConfigLLMProvider
     from bugpilot.providers.base import LLMProvider
 
 type ProviderType = Literal[
@@ -43,15 +38,11 @@ MEDIA_TOKEN_ESTIMATE = 2_000
 
 @dataclass(slots=True)
 class LLM:
-    provider: "LLMProvider"
+    provider: LLMProvider
     max_context_size: int
     capabilities: set[ModelCapability]
-    model_config: "LLMModel | None" = None
-    provider_config: "ConfigLLMProvider | None" = None
-
-
-
-
+    model_config: LLMModel | None = None
+    provider_config: ConfigLLMProvider | None = None
 
 
 def compute_max_completion_tokens(
@@ -149,7 +140,7 @@ def model_display_name(model_name: str | None, model: LLMModel | None = None) ->
     return model_name
 
 
-def augment_provider_with_env_vars(provider: "ConfigLLMProvider", model: "LLMModel") -> dict[str, str]:
+def augment_provider_with_env_vars(provider: ConfigLLMProvider, model: LLMModel) -> dict[str, str]:
     """Override provider/model settings from environment variables."""
     applied: dict[str, str] = {}
     return applied
@@ -157,7 +148,7 @@ def augment_provider_with_env_vars(provider: "ConfigLLMProvider", model: "LLMMod
 
 def clone_llm_with_model_alias(
     llm: LLM | None,
-    config: "Config",
+    config: Config,
     model_alias: str | None,
     *,
     session_id: str,
@@ -166,11 +157,12 @@ def clone_llm_with_model_alias(
         return llm
     if model_alias not in config.models:
         raise KeyError(f"Unknown model alias: {model_alias}")
-    
+
     from bugpilot.providers.registry import ProviderRegistry
+
     provider = ProviderRegistry.create(config, model_alias, session_id=session_id)
     model = config.models[model_alias]
-    
+
     return LLM(
         provider=provider,
         max_context_size=model.max_context_size,

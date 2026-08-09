@@ -1,5 +1,5 @@
 """
-BugPilot SDK provides a convenient way to access the Kimi API and build agent workflows.
+BugPilot SDK provides a convenient way to access the BugPilot API and build agent workflows.
 
 Key features:
 
@@ -81,7 +81,9 @@ from kosong.chat_provider import (
     ThinkingEffort,
     TokenUsage,
 )
-from kosong.chat_provider.kimi import Kimi as BugPilot, KimiFiles as BugPilotFiles, KimiStreamedMessage as BugPilotStreamedMessage
+from kosong.chat_provider.bugpilot import BugPilot as BugPilot
+from kosong.chat_provider.bugpilot import BugPilotFiles as BugPilotFiles
+from kosong.chat_provider.bugpilot import BugPilotStreamedMessage as BugPilotStreamedMessage
 from kosong.message import (
     AudioURLPart,
     ContentPart,

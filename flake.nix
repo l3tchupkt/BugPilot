@@ -1,5 +1,5 @@
 {
-  description = "kimi-cli flake";
+  description = "bugpilot flake";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
     systems.url = "github:nix-systems/default";
@@ -47,7 +47,7 @@
       packages = forAllSystems (
         { pkgs, ... }:
         let
-          kimi-cli =
+          bugpilot =
             let
               inherit (pkgs)
                 lib
@@ -71,7 +71,7 @@
                   nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.setuptools ];
                 });
                 # Replace README symlink with real file for Nix builds.
-                "kimi-code" = prev."kimi-code".overrideAttrs (old: {
+                "bugpilot" = prev."bugpilot".overrideAttrs (old: {
                   postPatch = (old.postPatch or "") + ''
                     rm -f README.md
                     cp ${./README.md} README.md
@@ -85,10 +85,10 @@
                   extraBuildOverlay
                 ]
               );
-              kimiCliPackage = pythonSet.mkVirtualEnv "kimi-cli-virtual-env-${pyproject.project.version}" workspace.deps.default;
+              bugpilotCliPackage = pythonSet.mkVirtualEnv "bugpilot-virtual-env-${pyproject.project.version}" workspace.deps.default;
             in
             stdenvNoCC.mkDerivation ({
-              pname = "kimi-cli";
+              pname = "bugpilot";
               version = pyproject.project.version;
 
               dontUnpack = true;
@@ -100,9 +100,9 @@
                 runHook preInstall
 
                 mkdir -p $out/bin
-                makeWrapper ${kimiCliPackage}/bin/kimi $out/bin/kimi \
+                makeWrapper ${bugpilotCliPackage}/bin/bugpilot $out/bin/bugpilot \
                   --prefix PATH : ${lib.makeBinPath [ ripgrep ]} \
-                  --set KIMI_CLI_NO_AUTO_UPDATE "1"
+                  --set BUGPILOT_NO_AUTO_UPDATE "1"
 
                 runHook postInstall
               '';
@@ -120,13 +120,13 @@
                 maintainers = with lib.maintainers; [
                   xiaoxiangmoe
                 ];
-                mainProgram = "kimi";
+                mainProgram = "bugpilot";
               };
             });
         in
         {
-          inherit kimi-cli;
-          default = kimi-cli;
+          inherit bugpilot;
+          default = bugpilot;
         }
       );
       formatter = forAllSystems ({ pkgs, ... }: pkgs.nixfmt-tree);

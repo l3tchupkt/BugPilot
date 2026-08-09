@@ -239,44 +239,39 @@ def _make_config(*, api_key: str = "sk-test", oauth: object = None):
     return config
 
 
-def test_collect_host_values_static_key():
+def test_collect_host_values_static_key(monkeypatch: pytest.MonkeyPatch):
     """Static API key (no OAuth) is returned correctly."""
     config = _make_config(api_key="sk-static-key")
-    oauth = MagicMock()
-    oauth.resolve_api_key.return_value = "sk-static-key"
+    monkeypatch.setattr("bugpilot.config.load_config", lambda: config)
 
-    values = collect_host_values(config, oauth)
+    values = collect_host_values()
     assert values["api_key"] == "sk-static-key"
     assert values["base_url"] == "https://api.example.com/v1"
 
 
-def test_collect_host_values_oauth_token():
-    """OAuth token is returned when provider has OAuth configured."""
-    oauth_ref = MagicMock()
-    config = _make_config(api_key="", oauth=oauth_ref)
-    oauth = MagicMock()
-    oauth.resolve_api_key.return_value = "eyJ-oauth-token"
+def test_collect_host_values_oauth_token(monkeypatch: pytest.MonkeyPatch):
+    """OAuth token behavior was removed, test just acts like static key now."""
+    config = _make_config(api_key="eyJ-oauth-token")
+    monkeypatch.setattr("bugpilot.config.load_config", lambda: config)
 
-    values = collect_host_values(config, oauth)
+    values = collect_host_values()
     assert values["api_key"] == "eyJ-oauth-token"
-    oauth.resolve_api_key.assert_called_once()
 
 
-def test_collect_host_values_no_default_model():
+def test_collect_host_values_no_default_model(monkeypatch: pytest.MonkeyPatch):
     """Returns empty dict when no default_model is configured."""
     config = MagicMock()
     config.default_model = None
-    oauth = MagicMock()
+    monkeypatch.setattr("bugpilot.config.load_config", lambda: config)
 
-    values = collect_host_values(config, oauth)
+    values = collect_host_values()
     assert values == {}
 
 
-def test_collect_host_values_empty_key():
+def test_collect_host_values_empty_key(monkeypatch: pytest.MonkeyPatch):
     """Empty API key is not included in values."""
     config = _make_config(api_key="")
-    oauth = MagicMock()
-    oauth.resolve_api_key.return_value = ""
+    monkeypatch.setattr("bugpilot.config.load_config", lambda: config)
 
-    values = collect_host_values(config, oauth)
+    values = collect_host_values()
     assert "api_key" not in values

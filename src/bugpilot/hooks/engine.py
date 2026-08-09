@@ -246,9 +246,8 @@ class HookEngine:
         # (PreToolUse block), treating a sink failure as fail-open would
         # silently bypass the block.
         try:
-
             has_block = any(r.action == "block" for r in results)
-#             track("hook_triggered", event_type=event, action="block" if has_block else "allow")
+        #             track("hook_triggered", event_type=event, action="block" if has_block else "allow")
         except Exception:
             logger.debug("Telemetry for hook_triggered failed")
 

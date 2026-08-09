@@ -80,9 +80,9 @@ async def usage(app: Shell, args: str):
 def _usage_url(model: LLMModel | None) -> str | None:
     if model is None:
         return None
-#     platform_id = parse_managed_provider_key(model.provider)
-#     platform = get_platform_by_id(platform_id)
-#     if platform is None or platform.id != BUGPILOT_CODE_PLATFORM_ID:
+    #     platform_id = parse_managed_provider_key(model.provider)
+    #     platform = get_platform_by_id(platform_id)
+    #     if platform is None or platform.id != BUGPILOT_CODE_PLATFORM_ID:
     return None
 
 

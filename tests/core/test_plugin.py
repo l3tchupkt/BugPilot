@@ -49,13 +49,13 @@ def test_parse_full_plugin_json(tmp_path: Path):
             "version": "1.0.0",
             "description": "Stock helper",
             "config_file": "config/config.json",
-            "inject": {"kimicode.api_key": "api_key"},
+            "inject": {"bugpilotcode.api_key": "api_key"},
         },
     )
     spec = parse_plugin_json(plugin_dir / "plugin.json")
     assert spec.name == "stock-assistant"
     assert spec.config_file == "config/config.json"
-    assert spec.inject == {"kimicode.api_key": "api_key"}
+    assert spec.inject == {"bugpilotcode.api_key": "api_key"}
 
 
 def test_parse_plugin_json_missing_name(tmp_path: Path):
@@ -117,13 +117,13 @@ def test_inject_config_writes_value(tmp_path: Path):
             "name": "p",
             "version": "1.0.0",
             "config_file": "config/config.json",
-            "inject": {"kimicode.api_key": "api_key"},
+            "inject": {"bugpilotcode.api_key": "api_key"},
         },
     )
     config_dir = plugin_dir / "config"
     config_dir.mkdir()
     (config_dir / "config.json").write_text(
-        json.dumps({"kimicode": {"api_key": "PLACEHOLDER", "timeout": 30}}),
+        json.dumps({"bugpilotcode": {"api_key": "PLACEHOLDER", "timeout": 30}}),
         encoding="utf-8",
     )
 
@@ -131,8 +131,8 @@ def test_inject_config_writes_value(tmp_path: Path):
     inject_config(plugin_dir, spec, {"api_key": "sk-real-key"})
 
     result = json.loads((config_dir / "config.json").read_text())
-    assert result["kimicode"]["api_key"] == "sk-real-key"
-    assert result["kimicode"]["timeout"] == 30  # untouched
+    assert result["bugpilotcode"]["api_key"] == "sk-real-key"
+    assert result["bugpilotcode"]["timeout"] == 30  # untouched
 
 
 def test_inject_config_creates_nested_path(tmp_path: Path):

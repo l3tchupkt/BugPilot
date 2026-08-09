@@ -8,7 +8,7 @@ BugPilot 的配置可以通过多种方式设置，不同来源的配置按优�
 
 1. **环境变量** - 最高优先级，用于临时覆盖或 CI/CD 环境
 2. **CLI 参数** - 启动时指定的参数
-3. **配置文件** - `~/.kimi/config.toml` 或通过 `--config-file` 指定的文件
+3. **配置文件** - `~/.bugpilot/config.toml` 或通过 `--config-file` 指定的文件
 
 ## CLI 参数
 
@@ -17,7 +17,7 @@ BugPilot 的配置可以通过多种方式设置，不同来源的配置按优�
 | 参数 | 说明 |
 | --- | --- |
 | `--config <TOML/JSON>` | 直接传入配置内容，覆盖默认配置文件 |
-| `--config-file <PATH>` | 指定配置文件路径，替代默认的 `~/.kimi/config.toml` |
+| `--config-file <PATH>` | 指定配置文件路径，替代默认的 `~/.bugpilot/config.toml` |
 
 `--config` 和 `--config-file` 不能同时使用。
 
@@ -53,7 +53,7 @@ BugPilot 的配置可以通过多种方式设置，不同来源的配置按优�
 
 环境变量根据当前使用的供应商类型来决定是否生效：
 
-- `kimi` 类型的供应商：使用 `KIMI_*` 环境变量
+- `bugpilot` 类型的供应商：使用 `BUGPILOT_*` 环境变量
 - `openai_legacy` 或 `openai_responses` 类型的供应商：使用 `OPENAI_*` 环境变量
 - 其他类型的供应商：不支持环境变量覆盖
 
@@ -62,24 +62,24 @@ BugPilot 的配置可以通过多种方式设置，不同来源的配置按优�
 示例：
 
 ```sh
-BUGPILOT_API_KEY="sk-xxx" KIMI_MODEL_NAME="kimi-k2-thinking-turbo" kimi
+BUGPILOT_API_KEY="sk-xxx" BUGPILOT_MODEL_NAME="bugpilot-k2-thinking-turbo" bugpilot
 ```
 
 ## 配置优先级示例
 
-假设配置文件 `~/.kimi/config.toml` 内容如下：
+假设配置文件 `~/.bugpilot/config.toml` 内容如下：
 
 ```toml
-default_model = "kimi-for-coding"
+default_model = "bugpilot-for-coding"
 
-[providers.kimi-for-coding]
-type = "kimi"
-base_url = "https://api.kimi.com/coding/v1"
+[providers.bugpilot-for-coding]
+type = "bugpilot"
+base_url = "https://api.bugpilot.com/coding/v1"
 api_key = "sk-config"
 
-[models.kimi-for-coding]
-provider = "kimi-for-coding"
-model = "kimi-for-coding"
+[models.bugpilot-for-coding]
+provider = "bugpilot-for-coding"
+model = "bugpilot-for-coding"
 max_context_size = 262144
 ```
 
@@ -87,7 +87,7 @@ max_context_size = 262144
 
 | 场景 | `base_url` | `api_key` | `model` |
 | --- | --- | --- | --- |
-| `kimi` | 配置文件 | 配置文件 | 配置文件 |
-| `BUGPILOT_API_KEY=sk-env kimi` | 配置文件 | 环境变量 | 配置文件 |
-| `kimi --model other` | 配置文件 | 配置文件 | CLI 参数 |
-| `KIMI_MODEL_NAME=k2 kimi` | 配置文件 | 配置文件 | 环境变量 |
+| `bugpilot` | 配置文件 | 配置文件 | 配置文件 |
+| `BUGPILOT_API_KEY=sk-env bugpilot` | 配置文件 | 环境变量 | 配置文件 |
+| `bugpilot --model other` | 配置文件 | 配置文件 | CLI 参数 |
+| `BUGPILOT_MODEL_NAME=k2 bugpilot` | 配置文件 | 配置文件 | 环境变量 |

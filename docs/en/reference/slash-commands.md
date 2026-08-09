@@ -34,10 +34,10 @@ Submit feedback to help improve BugPilot. You will be prompted to enter your fee
 
 Log in or configure an API platform. After execution, first select a platform:
 
-- **Kimi Code**: Automatically opens a browser for OAuth authorization
+- **BugPilot**: Automatically opens a browser for OAuth authorization
 - **Other platforms**: Enter an API key, then select an available model
 
-After configuration, settings are automatically saved to `~/.kimi/config.toml` and reloaded. See [Providers](../configuration/providers.md) for details.
+After configuration, settings are automatically saved to `~/.bugpilot/config.toml` and reloaded. See [Providers](../configuration/providers.md) for details.
 
 Alias: `/setup`
 
@@ -97,7 +97,7 @@ Display API usage and quota information, showing quota usage with progress bars 
 Alias: `/status`
 
 ::: tip
-This command only works with the Kimi Code platform.
+This command only works with the BugPilot platform.
 :::
 
 ### `/mcp`
@@ -163,7 +163,7 @@ Export the current session context to a Markdown file for archiving or sharing.
 
 Usage:
 
-- `/export`: Export to the current working directory with an auto-generated filename (format: `kimi-export-<first 8 chars of session ID>-<timestamp>.md`)
+- `/export`: Export to the current working directory with an auto-generated filename (format: `bugpilot-export-<first 8 chars of session ID>-<timestamp>.md`)
 - `/export <path>`: Export to the specified path. If the path is a directory, the filename is auto-generated; if it is a file path, the content is written directly to that file
 
 The exported file includes:
@@ -237,7 +237,7 @@ Usage:
 - `/add-dir`: Without arguments, list already added additional directories
 
 ::: tip
-Directories already within the working directory do not need to be added, as they are already accessible. You can also add directories at startup via the `--add-dir` option. See [`kimi` command](./kimi-command.md#working-directory) for details.
+Directories already within the working directory do not need to be added, as they are already accessible. You can also add directories at startup via the `--add-dir` option. See [`bugpilot` command](./bugpilot-command.md#working-directory) for details.
 :::
 
 ## Others
@@ -320,20 +320,20 @@ AFK skips all approval confirmations and removes the clarifying-question safety 
 
 ### `/web`
 
-Switch to Web UI. BugPilot will start a Web UI server and open the current session in your browser, allowing you to continue the conversation in the Web UI. See [Web UI](./kimi-web.md) for details.
+Switch to Web UI. BugPilot will start a Web UI server and open the current session in your browser, allowing you to continue the conversation in the Web UI. See [Web UI](./bugpilot-web.md) for details.
 
 ### `/vis`
 
-Switch to the Agent Tracing Visualizer. BugPilot will start the visualizer server and open the current session's tracing view in the browser, where you can inspect Wire event timelines, context messages, and usage statistics. See [Agent Tracing Visualizer](./kimi-vis.md) for details.
+Switch to the Agent Tracing Visualizer. BugPilot will start the visualizer server and open the current session's tracing view in the browser, where you can inspect Wire event timelines, context messages, and usage statistics. See [Agent Tracing Visualizer](./bugpilot-vis.md) for details.
 
 ### `/upgrade`
 
-Install the new Kimi Code — the faster, more powerful successor. Running it shows the install command and asks whether to install immediately:
+Install the new BugPilot — the faster, more powerful successor. Running it shows the install command and asks whether to install immediately:
 
 - Install now: BugPilot runs the install script, and your existing config and sessions are migrated automatically
 - Install later: only the install command is shown so you can run it manually
 
-After installation, open a new terminal and run `kimi` to start the new Kimi Code.
+After installation, open a new terminal and run `bugpilot` to start the new BugPilot.
 
 ::: tip Note
 This command is only available in interactive shell mode.

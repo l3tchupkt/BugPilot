@@ -408,7 +408,7 @@ class Shell:
 
         # Start telemetry periodic flush and disk retry
 
-#         _telemetry_sink = get_sink()
+        #         _telemetry_sink = get_sink()
 
         if isinstance(self.soul, Agent):
             watcher = NotificationWatcher(
@@ -494,13 +494,13 @@ class Shell:
                 prompt_session.set_prefill_text(self._prefill_text)
                 self._prefill_text = None
             if isinstance(self.soul, Agent):
-                kimi_soul = self.soul
-                snapshot = kimi_soul.status.mcp_status
+                bugpilot_soul = self.soul
+                snapshot = bugpilot_soul.status.mcp_status
                 if snapshot and snapshot.loading:
 
                     async def _invalidate_after_mcp_loading() -> None:
                         try:
-                            await kimi_soul.wait_for_background_mcp_loading()
+                            await bugpilot_soul.wait_for_background_mcp_loading()
                         except Exception:
                             logger.debug("MCP loading finished with error while refreshing prompt")
                         if self._prompt_session is prompt_session:
@@ -656,9 +656,8 @@ class Shell:
                             and shell_slash_registry.find_command(slash_cmd_call.name) is None
                         )
                         if is_soul_slash:
-
                             assert available_command is not None
-#                             track("input_command", command=available_command.name)
+                            #                             track("input_command", command=available_command.name)
                             background_autotrigger_armed = True
                             resume_prompt.set()
                             await self.run_soul_command(slash_cmd_call.raw_input)
@@ -696,7 +695,7 @@ class Shell:
                 # persists in-flight events to disk; flush_sync() catches any
                 # events still in the buffer.
 
-#                 track("exit", duration_s=time.monotonic() - _run_start_time)
+                #                 track("exit", duration_s=time.monotonic() - _run_start_time)
                 ensure_tty_sane()
 
         return shell_ok
@@ -734,7 +733,7 @@ class Shell:
 
         logger.info("Running shell command: {cmd}", cmd=command)
 
-#         track("input_bash")
+        #         track("input_bash")
 
         proc: asyncio.subprocess.Process | None = None
 
@@ -766,14 +765,14 @@ class Shell:
         available_command = self._find_available_slash_command(command_call.name)
         if available_command is None:
             logger.info("Unknown slash command /{command}", command=command_call.name)
-#             track("input_command_invalid")
+            #             track("input_command_invalid")
             console.print(
                 f'[red]Unknown slash command "/{command_call.name}", '
                 'type "/" for all available commands[/red]'
             )
             return
 
-#         track("input_command", command=available_command.name)
+        #         track("input_command", command=available_command.name)
 
         command = shell_slash_registry.find_command(command_call.name)
         if command is None:
@@ -1315,10 +1314,7 @@ class Shell:
         async def _bridge() -> None:
             try:
                 response = await request.wait()
-                if (
-                    isinstance(self.soul, Agent)
-                    and self.soul.runtime.approval_runtime is not None
-                ):
+                if isinstance(self.soul, Agent) and self.soul.runtime.approval_runtime is not None:
                     self.soul.runtime.approval_runtime.resolve(
                         request.id, response, feedback=request.feedback
                     )
@@ -1525,7 +1521,7 @@ def _print_welcome_info(name: str, info_items: list[WelcomeInfoItem]) -> None:
                         )
                     )
 
-#                     track("update_prompted", current=current_version, latest=latest_version)
+    #                     track("update_prompted", current=current_version, latest=latest_version)
 
     console.print(
         Panel(

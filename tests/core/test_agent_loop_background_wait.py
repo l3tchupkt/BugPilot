@@ -1,3 +1,6 @@
+from __future__ import annotations
+from bugpilot.soul.agent_loop import AgentLoop
+
 """Tests for Print mode background task waiting behavior.
 
 When background agents are still running after ``run_soul()`` completes a turn,
@@ -16,7 +19,6 @@ When background agents are still running after ``run_soul()`` completes a turn,
 - raise ``RunCancelled`` when ``cancel_event`` is set.
 """
 
-from __future__ import annotations
 
 import asyncio
 from pathlib import Path
@@ -26,7 +28,6 @@ import pytest
 
 from bugpilot.cli import ExitCode, InputFormat
 from bugpilot.soul import RunCancelled
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.ui.print import Print
 
 
@@ -111,7 +112,7 @@ def _make_print_with_runtime(
     print_wait_ceiling_s: int = 3600,
     agent_task_timeout_s: int = 900,
 ) -> tuple[Print, AsyncMock]:
-    soul = AsyncMock(spec=Agent)
+    soul = AsyncMock(spec=AgentLoop)
     soul.runtime = MagicMock()
     soul.runtime.role = "root"
     soul.runtime.background_tasks = manager

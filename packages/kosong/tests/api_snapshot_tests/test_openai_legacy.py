@@ -346,7 +346,7 @@ async def test_openai_legacy_auto_reasoning_effort_when_history_has_think_part()
     """When reasoning_effort is not set but history contains ThinkPart and reasoning_key is
     configured, reasoning_effort should be auto-set to avoid server validation errors.
 
-    Reproduces: https://github.com/l3tchupkt/kimi-cli/issues/1616
+    Reproduces: https://github.com/l3tchupkt/bugpilot/issues/1616
     """
     with respx.mock(base_url="https://api.openai.com") as mock:
         mock.post("/v1/chat/completions").mock(
@@ -354,7 +354,7 @@ async def test_openai_legacy_auto_reasoning_effort_when_history_has_think_part()
         )
         # Provider with reasoning_key but NO explicit reasoning_effort
         provider = OpenAILegacy(
-            model="kimi-k2.5",
+            model="bugpilot-k2.5",
             api_key="test-key",
             stream=False,
             reasoning_key="reasoning_content",
@@ -384,7 +384,7 @@ async def test_openai_legacy_no_auto_reasoning_effort_without_think_part():
             return_value=Response(200, json=make_chat_completion_response())
         )
         provider = OpenAILegacy(
-            model="kimi-k2.5",
+            model="bugpilot-k2.5",
             api_key="test-key",
             stream=False,
             reasoning_key="reasoning_content",

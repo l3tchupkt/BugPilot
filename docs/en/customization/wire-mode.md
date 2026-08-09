@@ -9,7 +9,7 @@ Wire is the message-passing layer used internally by BugPilot. When you interact
 Wire mode (`--wire`) exposes this communication protocol, allowing external programs to interact directly with BugPilot. This is suitable for building custom UIs or embedding BugPilot into other applications.
 
 ```sh
-kimi --wire
+bugpilot --wire
 ```
 
 ## Use cases
@@ -1133,83 +1133,83 @@ interface ShellDisplayBlock {
 }
 ```
 
-## Kimi Agent (Rust) Wire server
+## BugPilot Agent (Rust) Wire server
 
 ::: warning Note
-Kimi Agent is currently experimental. APIs and behavior may change in future releases.
+BugPilot Agent is currently experimental. APIs and behavior may change in future releases.
 :::
 
-Kimi Agent (Rust) is the Rust implementation of the BugPilot kernel, designed specifically for Wire mode. If you only need the Wire protocol service, Kimi Agent (Rust) offers a more lightweight alternative. The Rust implementation lives in [`l3tchupkt/kimi-agent-rs`](https://github.com/l3tchupkt/kimi-agent-rs).
+BugPilot Agent (Rust) is the Rust implementation of the BugPilot kernel, designed specifically for Wire mode. If you only need the Wire protocol service, BugPilot Agent (Rust) offers a more lightweight alternative. The Rust implementation lives in [`l3tchupkt/bugpilot-agent-rs`](https://github.com/l3tchupkt/bugpilot-agent-rs).
 
 ### Features
 
-- **Full Wire protocol compatibility**: Uses the same Wire protocol as Python's `kimi --wire`, existing clients need no modifications
+- **Full Wire protocol compatibility**: Uses the same Wire protocol as Python's `bugpilot --wire`, existing clients need no modifications
 - **Smaller footprint**: Single statically-linked binary, no Python runtime required
 - **Faster startup**: Native compilation provides faster startup times
-- **Same configuration**: Uses the same config file (`~/.kimi/config.toml`) and session directories
+- **Same configuration**: Uses the same config file (`~/.bugpilot/config.toml`) and session directories
 
 ### Limitations
 
 - **Wire mode only**: No Shell/Print/ACP UI
-- **Kimi provider only**: Does not support OpenAI, Anthropic, or other providers
-- **No Kimi account login**: No `login`/`logout` subcommands or `/login`, `/logout` slash commands; requires manual API key configuration
+- **BugPilot provider only**: Does not support OpenAI, Anthropic, or other providers
+- **No BugPilot account login**: No `login`/`logout` subcommands or `/login`, `/logout` slash commands; requires manual API key configuration
 - **No `--prompt`/`--command`**: Wire server does not accept initial prompts
 - **Local execution only**: No SSH Kaos support
-- **Different MCP OAuth storage**: Kimi Agent stores credentials in `~/.kimi/credentials/mcp_auth.json`, while the Python version uses `~/.kimi/mcp-oauth/`; they are incompatible
+- **Different MCP OAuth storage**: BugPilot Agent stores credentials in `~/.bugpilot/credentials/mcp_auth.json`, while the Python version uses `~/.bugpilot/mcp-oauth/`; they are incompatible
 
 ### Installation
 
-Download pre-built binaries from [GitHub Releases](https://github.com/l3tchupkt/kimi-agent-rs/releases):
+Download pre-built binaries from [GitHub Releases](https://github.com/l3tchupkt/bugpilot-agent-rs/releases):
 
 ```sh
 # macOS (Apple Silicon)
-curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-aarch64-apple-darwin.tar.gz | tar xz
-sudo mv kimi-agent /usr/local/bin/
+curl -L https://github.com/l3tchupkt/bugpilot-agent-rs/releases/latest/download/bugpilot-agent-aarch64-apple-darwin.tar.gz | tar xz
+sudo mv bugpilot-agent /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/l3tchupkt/kimi-agent-rs/releases/latest/download/kimi-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
-sudo mv kimi-agent /usr/local/bin/
+curl -L https://github.com/l3tchupkt/bugpilot-agent-rs/releases/latest/download/bugpilot-agent-x86_64-unknown-linux-gnu.tar.gz | tar xz
+sudo mv bugpilot-agent /usr/local/bin/
 ```
 
 ### Usage
 
-Kimi Agent runs in Wire mode by default:
+BugPilot Agent runs in Wire mode by default:
 
 ```sh
-kimi-agent
+bugpilot-agent
 ```
 
-Common options are the same as the `kimi` command:
+Common options are the same as the `bugpilot` command:
 
 ```sh
 # Specify work directory
-kimi-agent --work-dir /path/to/project
+bugpilot-agent --work-dir /path/to/project
 
 # Continue previous session
-kimi-agent --continue
+bugpilot-agent --continue
 
 # Use specific session
-kimi-agent --session <session-id>
+bugpilot-agent --session <session-id>
 
 # Use specific model
-kimi-agent --model k2
+bugpilot-agent --model k2
 
 # YOLO mode (skip approvals)
-kimi-agent --yolo
+bugpilot-agent --yolo
 ```
 
 Subcommands:
 
 ```sh
 # Show version and environment info
-kimi-agent info
+bugpilot-agent info
 
 # Manage MCP servers
-kimi-agent mcp list
-kimi-agent mcp add <name> <command> [args...]
-kimi-agent mcp remove <name>
+bugpilot-agent mcp list
+bugpilot-agent mcp add <name> <command> [args...]
+bugpilot-agent mcp remove <name>
 ```
 
 ### Version synchronization
 
-Kimi Agent is released independently from BugPilot. See `l3tchupkt/kimi-agent-rs` release notes for compatibility and sync status.
+BugPilot Agent is released independently from BugPilot. See `l3tchupkt/bugpilot-agent-rs` release notes for compatibility and sync status.

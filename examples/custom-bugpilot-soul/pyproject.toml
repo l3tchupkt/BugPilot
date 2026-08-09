@@ -1,0 +1,10 @@
+[project]
+name = "custom-bugpilot-soul"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["bugpilot", "kosong"]
+
+[tool.uv.sources]
+bugpilot = { path = "../../" }

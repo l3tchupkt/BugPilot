@@ -13,7 +13,7 @@ def main(argv: Sequence[str] | None = None) -> int | str | None:
     # Same entry treatment as bugpilot.__main__: install excepthook before
     # anything else so startup-phase crashes in subcommand subprocesses
     # (background-task-worker, __web-worker, acp via toad) are captured.
-#     install_crash_handlers()
+    #     install_crash_handlers()
     normalize_proxy_env()
 
     try:

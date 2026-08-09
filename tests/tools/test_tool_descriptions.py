@@ -379,7 +379,7 @@ Replace specific strings within a specified file.
 
 
 def test_search_web_description(search_web_tool: SearchWeb):
-    """Test the description of MoonshotSearch tool."""
+    """Test the description of BugPilotSearch tool."""
     assert search_web_tool.base.description == snapshot(
         "WebSearch tool allows you to search on the internet to get latest information, including news, documents, release notes, blog posts, papers, etc.\n"
     )

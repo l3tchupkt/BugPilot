@@ -10,15 +10,15 @@ BugPilot 支持多种 LLM 平台，可以通过配置文件或 `/login` 命令�
 2. 输入 API 密钥
 3. 从可用模型列表中选择模型
 
-配置完成后，BugPilot 会自动保存设置到 `~/.kimi/config.toml` 并重新加载。
+配置完成后，BugPilot 会自动保存设置到 `~/.bugpilot/config.toml` 并重新加载。
 
 `/login` 目前支持以下平台：
 
 | 平台 | 说明 |
 | --- | --- |
-| Kimi Code | Kimi Code 平台，支持搜索和抓取服务 |
-| Moonshot AI 开放平台 (moonshot.cn) | 中国区 API 端点 |
-| Moonshot AI Open Platform (moonshot.ai) | 全球区 API 端点 |
+| BugPilot | BugPilot 平台，支持搜索和抓取服务 |
+| BugPilot AI 开放平台 (bugpilot.ai) | 中国区 API 端点 |
+| BugPilot AI Open Platform (bugpilot.ai) | 全球区 API 端点 |
 
 如需使用其他平台，请手动编辑配置文件。
 
@@ -28,7 +28,7 @@ BugPilot 支持多种 LLM 平台，可以通过配置文件或 `/login` 命令�
 
 | 类型 | 说明 |
 | --- | --- |
-| `kimi` | Kimi API |
+| `bugpilot` | BugPilot API |
 | `openai_legacy` | OpenAI Chat Completions API |
 | `openai_responses` | OpenAI Responses API |
 | `anthropic` | Anthropic Claude API |
@@ -37,14 +37,14 @@ BugPilot 支持多种 LLM 平台，可以通过配置文件或 `/login` 命令�
 
 所有供应商类型都支持通过 `custom_headers` 字段添加自定义 HTTP 请求头。详见 [配置文件](./config-files.md)。
 
-### `kimi`
+### `bugpilot`
 
-用于连接 Kimi API，包括 Kimi Code 和 Moonshot AI 开放平台。
+用于连接 BugPilot API，包括 BugPilot 和 BugPilot AI 开放平台。
 
 ```toml
-[providers.kimi-for-coding]
-type = "kimi"
-base_url = "https://api.kimi.com/coding/v1"
+[providers.bugpilot-for-coding]
+type = "bugpilot"
+base_url = "https://api.bugpilot.com/coding/v1"
 api_key = "sk-xxx"
 ```
 
@@ -129,7 +129,7 @@ capabilities = ["thinking", "image_in"]
 
 ### `always_thinking`
 
-表示模型始终使用 Thinking 模式，无法关闭。例如 `kimi-k2-thinking-turbo` 等名称中包含 "thinking" 的模型通常具有此能力。使用这类模型时，`/model` 命令不会提示选择 Thinking 模式的开关。
+表示模型始终使用 Thinking 模式，无法关闭。例如 `bugpilot-k2-thinking-turbo` 等名称中包含 "thinking" 的模型通常具有此能力。使用这类模型时，`/model` 命令不会提示选择 Thinking 模式的开关。
 
 ### `image_in`
 
@@ -141,14 +141,14 @@ capabilities = ["thinking", "image_in"]
 
 ## 搜索和抓取服务
 
-`SearchWeb` 和 `FetchURL` 工具依赖外部服务，目前仅 Kimi Code 平台提供这些服务。
+`SearchWeb` 和 `FetchURL` 工具依赖外部服务，目前仅 BugPilot 平台提供这些服务。
 
-使用 `/login` 选择 Kimi Code 平台时，搜索和抓取服务会自动配置。
+使用 `/login` 选择 BugPilot 平台时，搜索和抓取服务会自动配置。
 
 | 服务 | 对应工具 | 未配置时的行为 |
 | --- | --- | --- |
-| `moonshot_search` | `SearchWeb` | 工具不可用 |
-| `moonshot_fetch` | `FetchURL` | 回退到本地抓取 |
+| `bugpilot_search` | `SearchWeb` | 工具不可用 |
+| `bugpilot_fetch` | `FetchURL` | 回退到本地抓取 |
 
 使用其他平台时，`FetchURL` 工具仍可使用，但会回退到本地抓取。
 

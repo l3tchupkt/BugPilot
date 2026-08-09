@@ -11,11 +11,11 @@ from kosong.tooling.empty import EmptyToolset
 import bugpilot.soul.agent_loop as agent_loop_module
 from bugpilot.llm import LLM, ModelCapability
 from bugpilot.soul import LLMNotSupported, run_soul
-from bugpilot.soul.agent import Agent, Runtime
+from bugpilot.soul.agent import Agent
+from bugpilot.soul.agent_loop import AgentLoop, Runtime
 from bugpilot.soul.approval import Approval
 from bugpilot.soul.context import Context
 from bugpilot.soul.dynamic_injection import DynamicInjection
-from bugpilot.soul.agent_loop import Agent
 from bugpilot.soul.message import is_system_reminder_message
 from bugpilot.utils.aioqueue import QueueShutDown
 from bugpilot.wire import Wire
@@ -28,14 +28,14 @@ def approval() -> Approval:
     return Approval(yolo=False)
 
 
-def _make_soul(runtime: Runtime, tmp_path: Path) -> Agent:
+def _make_soul(runtime: Runtime, tmp_path: Path) -> AgentLoop:
     agent = Agent(
         name="Steer Test Agent",
         system_prompt="Test prompt.",
         toolset=EmptyToolset(),
         runtime=runtime,
     )
-    return Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    return AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
 
 def _runtime_with_llm(runtime: Runtime, llm: LLM) -> Runtime:
@@ -60,7 +60,7 @@ def _runtime_with_llm(runtime: Runtime, llm: LLM) -> Runtime:
 def _llm_with_capabilities(runtime: Runtime, capabilities: set[ModelCapability]) -> LLM:
     assert runtime.llm is not None
     return LLM(
-        chat_provider=runtime.llm.chat_provider,
+        provider=runtime.llm.chat_provider,
         max_context_size=runtime.llm.max_context_size,
         capabilities=capabilities,
         model_config=runtime.llm.model_config,
@@ -420,7 +420,7 @@ async def test_run_soul_emits_steer_input_and_continues_same_turn(
 ) -> None:
     assert runtime.llm is not None
     llm = LLM(
-        chat_provider=_SequenceChatProvider(
+        provider=_SequenceChatProvider(
             [
                 [TextPart(text="first answer")],
                 [TextPart(text="second answer")],
@@ -435,7 +435,7 @@ async def test_run_soul_emits_steer_input_and_continues_same_turn(
         toolset=EmptyToolset(),
         runtime=_runtime_with_llm(runtime, llm),
     )
-    soul = Agent(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
+    soul = AgentLoop(agent, context=Context(file_backend=tmp_path / "history.jsonl"))
 
     seen: list[object] = []
     injected = False

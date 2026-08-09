@@ -52,6 +52,7 @@ async def init(soul: Agent, args: str):
     )
     await soul.context.append_message(Message(role="user", content=[system_message]))
 
+
 #     track("init_complete")
 
 
@@ -100,7 +101,7 @@ async def yolo(soul: Agent, args: str):
     # Inspect only the yolo flag: afk is independent and is toggled by /afk.
     if soul.runtime.approval.is_yolo_flag():
         soul.runtime.approval.set_yolo(False)
-#         track("yolo_toggle", enabled=False)
+        #         track("yolo_toggle", enabled=False)
         if soul.runtime.approval.is_afk():
             # Yolo off but afk still on -> tool calls remain auto-approved.
             # Don't mislead the user into thinking approvals just came back.
@@ -116,7 +117,7 @@ async def yolo(soul: Agent, args: str):
             wire_send(TextPart(text="You only die once! Actions will require approval."))
     else:
         soul.runtime.approval.set_yolo(True)
-#         track("yolo_toggle", enabled=True)
+        #         track("yolo_toggle", enabled=True)
         wire_send(TextPart(text="You only live once! All actions will be auto-approved."))
 
 
@@ -130,7 +131,7 @@ async def afk(soul: Agent, args: str):
         await soul.context.append_message(
             Message(role="user", content=[system_reminder(AFK_DISABLED_REMINDER)])
         )
-#         track("afk_toggle", enabled=False)
+        #         track("afk_toggle", enabled=False)
         if soul.runtime.approval.is_yolo_flag():
             wire_send(
                 TextPart(
@@ -142,7 +143,7 @@ async def afk(soul: Agent, args: str):
     else:
         soul.runtime.approval.set_afk(True)
         await soul.notify_afk_changed(True)
-#         track("afk_toggle", enabled=True)
+        #         track("afk_toggle", enabled=True)
         wire_send(
             TextPart(
                 text=(

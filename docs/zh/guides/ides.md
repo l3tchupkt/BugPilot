@@ -17,7 +17,7 @@ BugPilot 支持通过 [Agent Client Protocol (ACP)](https://agentclientprotocol.
   "agent_servers": {
     "BugPilot": {
       "type": "custom",
-      "command": "kimi",
+      "command": "bugpilot",
       "args": ["acp"],
       "env": {}
     }
@@ -28,7 +28,7 @@ BugPilot 支持通过 [Agent Client Protocol (ACP)](https://agentclientprotocol.
 配置说明：
 
 - `type`：固定值 `"custom"`
-- `command`：BugPilot 的命令路径，如果 `kimi` 不在 PATH 中，需要使用完整路径
+- `command`：BugPilot 的命令路径，如果 `bugpilot` 不在 PATH 中，需要使用完整路径
 - `args`：启动参数，`acp` 启用 ACP 模式
 - `env`：环境变量，通常留空即可
 
@@ -46,7 +46,7 @@ JetBrains 系列 IDE（IntelliJ IDEA、PyCharm、WebStorm 等）通过 AI 聊天
 {
   "agent_servers": {
     "BugPilot": {
-      "command": "~/.local/bin/kimi",
+      "command": "~/.local/bin/bugpilot",
       "args": ["acp"],
       "env": {}
     }
@@ -54,4 +54,4 @@ JetBrains 系列 IDE（IntelliJ IDEA、PyCharm、WebStorm 等）通过 AI 聊天
 }
 ```
 
-`command` 需要使用完整路径，可以在终端中运行 `which kimi` 获取。保存后，在 AI 聊天的 Agent 选择器中就可以选择 BugPilot 了。
+`command` 需要使用完整路径，可以在终端中运行 `which bugpilot` 获取。保存后，在 AI 聊天的 Agent 选择器中就可以选择 BugPilot 了。

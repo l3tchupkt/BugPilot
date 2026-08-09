@@ -11,8 +11,6 @@ from __future__ import annotations
 import pytest
 from kosong.chat_provider import APIEmptyResponseError
 
-from bugpilot.soul.agent_loop import Agent
-
 
 @pytest.mark.asyncio
 async def test_think_only_error_is_retryable() -> None:

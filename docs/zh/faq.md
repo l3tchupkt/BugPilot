@@ -7,7 +7,7 @@
 如果在运行 `/login`（或 `/setup`）命令时看到 "No models available for the selected platform" 错误，可能是以下原因：
 
 - **API 密钥无效或过期**：检查你输入的 API 密钥是否正确，以及是否仍有效。
-- **网络连接问题**：确认能正常访问 API 服务地址（如 `api.kimi.com` 或 `api.moonshot.cn`）。
+- **网络连接问题**：确认能正常访问 API 服务地址（如 `api.bugpilot.com` 或 `api.bugpilot.ai`）。
 
 ### API 密钥无效
 
@@ -19,7 +19,7 @@ API 密钥无效可能的原因：
 
 ### 会员过期或配额用尽
 
-如果你使用 Kimi Code 平台，可以通过 `/usage` 命令查看当前的配额和会员状态。如果配额用尽或会员过期，需要在 [Kimi Code](https://kimi.com/coding) 续费或升级。
+如果你使用 BugPilot 平台，可以通过 `/usage` 命令查看当前的配额和会员状态。如果配额用尽或会员过期，需要在 [BugPilot](https://bugpilot.com/coding) 续费或升级。
 
 ## 交互问题
 
@@ -29,8 +29,8 @@ API 密钥无效可能的原因：
 
 如果需要切换工作目录：
 
-- **退出并重新启动**：在目标目录中重新运行 `kimi` 命令。
-- **使用 `--work-dir` 参数**：启动时指定工作目录，如 `kimi --work-dir /path/to/project`。
+- **退出并重新启动**：在目标目录中重新运行 `bugpilot` 命令。
+- **使用 `--work-dir` 参数**：启动时指定工作目录，如 `bugpilot --work-dir /path/to/project`。
 - **在命令中使用绝对路径**：直接使用绝对路径执行命令，如 `ls /path/to/dir`。
 
 ### 粘贴图片失败
@@ -44,7 +44,7 @@ API 密钥无效可能的原因：
 
 ### 工作目录被删除或移除
 
-如果在会话期间工作目录变得不可访问（外置硬盘拔出、目录被删除或文件系统卸载），BugPilot 会检测到这一情况并显示崩溃报告，包含会话 ID 和工作目录路径，之后干净退出。你可以通过 `kimi -r <session-id>` 在正确的目录中恢复会话。
+如果在会话期间工作目录变得不可访问（外置硬盘拔出、目录被删除或文件系统卸载），BugPilot 会检测到这一情况并显示崩溃报告，包含会话 ID 和工作目录路径，之后干净退出。你可以通过 `bugpilot -r <session-id>` 在正确的目录中恢复会话。
 
 ## ACP 问题
 
@@ -52,10 +52,10 @@ API 密钥无效可能的原因：
 
 如果 IDE（如 Zed 或 JetBrains IDE）无法连接到 BugPilot，请检查以下几点：
 
-- **确认 BugPilot 已安装**：运行 `kimi --version` 确认安装成功。
-- **检查配置路径**：确保 IDE 配置中的 BugPilot 路径正确。通常可以使用 `kimi acp` 作为命令。
-- **检查 uv 路径**：如果使用 uv 安装，确保 `~/.local/bin` 在 PATH 中。可以使用绝对路径，如 `/Users/yourname/.local/bin/kimi acp`。
-- **查看日志**：检查 `~/.kimi/logs/kimi.log` 中的错误信息。
+- **确认 BugPilot 已安装**：运行 `bugpilot --version` 确认安装成功。
+- **检查配置路径**：确保 IDE 配置中的 BugPilot 路径正确。通常可以使用 `bugpilot acp` 作为命令。
+- **检查 uv 路径**：如果使用 uv 安装，确保 `~/.local/bin` 在 PATH 中。可以使用绝对路径，如 `/Users/yourname/.local/bin/bugpilot acp`。
+- **查看日志**：检查 `~/.bugpilot/logs/bugpilot.log` 中的错误信息。
 
 ## MCP 问题
 
@@ -64,16 +64,16 @@ API 密钥无效可能的原因：
 添加 MCP 服务器后，如果工具未加载或报错，可能是以下原因：
 
 - **命令不存在**：对于 stdio 类型的服务器，确保命令（如 `npx`）在 PATH 中。可以使用绝对路径配置。
-- **配置格式错误**：检查 `~/.kimi/mcp.json` 是否为有效的 JSON 格式。运行 `kimi mcp list` 查看当前配置。
+- **配置格式错误**：检查 `~/.bugpilot/mcp.json` 是否为有效的 JSON 格式。运行 `bugpilot mcp list` 查看当前配置。
 
 调试步骤：
 
 ```sh
 # 查看已配置的服务器
-kimi mcp list
+bugpilot mcp list
 
 # 测试服务器是否正常
-kimi mcp test <server-name>
+bugpilot mcp test <server-name>
 ```
 
 ### OAuth 授权失败
@@ -81,8 +81,8 @@ kimi mcp test <server-name>
 对于需要 OAuth 授权的 MCP 服务器（如 Linear），如果授权失败：
 
 - **检查网络连接**：确保能访问授权服务器。
-- **重新授权**：运行 `kimi mcp auth <server-name>` 重新进行授权。
-- **重置授权**：如果授权信息损坏，可以运行 `kimi mcp reset-auth <server-name>` 清除后重试。
+- **重新授权**：运行 `bugpilot mcp auth <server-name>` 重新进行授权。
+- **重置授权**：如果授权信息损坏，可以运行 `bugpilot mcp reset-auth <server-name>` 清除后重试。
 
 ### Header 格式错误
 
@@ -90,10 +90,10 @@ kimi mcp test <server-name>
 
 ```sh
 # 正确
-kimi mcp add --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY: your-key"
+bugpilot mcp add --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY: your-key"
 
 # 错误（缺少空格或使用等号）
-kimi mcp add --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY=your-key"
+bugpilot mcp add --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY=your-key"
 ```
 
 ## Print/Wire 模式问题
@@ -116,7 +116,7 @@ kimi mcp add --transport http context7 https://mcp.context7.com/mcp --header "CO
 
 如果 `--print` 模式下没有输出，可能是：
 
-- **未提供输入**：需要通过 `--prompt`（或 `--command`）或 stdin 提供输入。例如：`kimi --print --prompt "你好"`。
+- **未提供输入**：需要通过 `--prompt`（或 `--command`）或 stdin 提供输入。例如：`bugpilot --print --prompt "你好"`。
 - **输出被缓冲**：尝试使用 `--output-format stream-json` 获取流式输出。
 - **配置未完成**：确保已通过 `/login` 配置 API 密钥和模型。
 
@@ -152,7 +152,7 @@ uv tool upgrade bugpilot --no-cache
 如果不希望 BugPilot 检查更新或在启动时显示更新提醒，可以设置环境变量：
 
 ```sh
-export KIMI_CLI_NO_AUTO_UPDATE=1
+export BUGPILOT_NO_AUTO_UPDATE=1
 ```
 
 这会同时禁用后台更新检查、启动时的阻断式更新提醒和欢迎面板中的版本提示。可以将此行添加到你的 shell 配置文件（如 `~/.zshrc` 或 `~/.bashrc`）中。

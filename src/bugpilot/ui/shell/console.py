@@ -60,7 +60,7 @@ class _BugPilotPager(Pager):
                 os.environ["MANPAGER"] = saved
 
 
-class _KimiConsole(Console):
+class _BugPilotConsole(Console):
     """Console subclass that defaults to :class:`_BugPilotPager`."""
 
     def pager(
@@ -74,7 +74,7 @@ class _KimiConsole(Console):
         return super().pager(pager=pager, styles=styles, links=links)
 
 
-console = _KimiConsole(highlight=False, theme=NEUTRAL_MARKDOWN_THEME)
+console = _BugPilotConsole(highlight=False, theme=NEUTRAL_MARKDOWN_THEME)
 
 
 # Matches OSC 8 hyperlink open/close markers emitted by Rich's Style(link=...).

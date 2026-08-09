@@ -12,9 +12,9 @@ BugPilot 适合以下场景：
 
 BugPilot 支持以下几种使用方式：
 
-- **[交互式命令行（`kimi`）](../reference/kimi-command.md)**：在终端中以 Shell 方式与 AI 对话，支持自然语言描述任务或直接执行 Shell 命令
-- **[浏览器界面（`kimi web`）](../reference/kimi-web.md)**：在本地浏览器中打开图形界面，支持会话管理、文件引用、代码高亮等
-- **[Agent 集成（`kimi acp`）](../reference/kimi-acp.md)**：以服务方式运行，通过 [Agent Client Protocol] 集成到 [IDE](./ides.md) 和其他本地 Agent 客户端中
+- **[交互式命令行（`bugpilot`）](../reference/bugpilot-command.md)**：在终端中以 Shell 方式与 AI 对话，支持自然语言描述任务或直接执行 Shell 命令
+- **[浏览器界面（`bugpilot web`）](../reference/bugpilot-web.md)**：在本地浏览器中打开图形界面，支持会话管理、文件引用、代码高亮等
+- **[Agent 集成（`bugpilot acp`）](../reference/bugpilot-acp.md)**：以服务方式运行，通过 [Agent Client Protocol] 集成到 [IDE](./ides.md) 和其他本地 Agent 客户端中
 
 ::: info 提示
 如果你遇到问题或有建议，欢迎在 [GitHub Issues](https://github.com/l3tchupkt/bugpilot/issues) 反馈。
@@ -26,29 +26,29 @@ BugPilot 支持以下几种使用方式：
 
 
 ::: tip
-BugPilot 已升级为 [Kimi Code](https://github.com/l3tchupkt/kimi-code)，安装 Kimi Code 后会**自动迁移**你的配置与会话。新用户建议直接安装 Kimi Code；
+BugPilot 已升级为 [BugPilot](https://github.com/l3tchupkt/bugpilot)，安装 BugPilot 后会**自动迁移**你的配置与会话。新用户建议直接安装 BugPilot；
 :::
 
 运行安装脚本即可完成安装。脚本会先安装 [uv](https://docs.astral.sh/uv/)（Python 包管理工具），再通过 uv 安装 BugPilot：
 
 ```sh
 # Linux / macOS
-curl -LsSf https://code.kimi.com/install.sh | bash
+curl -LsSf https://code.bugpilot.com/install.sh | bash
 ```
 
 ```powershell
 # Windows (PowerShell)
-Invoke-RestMethod https://code.kimi.com/install.ps1 | Invoke-Expression
+Invoke-RestMethod https://code.bugpilot.com/install.ps1 | Invoke-Expression
 ```
 
 验证安装是否成功：
 
 ```sh
-kimi --version
+bugpilot --version
 ```
 
 ::: tip 提示
-由于 macOS 的安全检查机制，首次运行 `kimi` 命令可能需要较长时间。可以在「系统设置 → 隐私与安全性 → 开发者工具」中添加你的终端应用来加速后续启动。
+由于 macOS 的安全检查机制，首次运行 `bugpilot` 命令可能需要较长时间。可以在「系统设置 → 隐私与安全性 → 开发者工具」中添加你的终端应用来加速后续启动。
 :::
 
 如果你已经安装了 uv，也可以直接运行：
@@ -77,11 +77,11 @@ uv tool uninstall bugpilot
 
 ## 第一次运行
 
-在你想要工作的项目目录中运行 `kimi` 命令启动 BugPilot：
+在你想要工作的项目目录中运行 `bugpilot` 命令启动 BugPilot：
 
 ```sh
 cd your-project
-kimi
+bugpilot
 ```
 
 首次启动时，你需要配置 API 来源。输入 `/login` 命令开始配置：
@@ -90,7 +90,7 @@ kimi
 /login
 ```
 
-执行后首先选择平台。推荐选择 **Kimi Code**，会自动打开浏览器进行 OAuth 授权；选择其他平台则需要输入 API 密钥。配置完成后 BugPilot 会自动保存设置并重新加载。详见 [平台与模型](../configuration/providers.md)。
+执行后首先选择平台。推荐选择 **BugPilot**，会自动打开浏览器进行 OAuth 授权；选择其他平台则需要输入 API 密钥。配置完成后 BugPilot 会自动保存设置并重新加载。详见 [平台与模型](../configuration/providers.md)。
 
 现在你可以直接用自然语言和 BugPilot 对话了。试着描述你想完成的任务，比如：
 
