@@ -15,6 +15,7 @@ from bugpilot.approval_runtime import (
     set_current_approval_source,
 )
 from bugpilot.soul import MaxStepsReached, RunCancelled, UILoopFn, get_wire_or_none, run_soul
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.soul.toolset import get_current_tool_call_or_none
 from bugpilot.subagents.builder import SubagentBuilder
 from bugpilot.subagents.core import SubagentRunSpec, prepare_soul
@@ -62,7 +63,7 @@ class SoulRunFailure:
 
 
 async def run_soul_checked(
-    soul: Agent,
+    soul: AgentLoop,
     prompt: str,
     ui_loop_fn: UILoopFn,
     wire_path: Path,
@@ -82,7 +83,7 @@ async def run_soul_checked(
             ui_loop_fn,
             asyncio.Event(),
             wire_file=WireFile(wire_path),
-            runtime=soul.runtime,
+            runtime=soul.agent.runtime,
         )
     except MaxStepsReached as exc:
         logger.warning(
@@ -123,6 +124,7 @@ async def run_soul_checked(
             brief="LLM provider error",
         )
     except Exception as exc:
+        print(f"==== RUN_SOUL_CHECKED EXCEPTION: {exc} ====", flush=True)
         logger.exception("Subagent soul run failed when {phase}", phase=phase)
         return SoulRunFailure(
             message=f"Unexpected error when {phase}: {exc}",
@@ -139,7 +141,7 @@ async def run_soul_checked(
 
 
 async def run_with_summary_continuation(
-    soul: Agent,
+    soul: AgentLoop,
     prompt: str,
     ui_loop_fn: UILoopFn,
     wire_path: Path,

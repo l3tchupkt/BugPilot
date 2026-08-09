@@ -12,7 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 
-from bugpilot.soul.agent_loop import Agent
+from bugpilot.soul.agent_loop import AgentLoop
 from bugpilot.soul.context import Context
 from bugpilot.subagents.builder import SubagentBuilder
 from bugpilot.subagents.models import AgentLaunchSpec, AgentTypeDefinition
@@ -82,5 +82,5 @@ async def prepare_soul(
     store.prompt_path(spec.agent_id).write_text(prompt, encoding="utf-8")
 
     # 6. Create soul
-    soul = Agent(agent, context=context)
+    soul = AgentLoop(agent, context=context)
     return soul, prompt

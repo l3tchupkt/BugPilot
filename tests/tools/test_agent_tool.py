@@ -939,22 +939,29 @@ async def test_agent_tool_background_agent_waits_for_approval(agent_tool, runtim
     async def fake_run_soul(
         soul, user_input, ui_loop_fn, cancel_event, wire_file=None, runtime=None
     ):
-        source = get_current_approval_source_or_none()
-        assert source is not None
-        request = soul.runtime.approval_runtime.create_request(
-            request_id="req-bg-approval",
-            tool_call_id="call-bg-approval",
-            sender="WriteFile",
-            action="edit file",
-            description="Edit target file",
-            display=[],
-            source=source,
-        )
-        await soul.runtime.approval_runtime.wait_for_response(request.id)
-        # Use a response >= SUMMARY_MIN_LENGTH to avoid triggering summary continuation.
-        await soul.context.append_message(
-            Message(role="assistant", content=[TextPart(text="x" * 250)])
-        )
+        print("==== FAKE_RUN_SOUL CALLED ====", flush=True)
+        try:
+            source = get_current_approval_source_or_none()
+            assert source is not None, "Approval source is None!"
+            request = soul.agent.runtime.approval_runtime.create_request(
+                request_id="req-bg-approval",
+                tool_call_id="call-bg-approval",
+                sender="WriteFile",
+                action="edit file",
+                description="Edit target file",
+                display=[],
+                source=source,
+            )
+            print(f"==== FAKE_RUN_SOUL REQUEST CREATED: {request.id} ====", flush=True)
+            await soul.agent.runtime.approval_runtime.wait_for_response(request.id)
+            print("==== FAKE_RUN_SOUL WAIT FINISHED ====", flush=True)
+            # Use a response >= SUMMARY_MIN_LENGTH to avoid triggering summary continuation.
+            await soul.context.append_message(
+                Message(role="assistant", content=[TextPart(text="x" * 250)])
+            )
+        except Exception as e:
+            print(f"Exception in fake_run_soul: {e}", flush=True)
+            raise
 
     monkeypatch.setattr("bugpilot.subagents.builder.load_agent", fake_load_agent)
     monkeypatch.setattr("bugpilot.subagents.runner.run_soul", fake_run_soul)
