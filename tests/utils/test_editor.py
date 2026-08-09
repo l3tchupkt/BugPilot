@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import stat
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -126,14 +127,17 @@ class TestEditTextInEditor:
         filesystems with only 1-second mtime resolution (e.g. tmpfs in CI).
         If False, it does nothing (simulating :q! without saving).
         """
-        script = tmp_path / "fake-editor.sh"
+        script = tmp_path / "fake-editor.py"
         if modify:
-            # touch -t YYYYMMDDhhmm is POSIX; guarantees mtime differs.
-            script.write_text('#!/bin/sh\necho "edited line" >> "$1"\ntouch -t 209901010000 "$1"\n')
+            script.write_text(
+                "import sys, os, time\n"
+                "with open(sys.argv[-1], 'a') as f: f.write('edited line\\n')\n"
+                "now = time.time() + 86400\n"
+                "os.utime(sys.argv[-1], (now, now))\n"
+            )
         else:
-            script.write_text("#!/bin/sh\nexit 0\n")
-        script.chmod(script.stat().st_mode | stat.S_IEXEC)
-        return str(script)
+            script.write_text("import sys\nsys.exit(0)\n")
+        return f'"{sys.executable.replace(chr(92), "/")}" "{script.as_posix()}"'
 
     def test_basic_edit(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         """Editor modifies the file — should return edited content."""
@@ -151,11 +155,10 @@ class TestEditTextInEditor:
 
     def test_editor_nonzero_exit_returns_none(self, tmp_path: Path):
         """Editor exiting with non-zero code — should return None."""
-        script = tmp_path / "failing-editor.sh"
-        script.write_text("#!/bin/sh\nexit 1\n")
-        script.chmod(script.stat().st_mode | stat.S_IEXEC)
-
-        result = edit_text_in_editor("text", configured=str(script))
+        script = tmp_path / "failing-editor.py"
+        script.write_text("import sys\nsys.exit(1)\n")
+        import sys
+        result = edit_text_in_editor("text", configured=f'"{sys.executable.replace(chr(92), "/")}" "{script.as_posix()}"')
         assert result is None
 
     def test_editor_not_found_returns_none(self):
@@ -173,22 +176,20 @@ class TestEditTextInEditor:
 
     def test_trailing_newline_stripped(self, tmp_path: Path):
         """Editors typically add a trailing newline — it should be stripped."""
-        script = tmp_path / "newline-editor.sh"
-        script.write_text('#!/bin/sh\nprintf "hello world\\n" > "$1"\ntouch -t 209901010000 "$1"\n')
-        script.chmod(script.stat().st_mode | stat.S_IEXEC)
-
-        result = edit_text_in_editor("", configured=str(script))
+        script = tmp_path / "newline-editor.py"
+        script.write_text("import sys, os, time\nwith open(sys.argv[-1], 'w') as f: f.write('hello world\\n')\nnow = time.time() + 86400\nos.utime(sys.argv[-1], (now, now))\n")
+        
+        result = edit_text_in_editor("", configured=f'"{sys.executable.replace(chr(92), "/")}" "{script.as_posix()}"')
         assert result == "hello world"
 
     def test_multiple_trailing_newlines_only_one_stripped(self, tmp_path: Path):
         """Only one trailing newline should be stripped."""
-        script = tmp_path / "multi-nl-editor.sh"
+        script = tmp_path / "multi-nl-editor.py"
         script.write_text(
-            '#!/bin/sh\nprintf "line1\\nline2\\n\\n" > "$1"\ntouch -t 209901010000 "$1"\n'
+            "import sys, os, time\nwith open(sys.argv[-1], 'w') as f: f.write('line1\\nline2\\n\\n')\nnow = time.time() + 86400\nos.utime(sys.argv[-1], (now, now))\n"
         )
-        script.chmod(script.stat().st_mode | stat.S_IEXEC)
-
-        result = edit_text_in_editor("", configured=str(script))
+        
+        result = edit_text_in_editor("", configured=f'"{sys.executable.replace(chr(92), "/")}" "{script.as_posix()}"')
         assert result == "line1\nline2\n"
 
     def test_temp_file_cleaned_up(self, tmp_path: Path):
@@ -213,11 +214,10 @@ class TestEditTextInEditor:
 
     def test_empty_input_text(self, tmp_path: Path):
         """Editing empty text should work."""
-        script = tmp_path / "write-editor.sh"
-        script.write_text('#!/bin/sh\nprintf "new content" > "$1"\ntouch -t 209901010000 "$1"\n')
-        script.chmod(script.stat().st_mode | stat.S_IEXEC)
-
-        result = edit_text_in_editor("", configured=str(script))
+        script = tmp_path / "write-editor.py"
+        script.write_text("import sys, os, time\nwith open(sys.argv[-1], 'w') as f: f.write('new content')\nnow = time.time() + 86400\nos.utime(sys.argv[-1], (now, now))\n")
+        
+        result = edit_text_in_editor("", configured=f'"{sys.executable.replace(chr(92), "/")}" "{script.as_posix()}"')
         assert result == "new content"
 
     def test_unicode_content(self, tmp_path: Path):

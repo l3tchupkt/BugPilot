@@ -149,10 +149,7 @@ def test_pyinstaller_hiddenimports():
             "bugpilot.cli.export",
             "bugpilot.cli.info",
             "bugpilot.cli.mcp",
-            "bugpilot.cli.plugin",
-            "bugpilot.cli.vis",
-            "bugpilot.cli.web",
-            "bugpilot.tools",
+            "bugpilot.cli.plugin", "bugpilot.tools",
             "bugpilot.tools.agent",
             "bugpilot.tools.ask_user",
             "bugpilot.tools.background",
@@ -174,11 +171,7 @@ def test_pyinstaller_hiddenimports():
             "bugpilot.tools.test",
             "bugpilot.tools.think",
             "bugpilot.tools.todo",
-            "bugpilot.tools.utils",
-            "bugpilot.tools.web",
-            "bugpilot.tools.web.fetch",
-            "bugpilot.tools.web.search",
-            "setproctitle",
+            "bugpilot.tools.utils", "setproctitle",
         ]
     )
 

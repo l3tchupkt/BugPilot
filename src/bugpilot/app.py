@@ -256,9 +256,18 @@ class BugPilotCLI:
         from bugpilot.llm import LLM, derive_model_capabilities
         from bugpilot.providers.registry import ProviderRegistry
 
-        provider_instance = ProviderRegistry.create(
-            config, model_name or config.default_model or "", session_id=session.id
-        )
+        # If we fell back to the empty model, don't try to look it up in the registry by alias
+        if model.model == "" and provider.type == "openai-compatible":
+            from bugpilot.providers.openai_compatible import OpenAICompatibleProvider
+            provider_instance = OpenAICompatibleProvider(
+                model="",
+                api_key=None,
+                base_url="",
+            )
+        else:
+            provider_instance = ProviderRegistry.create(
+                config, model_name or config.default_model or "", session_id=session.id
+            )
         llm = LLM(
             provider=provider_instance,
             max_context_size=model.max_context_size,
