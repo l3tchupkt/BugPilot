@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  bugpilot:
+    build: .
+    image: bugpilot:latest
+    container_name: bugpilot
+    # Use host network to allow scanning localhost services easily
+    network_mode: "host"
+    volumes:
+      # Mount current directory as workspace
+      - ./.agent_workspace:/workspace
+      # Persist SQLite db and agents config
+      - ~/.bugpilot:/root/.bugpilot
+    working_dir: /workspace
+    stdin_open: true # Equivalent to -i
+    tty: true        # Equivalent to -t
+    environment:
+      - TERM=xterm-256color

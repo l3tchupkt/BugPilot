@@ -25,6 +25,11 @@ class HackerMode:
         self.todos = []
         self.findings = []
         self.iteration = 0
+        
+        # Load dynamic user skills
+        from bugpilot.core.plugin_loader import PluginLoader
+        self.plugin_loader = PluginLoader()
+        self.plugin_loader.load_all_skills()
     
     def truncate_output(self, output: str, max_length: int = 5000) -> str:
         """Truncate massive outputs to save context window"""

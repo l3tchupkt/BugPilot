@@ -64,10 +64,16 @@ venv.bak/
 output/
 findings.md
 sessions/
+.bugpilot_sessions/
+bugpilot.db
+bugpilot.db-journal
+agents.yaml
 *.log
+.agent_workspace/
 
 # IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
+
