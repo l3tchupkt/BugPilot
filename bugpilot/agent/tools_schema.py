@@ -84,6 +84,25 @@ def get_core_tools():
             }
         },
         {
+            "name": "todo",
+            "description": "Manage a virtual todo list to keep track of your long-term plan and what steps remain. Useful for preventing context loss over long iterations.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["add", "remove", "list", "clear"],
+                        "description": "The action to perform on the todo list."
+                    },
+                    "item": {
+                        "type": "string",
+                        "description": "The task to add or remove."
+                    }
+                },
+                "required": ["action"]
+            }
+        },
+        {
             "name": "ask_user",
             "description": "Halt autonomous execution and ask the user a question or for permission/clarification.",
             "parameters": {

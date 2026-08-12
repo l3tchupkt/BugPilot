@@ -22,6 +22,7 @@ class HackerMode:
         
         # Persistent State
         self.history = []
+        self.todos = []
         self.findings = []
         self.iteration = 0
     
@@ -151,21 +152,47 @@ Example format:
                 elif tool_name == "execute_command":
                     cmd = params.get("command", "")
                     timeout = params.get("timeout", 300)
-                    with self.ui.loading_indicator(f"Executing..."):
+                    with self.ui.loading_indicator(f"Executing: {cmd[:50]}..."):
                         res = self.controller.executor.execute(cmd, timeout=timeout)
                     
                     # Truncate output for LLM context
                     out_truncated = self.truncate_output(res.get('output', ''))
                     
-                    # UI display
-                    disp_out = out_truncated[:2000] + ("\n...[Truncated]" if len(out_truncated) > 2000 else "")
-                    self.ui.print_panel(f"```text\n{disp_out}\n```", title=f"Exit Code {res.get('returncode')}", style="white")
+                    # UI display - masked to reduce clutter (extent/unextent style)
+                    if res.get('returncode') == 0:
+                        self.ui.print_success(f"Command executed successfully: `{cmd}`")
+                    else:
+                        self.ui.print_error(f"Command failed (exit {res.get('returncode')}): `{cmd}`")
+                        # Show a small snippet if it failed to help user see what went wrong
+                        err_snippet = out_truncated[:500] + ("..." if len(out_truncated) > 500 else "")
+                        self.ui.print_panel(f"```text\n{err_snippet}\n```", title="Error Output Snippet", style="red")
                     
                     self.history.append({
                         "role": "user",
                         "content": f"SYSTEM TOOL RESULT (execute_command):\nExit Code: {res.get('returncode')}\nOutput:\n{out_truncated}"
                     })
                     self.findings.append(f"Ran `{cmd}`")
+
+                elif tool_name == "todo":
+                    action = params.get("action")
+                    item = params.get("item", "")
+                    if action == "add":
+                        self.todos.append(item)
+                        result = f"Added '{item}' to todo list."
+                    elif action == "remove":
+                        if item in self.todos:
+                            self.todos.remove(item)
+                            result = f"Removed '{item}' from todo list."
+                        else:
+                            result = f"Item '{item}' not found in todo list."
+                    elif action == "clear":
+                        self.todos.clear()
+                        result = "Cleared todo list."
+                    else: # list
+                        result = "Current TODOs:\n" + "\n".join([f"- {t}" for t in self.todos]) if self.todos else "Todo list is empty."
+                    
+                    self.ui.print_panel(result, title="Agent To-Do List", style="yellow")
+                    self.history.append({"role": "user", "content": f"SYSTEM TOOL RESULT (todo):\n{result}"})
                     
                 elif tool_name == "read_file":
                     filepath = params.get("filepath", "")
