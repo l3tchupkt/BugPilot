@@ -172,74 +172,51 @@ class TerminalUI:
         
         # Try to load logo.txt
         logo_path = os.path.join(os.path.dirname(__file__), "logo.txt")
-        logo_lines = []
+        logo_content = ""
         if os.path.exists(logo_path):
             with open(logo_path, "r", encoding="utf-8") as f:
-                logo_lines = f.read().splitlines()
+                raw_lines = f.read().splitlines()
+                # Strip empty lines (even those with just spaces) from start and end
+                start, end = 0, len(raw_lines)
+                while start < end and not raw_lines[start].strip():
+                    start += 1
+                while end > start and not raw_lines[end - 1].strip():
+                    end -= 1
+                logo_content = "\n".join(raw_lines[start:end])
 
-        def generate_frame(frame_idx, total_frames):
-            from rich.table import Table
-            from rich.panel import Panel
-            
-            text_group = Group(
-                Text(title, style=f"bold {self.theme['primary']}", justify="left"),
-                info_line,
-                dev_line
+        from rich.table import Table
+        from rich.panel import Panel
+        
+        text_group = Group(
+            Text(title, style=f"bold {self.theme['primary']}", justify="left"),
+            info_line,
+            dev_line
+        )
+        
+        if not logo_content:
+            panel = Panel(
+                text_group,
+                border_style=self.theme['primary'],
+                expand=False,
+                padding=(1, 4)
             )
-            
-            if not logo_lines:
-                return Align.center(Panel(
-                    text_group,
-                    border_style=self.theme['primary'],
-                    expand=False,
-                    padding=(1, 4)
-                ))
-                
-            # Glitch / Blink effect
-            is_blink = frame_idx in [total_frames - 6, total_frames - 4, total_frames - 2]
-            
-            # Gentle bounce
-            bounce_offset = (frame_idx % 4) // 2
-            
-            if is_blink:
-                logo_text = "\n" * (len(logo_lines) + 2)
-            else:
-                padding_top = "\n" * bounce_offset
-                padding_bottom = "\n" * (2 - bounce_offset)
-                slide_offset = max(0, total_frames - 10 - frame_idx)
-                padding_top = "\n" * (bounce_offset + slide_offset)
-                logo_text = padding_top + "\n".join(logo_lines) + padding_bottom
-                
-            logo_renderable = Text.from_ansi(logo_text)
+        else:
+            logo_renderable = Text.from_ansi(logo_content)
             
             grid = Table.grid(padding=(0, 4))
             grid.add_column(justify="right", vertical="middle")
             grid.add_column(justify="left", vertical="middle")
+            grid.add_row(logo_renderable, text_group)
             
-            if frame_idx >= total_frames:
-                settled_logo = "\n" + "\n".join(logo_lines) + "\n"
-                grid.add_row(Text.from_ansi(settled_logo), text_group)
-            else:
-                grid.add_row(logo_renderable, text_group)
-                
             panel = Panel(
                 grid,
                 border_style=self.theme['primary'],
                 expand=False,
                 padding=(1, 4)
             )
-            return Align.center(panel)
 
         self.console.print()
-        if logo_lines:
-            total_frames = 16
-            with Live(generate_frame(0, total_frames), refresh_per_second=15, console=self.console, transient=False) as live:
-                for i in range(1, total_frames + 1):
-                    time.sleep(0.08)
-                    live.update(generate_frame(i, total_frames))
-        else:
-            self.console.print(generate_frame(0, 0))
-            
+        self.console.print(Align.center(panel))
         self.console.print()
     
     def print_message(self, message: str, style: str = "text"):
