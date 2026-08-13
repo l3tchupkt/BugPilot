@@ -1,11 +1,21 @@
+import os
+import re
 from setuptools import setup, find_packages
+
+def get_version():
+    init_py = os.path.join(os.path.dirname(__file__), "bugpilot", "__init__.py")
+    with open(init_py, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("__version__"):
+                return re.search(r'"([^"]+)"', line).group(1)
+    raise RuntimeError("Unable to find version string.")
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="bugpilot-cli",
-    version="1.3.5",
+    version=get_version(),
     author="LAKSHMIKANTHAN K",
     author_email="letchupkt@example.com",
     description="AI-Powered Autonomous Penetration Testing CLI",
