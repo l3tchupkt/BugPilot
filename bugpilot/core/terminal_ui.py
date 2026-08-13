@@ -181,14 +181,18 @@ class TerminalUI:
             from rich.table import Table
             
             text_group = Group(
-                Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']),
-                Align.center(info_line),
-                Align.center(dev_line),
-                Rule(style=self.theme['primary'])
+                Text("\n"), # vertical padding to align with logo
+                Align.left(info_line),
+                Align.left(dev_line)
             )
             
             if not logo_lines:
-                return text_group
+                return Group(
+                    Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']),
+                    Align.center(info_line),
+                    Align.center(dev_line),
+                    Rule(style=self.theme['primary'])
+                )
                 
             # Glitch / Blink effect
             is_blink = frame_idx in [total_frames - 6, total_frames - 4, total_frames - 2]
@@ -209,21 +213,25 @@ class TerminalUI:
                 
                 logo_text = padding_top + "\n".join(logo_lines) + padding_bottom
                 
-            logo_renderable = Align.center(Text.from_ansi(logo_text))
+            logo_renderable = Text.from_ansi(logo_text)
             
-            # Use Grid to align Logo (Left) and Banner (Right)
+            # Use Grid to align Logo and Banner
             grid = Table.grid(padding=(0, 4))
-            grid.add_column(justify="center", vertical="middle")
-            grid.add_column(justify="center", vertical="middle", ratio=1)
+            grid.add_column(justify="right", vertical="middle")
+            grid.add_column(justify="left", vertical="middle")
             
             if frame_idx >= total_frames:
-                # Final settled state (centered vertically)
+                # Final settled state
                 settled_logo = "\n" + "\n".join(logo_lines) + "\n"
-                grid.add_row(Align.center(Text.from_ansi(settled_logo)), text_group)
+                grid.add_row(Text.from_ansi(settled_logo), text_group)
             else:
                 grid.add_row(logo_renderable, text_group)
                 
-            return grid
+            return Group(
+                Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']),
+                Align.center(grid),
+                Rule(style=self.theme['primary'])
+            )
 
         self.console.print()
         if logo_lines:
