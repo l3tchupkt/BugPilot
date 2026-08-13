@@ -28,7 +28,7 @@ api_keys:
   claude: ''
   groq_active: ''
   nvidia nvapi-09tvG6X4O-_cStPILjQwDv9BTYPCYCI8tvIU_Co3LfUzwj7dKKwPVbybK5Ut9FVA_active: ''
-  nvidia_active: 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
+  nvidia_active: ''
 safety:
   require_confirmation: false
   dangerous_commands:
@@ -77,7 +77,7 @@ knowledge:
   owasp_url: https://owasp.org/Top10/
   cache_duration: 86400
 ui:
-  theme: neon
+  theme: matrix
   show_status_bar: true
   typing_effect: true
   typing_speed: 150

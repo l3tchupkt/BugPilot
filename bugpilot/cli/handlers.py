@@ -114,6 +114,11 @@ class CommandHandler:
                 "handler": self.cmd_owasp,
                 "description": "Get OWASP Top 10 information",
                 "usage": "/owasp [item-id] or /owasp search <keyword>"
+            },
+            "/theme": {
+                "handler": self.cmd_theme,
+                "description": "Switch UI theme",
+                "usage": "/theme <theme_name>"
             }
         }
     
