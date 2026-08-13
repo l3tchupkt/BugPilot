@@ -28,22 +28,7 @@ def main():
     from bugpilot.core.status_bar import StatusBar
     status_bar = StatusBar(ui.console)
     
-    # Check for API key
-    if not config_mgr.has_api_key():
-        ui.console.print("\n[yellow]⚠ No API key configured[/yellow]")
-        ui.console.print("[cyan]Press 's' to open settings, or add API key to environment[/cyan]\n")
-        
-        choice = ui.prompt("Continue? (s=settings, enter=skip): ").strip().lower()
-        if choice == 's':
-            from bugpilot.core.config.editor import SettingsEditor
-            SettingsEditor().show_menu()
-            config_mgr.load() # Reload config
-            # Reload UI with new theme
-            new_theme = config_mgr.config.get('ui', {}).get('theme', 'ocean')
-            ui = TerminalUI(theme=new_theme)
-            status_bar = StatusBar(ui.console)
-            # Clean screen again
-            os.system('cls' if os.name == 'nt' else 'clear')
+
     
     config = config_mgr.config
     
