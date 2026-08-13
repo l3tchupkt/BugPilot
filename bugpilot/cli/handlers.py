@@ -55,14 +55,19 @@ class CommandHandler:
                 "description": "Show command history",
                 "usage": "/history"
             },
+            "/config": {
+                "handler": self.cmd_config,
+                "description": "Inline configuration settings",
+                "usage": "/config [set|get|list] [key] [value]"
+            },
             "/settings": {
                 "handler": self.cmd_settings,
-                "description": "Interactive settings editor",
-                "usage": "/settings [show|edit|set|toggle|export|import|reset]"
+                "description": "Alias for /config list",
+                "usage": "/settings"
             },
             "/connect": {
                 "handler": self.cmd_connect,
-                "description": "Connect to an LLM provider online",
+                "description": "Alias for /config set api_keys.<provider>",
                 "usage": "/connect"
             },
             "/model": {
@@ -258,51 +263,89 @@ class CommandHandler:
         # TODO: Implement command history tracking
         self.cli.ui.print_info("Command history feature coming soon")
     
-    def cmd_settings(self, args: List[str]):
-        """Unified settings/config editor"""
-        import os
-        from bugpilot.core.config.editor import SettingsEditor
-        
-        # Save current theme
-        old_theme = None
-        if hasattr(self.cli, 'config_manager'):
-            old_theme = self.cli.config_manager.config.get('ui', {}).get('theme', 'ocean')
-        
-        # New editor handles everything
-        editor = SettingsEditor()
-        editor.show_menu()
-        
-        # Reload config after edit
-        if hasattr(self.cli, 'config_manager') and hasattr(self.cli.config_manager, 'load'):
-            self.cli.config_manager.load()
+    def cmd_config(self, args: List[str]):
+        """Inline settings configuration"""
+        if not hasattr(self.cli, 'config_manager'):
+            self.cli.ui.print_error("Config manager not available")
+            return
             
-            # Check if theme changed
-            new_theme = self.cli.config_manager.config.get('ui', {}).get('theme', 'ocean')
-            if new_theme != old_theme:
-                # Reload UI with new theme
-                from bugpilot.core.terminal_ui import TerminalUI
-                self.cli.ui = TerminalUI(theme=new_theme)
-                self.cli.ui.print_success(f"Theme changed to: {new_theme}")
+        if not args:
+            self.cli.ui.print_error("Usage: /config [set|get|list] [key] [value]")
+            return
+            
+        action = args[0].lower()
         
-        # Clear screen
-        os.system('cls' if os.name == 'nt' else 'clear')
+        if action == "list":
+            import yaml
+            self.cli.ui.print_panel(yaml.dump(self.cli.config_manager.config, default_flow_style=False), title="Current Configuration", style="info")
+            return
+            
+        if len(args) < 2:
+            self.cli.ui.print_error(f"Usage: /config {action} <key> [value]")
+            return
+            
+        key_path = args[1].split('.')
+        
+        if action == "get":
+            val = self.cli.config_manager.config
+            for k in key_path:
+                if isinstance(val, dict) and k in val:
+                    val = val[k]
+                else:
+                    self.cli.ui.print_error(f"Key not found: {args[1]}")
+                    return
+            self.cli.ui.print_success(f"{args[1]} = {val}")
+            
+        elif action == "set":
+            if len(args) < 3:
+                self.cli.ui.print_error("Usage: /config set <key> <value>")
+                return
+                
+            value = " ".join(args[2:])
+            
+            # Handle type conversion (bools, ints)
+            if value.lower() in ['true', 'yes', 'on']:
+                value = True
+            elif value.lower() in ['false', 'no', 'off']:
+                value = False
+            elif value.isdigit():
+                value = int(value)
+                
+            # Navigate to the correct depth and set
+            current = self.cli.config_manager.config
+            for k in key_path[:-1]:
+                if k not in current or not isinstance(current[k], dict):
+                    current[k] = {}
+                current = current[k]
+                
+            old_theme = self.cli.config_manager.config.get('ui', {}).get('theme')
+            
+            current[key_path[-1]] = value
+            self.cli.config_manager.save_config()
+            self.cli.ui.print_success(f"Updated {args[1]} to {value}")
+            
+            # Refresh UI if theme changed
+            if args[1] == "ui.theme" or "theme" in key_path:
+                new_theme = self.cli.config_manager.config.get('ui', {}).get('theme')
+                if new_theme != old_theme:
+                    from bugpilot.core.terminal_ui import TerminalUI
+                    self.cli.ui = TerminalUI(theme=new_theme)
+                    self.cli.ui.print_success(f"Theme applied: {new_theme}")
+        else:
+            self.cli.ui.print_error(f"Unknown config action: {action}")
+
+    def cmd_settings(self, args: List[str]):
+        """Deprecated TUI alias"""
+        self.cli.ui.print_warning("The interactive settings TUI has been deprecated.")
+        self.cli.ui.print_info("Please use `/config set <key> <value>` to manage your settings inline.")
+        self.cli.ui.print_info("Type `/config list` to see your current configuration.")
+        self.cmd_config(["list"])
 
     def cmd_connect(self, args: List[str]):
-        """Connect Provider directly"""
-        import os
-        from bugpilot.core.config.editor import SettingsEditor
-        
-        editor = SettingsEditor()
-        editor.edit_api_keys()
-        editor.save_settings()
-        
-        # Reload config after edit
-        if hasattr(self.cli, 'config_manager') and hasattr(self.cli.config_manager, 'load'):
-            self.cli.config_manager.load()
-            
-        # Clear screen
-        os.system('cls' if os.name == 'nt' else 'clear')
-        self.cli.ui.print_success("Provider connected!")
+        """Deprecated TUI alias"""
+        self.cli.ui.print_warning("The interactive connect TUI has been deprecated.")
+        self.cli.ui.print_info("To set an API key, use `/config set api_keys.<provider> <key>`")
+        self.cli.ui.print_info("Example: `/config set api_keys.openrouter sk-or-v1-xxx`")
     
     def cmd_model(self, args: List[str]):
         """Switch AI model"""
