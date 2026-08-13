@@ -17,11 +17,11 @@ setup(
     name="bugpilot-cli",
     version=get_version(),
     author="LAKSHMIKANTHAN K",
-    author_email="letchupkt@example.com",
+    author_email="letchupkt.dev@gmail.com",
     description="AI-Powered Autonomous Penetration Testing CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/letchupkt/bugpilot-cli",
+    url="https://github.com/l3tchupkt/bugpilot",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
