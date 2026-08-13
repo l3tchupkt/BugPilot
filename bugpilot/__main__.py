@@ -35,10 +35,8 @@ def main():
     try:
         from bugpilot.core.updater import check_for_updates, show_update_notification
         latest_version = check_for_updates()
-        if latest_version:
-            show_update_notification(ui, latest_version)
     except Exception:
-        pass  # Silently fail if update check doesn't work
+        latest_version = None
     
     # 4. Setup CLI Wrapper for CommandHandler
     class BugPilotCLI:
@@ -141,6 +139,9 @@ def main():
         mode = 'normal'
         
     ui.show_banner(mode)
+    
+    if latest_version:
+        show_update_notification(ui, latest_version)
 
     # Initialization has been moved to cli_app.init_agent()
 

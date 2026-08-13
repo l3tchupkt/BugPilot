@@ -148,21 +148,8 @@ class TerminalUI:
         title = "BUGPILOT-CLI"
         subtitle = "AI-Powered Autonomous Penetration Testing"
         
-        # Mode setup
-        mode_icon = "[!]" if mode == "hacker" else "[+]"
-        mode_text = "HACKER MODE" if mode == "hacker" else "NORMAL MODE"
-        mode_color = self.theme['error'] if mode == 'hacker' else self.theme['success']
-        
         # Info line
-        info_parts = [
-            (subtitle, self.theme['secondary']),
-            (" | ", self.theme['dim']),
-            (f"{mode_icon} {mode_text}", mode_color),
-        ]
-        
-        info_line = Text()
-        for text, style in info_parts:
-            info_line.append(text, style=f"bold {style}" if "MODE" in text else style)
+        info_line = Text(subtitle, style=self.theme['secondary'])
         
         # Developer credit
         dev_line = Text()

@@ -61,22 +61,8 @@ def update_package(ui=None):
         return False
 
 def show_update_notification(ui, latest_version):
-    """Show update available notification"""
-    from rich.panel import Panel
-    
-    message = f"""
-[!] [bold]New version available![/bold]
-
-Current version: [bold]{CURRENT_VERSION}[/bold]
-Latest version: [bold]{latest_version}[/bold]
-
-To update, run: `/update`
-Or manually: `pip install --upgrade {PACKAGE_NAME}`
-"""
-    
-    ui.console.print(Panel(
-        message.strip('\n'),
-        title="[yellow][!] Update Available[/yellow]",
-        border_style="yellow",
-        expand=False,
-    ))
+    """Show minimal update available notification"""
+    from rich.align import Align
+    message = f"[yellow]  [!] Update Available (v{latest_version}) - run `/update` to install  [/yellow]"
+    ui.console.print(Align.center(message))
+    ui.console.print()
