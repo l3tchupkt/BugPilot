@@ -171,44 +171,68 @@ class TerminalUI:
         dev_line.append("(letchupkt)", style=self.theme['accent'])
         
         # Try to load logo.txt
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "logo.txt")
+        logo_path = os.path.join(os.path.dirname(__file__), "logo.txt")
         logo_lines = []
         if os.path.exists(logo_path):
             with open(logo_path, "r", encoding="utf-8") as f:
                 logo_lines = f.read().splitlines()
 
         def generate_frame(frame_idx, total_frames):
-            elements = []
+            from rich.table import Table
             
-            if logo_lines:
-                # Slide in from top animation
-                visible_lines = min(frame_idx, len(logo_lines))
-                # Add padding to make it slide down smoothly
-                padding = "\n" * (len(logo_lines) - visible_lines)
+            text_group = Group(
+                Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']),
+                Align.center(info_line),
+                Align.center(dev_line),
+                Rule(style=self.theme['primary'])
+            )
+            
+            if not logo_lines:
+                return text_group
                 
-                logo_text = padding + "\n".join(logo_lines[:visible_lines])
-                elements.append(Align.center(Text.from_ansi(logo_text)))
+            # Glitch / Blink effect
+            is_blink = frame_idx in [total_frames - 6, total_frames - 4, total_frames - 2]
             
-            # Show the rest of the banner on the last frame
+            # Gentle bounce
+            bounce_offset = (frame_idx % 4) // 2
+            
+            if is_blink:
+                # Hide logo for a frame to simulate blinking/glitching
+                logo_text = "\n" * (len(logo_lines) + 2)
+            else:
+                padding_top = "\n" * bounce_offset
+                padding_bottom = "\n" * (2 - bounce_offset)
+                
+                # If animating in, we can slide it from top
+                slide_offset = max(0, total_frames - 10 - frame_idx)
+                padding_top = "\n" * (bounce_offset + slide_offset)
+                
+                logo_text = padding_top + "\n".join(logo_lines) + padding_bottom
+                
+            logo_renderable = Align.center(Text.from_ansi(logo_text))
+            
+            # Use Grid to align Logo (Left) and Banner (Right)
+            grid = Table.grid(padding=(0, 4))
+            grid.add_column(justify="center", vertical="middle")
+            grid.add_column(justify="center", vertical="middle", ratio=1)
+            
             if frame_idx >= total_frames:
-                elements.append(Text(""))
-                elements.append(Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']))
-                elements.append(Align.center(info_line))
-                elements.append(Align.center(dev_line))
-                elements.append(Rule(style=self.theme['primary']))
-            
-            return Group(*elements)
+                # Final settled state (centered vertically)
+                settled_logo = "\n" + "\n".join(logo_lines) + "\n"
+                grid.add_row(Align.center(Text.from_ansi(settled_logo)), text_group)
+            else:
+                grid.add_row(logo_renderable, text_group)
+                
+            return grid
 
         self.console.print()
         if logo_lines:
-            total_frames = len(logo_lines) + 1
-            # Run smooth slide-down reveal animation
-            with Live(generate_frame(0, total_frames), refresh_per_second=20, console=self.console, transient=False) as live:
+            total_frames = 16
+            with Live(generate_frame(0, total_frames), refresh_per_second=15, console=self.console, transient=False) as live:
                 for i in range(1, total_frames + 1):
-                    time.sleep(0.06)
+                    time.sleep(0.08)
                     live.update(generate_frame(i, total_frames))
         else:
-            # Fallback if no logo
             self.console.print(Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']))
             self.console.print(Align.center(info_line))
             self.console.print(Align.center(dev_line))
