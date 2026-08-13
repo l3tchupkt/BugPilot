@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/150x150.png?text=BugPilot" alt="BugPilot Logo" width="150" />
+  <img src="logo.png" alt="BugPilot Logo" width="150" />
   <h1>BugPilot CLI</h1>
   <p><strong>Next-Generation AI-Powered Autonomous Penetration Testing Agent</strong></p>
 
