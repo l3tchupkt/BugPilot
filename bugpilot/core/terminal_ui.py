@@ -179,20 +179,21 @@ class TerminalUI:
 
         def generate_frame(frame_idx, total_frames):
             from rich.table import Table
+            from rich.panel import Panel
             
             text_group = Group(
-                Text("\n"), # vertical padding to align with logo
-                Align.left(info_line),
-                Align.left(dev_line)
+                Text(title, style=f"bold {self.theme['primary']}", justify="left"),
+                info_line,
+                dev_line
             )
             
             if not logo_lines:
-                return Group(
-                    Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']),
-                    Align.center(info_line),
-                    Align.center(dev_line),
-                    Rule(style=self.theme['primary'])
-                )
+                return Align.center(Panel(
+                    text_group,
+                    border_style=self.theme['primary'],
+                    expand=False,
+                    padding=(1, 4)
+                ))
                 
             # Glitch / Blink effect
             is_blink = frame_idx in [total_frames - 6, total_frames - 4, total_frames - 2]
@@ -201,37 +202,33 @@ class TerminalUI:
             bounce_offset = (frame_idx % 4) // 2
             
             if is_blink:
-                # Hide logo for a frame to simulate blinking/glitching
                 logo_text = "\n" * (len(logo_lines) + 2)
             else:
                 padding_top = "\n" * bounce_offset
                 padding_bottom = "\n" * (2 - bounce_offset)
-                
-                # If animating in, we can slide it from top
                 slide_offset = max(0, total_frames - 10 - frame_idx)
                 padding_top = "\n" * (bounce_offset + slide_offset)
-                
                 logo_text = padding_top + "\n".join(logo_lines) + padding_bottom
                 
             logo_renderable = Text.from_ansi(logo_text)
             
-            # Use Grid to align Logo and Banner
             grid = Table.grid(padding=(0, 4))
             grid.add_column(justify="right", vertical="middle")
             grid.add_column(justify="left", vertical="middle")
             
             if frame_idx >= total_frames:
-                # Final settled state
                 settled_logo = "\n" + "\n".join(logo_lines) + "\n"
                 grid.add_row(Text.from_ansi(settled_logo), text_group)
             else:
                 grid.add_row(logo_renderable, text_group)
                 
-            return Group(
-                Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']),
-                Align.center(grid),
-                Rule(style=self.theme['primary'])
+            panel = Panel(
+                grid,
+                border_style=self.theme['primary'],
+                expand=False,
+                padding=(1, 4)
             )
+            return Align.center(panel)
 
         self.console.print()
         if logo_lines:
@@ -241,10 +238,7 @@ class TerminalUI:
                     time.sleep(0.08)
                     live.update(generate_frame(i, total_frames))
         else:
-            self.console.print(Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']))
-            self.console.print(Align.center(info_line))
-            self.console.print(Align.center(dev_line))
-            self.console.print(Rule(style=self.theme['primary']))
+            self.console.print(generate_frame(0, 0))
             
         self.console.print()
     
