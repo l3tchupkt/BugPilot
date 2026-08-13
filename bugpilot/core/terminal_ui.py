@@ -107,9 +107,10 @@ class TerminalUI:
         }
     }
     
-    def __init__(self, theme: str = "ocean"):
+    def __init__(self, theme: str = "ocean", config_manager=None):
         self.console = Console()
         self.theme = self.THEMES.get(theme, self.THEMES["ocean"])
+        self.config_manager = config_manager
         
         # Initialize persistent prompt session for command history
         try:
@@ -117,7 +118,7 @@ class TerminalUI:
             from prompt_toolkit.history import InMemoryHistory
             from bugpilot.cli.autocomplete import BugPilotCompleter
             
-            self.completer = BugPilotCompleter()
+            self.completer = BugPilotCompleter(config_manager=self.config_manager)
             self.prompt_session = PromptSession(
                 completer=self.completer,
                 history=InMemoryHistory()

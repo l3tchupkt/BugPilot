@@ -18,8 +18,7 @@ def main():
     
     # 2. Initialize UI with theme from config
     from bugpilot.core.terminal_ui import TerminalUI
-    theme = config_mgr.config.get('ui', {}).get('theme', 'ocean')
-    ui = TerminalUI(theme=theme)
+    ui = TerminalUI(theme=config_mgr.config.get('ui', {}).get('theme', 'ocean'), config_manager=config_mgr)
     
     # Clean screen on startup
     os.system('cls' if os.name == 'nt' else 'clear')

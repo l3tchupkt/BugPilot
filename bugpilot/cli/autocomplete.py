@@ -19,9 +19,11 @@ class BugPilotCompleter(Completer):
         "/update", "/cve", "/owasp", "/connect"
     ]
     
-    def __init__(self, working_directory: str = "."):
+    def __init__(self, working_directory: str = ".", config_manager=None):
         self.working_directory = working_directory
         self.path_completer = PathCompleter(only_directories=False, expanduser=True)
+        self.config_manager = config_manager
+        self.model_cache = {}
     
     def get_completions(self, document: Document, complete_event) -> Iterable[Completion]:
         text = document.text_before_cursor
@@ -56,6 +58,20 @@ class BugPilotCompleter(Completer):
                                 start_position=-len(word),
                                 display=p,
                                 display_meta="Provider"
+                            )
+                    return
+                elif len(parts) == 3 and parts[0] == '/model':
+                    provider = parts[1].lower()
+                    word = parts[2]
+                    
+                    models = self._get_provider_models(provider)
+                    for m in models:
+                        if m.startswith(word.lower()):
+                            yield Completion(
+                                m,
+                                start_position=-len(word),
+                                display=m,
+                                display_meta=f"{provider} model"
                             )
                     return
 
@@ -126,6 +142,67 @@ class BugPilotCompleter(Completer):
                             )
                 except:
                     pass
+
+    def _get_provider_models(self, provider: str) -> List[str]:
+        """Dynamically fetch models for a given provider or use fallbacks"""
+        if provider in self.model_cache:
+            return self.model_cache[provider]
+            
+        fallback_models = {
+            "openai": ["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"],
+            "anthropic": ["claude-3-5-sonnet-20241022", "claude-3-opus-20240229"],
+            "gemini": ["gemini-2.0-flash-exp", "gemini-1.5-pro"],
+            "ollama": ["llama3", "mistral", "codellama"],
+            "nvidia": ["meta/llama3-70b-instruct", "mistralai/mixtral-8x22b-instruct-v0.1"],
+            "groq": ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
+            "deepseek": ["deepseek-coder", "deepseek-chat"],
+            "openrouter": ["anthropic/claude-3.5-sonnet", "meta-llama/llama-3-70b-instruct"]
+        }
+        
+        if not self.config_manager:
+            return fallback_models.get(provider, [])
+            
+        api_key = self.config_manager.get_api_key(provider)
+        if not api_key and provider != "ollama":
+            return fallback_models.get(provider, [])
+            
+        import requests
+        try:
+            url = ""
+            headers = {"Authorization": f"Bearer {api_key}"}
+            
+            if provider == "openai":
+                url = "https://api.openai.com/v1/models"
+            elif provider == "nvidia":
+                url = "https://integrate.api.nvidia.com/v1/models"
+            elif provider == "groq":
+                url = "https://api.groq.com/openai/v1/models"
+            elif provider == "deepseek":
+                url = "https://api.deepseek.com/models"
+            elif provider == "openrouter":
+                url = "https://openrouter.ai/api/v1/models"
+            elif provider == "ollama":
+                url = "http://localhost:11434/api/tags"
+                headers = {}
+                
+            if url:
+                resp = requests.get(url, headers=headers, timeout=1.0)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if provider == "ollama":
+                        models = [m["name"] for m in data.get("models", [])]
+                    else:
+                        models = [m["id"] for m in data.get("data", [])]
+                        
+                    if models:
+                        self.model_cache[provider] = models
+                        return models
+        except Exception:
+            pass
+            
+        models = fallback_models.get(provider, [])
+        self.model_cache[provider] = models
+        return models
 
 
 def get_user_input_with_autocomplete(
