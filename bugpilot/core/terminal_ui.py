@@ -192,8 +192,13 @@ class TerminalUI:
         from rich.table import Table
         from rich.panel import Panel
         
+        # Little bigger size ASCII text for BUGPILOT
+        ascii_title = "▄▄▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄ ▄   ▄▄▄ ▄▄▄\n" \
+                      "█▄▄ █ █ █ ▄ █▄▄ █ █   █ █  █ \n" \
+                      "█▄▄ ▀▄▀ ▀▄▀ █   █ ▀▄▄ ▀▄▀  █ "
+        
         text_group = Group(
-            Text(title, style=f"bold {self.theme['primary']}", justify="left"),
+            Text(ascii_title, style=f"bold {self.theme['primary']}", justify="left"),
             info_line,
             dev_line
         )
@@ -222,8 +227,9 @@ class TerminalUI:
                 padding=(1, 4)
             )
 
+        from rich.align import Align
         self.console.print()
-        self.console.print(panel)
+        self.console.print(Align.center(panel))
         self.console.print()
     
     def print_message(self, message: str, style: str = "text"):
