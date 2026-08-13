@@ -55,16 +55,6 @@ class CommandHandler:
                 "description": "Show command history",
                 "usage": "/history"
             },
-            "/config": {
-                "handler": self.cmd_config,
-                "description": "Inline configuration settings",
-                "usage": "/config [set|get|list] [key] [value]"
-            },
-            "/settings": {
-                "handler": self.cmd_settings,
-                "description": "Alias for /config list",
-                "usage": "/settings"
-            },
             "/connect": {
                 "handler": self.cmd_connect,
                 "description": "Alias for /config set api_keys.<provider>",
@@ -79,11 +69,6 @@ class CommandHandler:
                 "handler": self.cmd_output,
                 "description": "Set output directory",
                 "usage": "/output <path>"
-            },
-            "/autopilot": {
-                "handler": self.cmd_autopilot,
-                "description": "Toggle autonomous mode",
-                "usage": "/autopilot [on|off]"
             },
             "/autopilot": {
                 "handler": self.cmd_autopilot,
@@ -263,84 +248,6 @@ class CommandHandler:
         # TODO: Implement command history tracking
         self.cli.ui.print_info("Command history feature coming soon")
     
-    def cmd_config(self, args: List[str]):
-        """Inline settings configuration"""
-        if not hasattr(self.cli, 'config_manager'):
-            self.cli.ui.print_error("Config manager not available")
-            return
-            
-        if not args:
-            self.cli.ui.print_error("Usage: /config [set|get|list] [key] [value]")
-            return
-            
-        action = args[0].lower()
-        
-        if action == "list":
-            import yaml
-            self.cli.ui.print_panel(yaml.dump(self.cli.config_manager.config, default_flow_style=False), title="Current Configuration", style="info")
-            return
-            
-        if len(args) < 2:
-            self.cli.ui.print_error(f"Usage: /config {action} <key> [value]")
-            return
-            
-        key_path = args[1].split('.')
-        
-        if action == "get":
-            val = self.cli.config_manager.config
-            for k in key_path:
-                if isinstance(val, dict) and k in val:
-                    val = val[k]
-                else:
-                    self.cli.ui.print_error(f"Key not found: {args[1]}")
-                    return
-            self.cli.ui.print_success(f"{args[1]} = {val}")
-            
-        elif action == "set":
-            if len(args) < 3:
-                self.cli.ui.print_error("Usage: /config set <key> <value>")
-                return
-                
-            value = " ".join(args[2:])
-            
-            # Handle type conversion (bools, ints)
-            if value.lower() in ['true', 'yes', 'on']:
-                value = True
-            elif value.lower() in ['false', 'no', 'off']:
-                value = False
-            elif value.isdigit():
-                value = int(value)
-                
-            # Navigate to the correct depth and set
-            current = self.cli.config_manager.config
-            for k in key_path[:-1]:
-                if k not in current or not isinstance(current[k], dict):
-                    current[k] = {}
-                current = current[k]
-                
-            old_theme = self.cli.config_manager.config.get('ui', {}).get('theme')
-            
-            current[key_path[-1]] = value
-            self.cli.config_manager.save_config()
-            self.cli.ui.print_success(f"Updated {args[1]} to {value}")
-            
-            # Refresh UI if theme changed
-            if args[1] == "ui.theme" or "theme" in key_path:
-                new_theme = self.cli.config_manager.config.get('ui', {}).get('theme')
-                if new_theme != old_theme:
-                    from bugpilot.core.terminal_ui import TerminalUI
-                    self.cli.ui = TerminalUI(theme=new_theme)
-                    self.cli.ui.print_success(f"Theme applied: {new_theme}")
-        else:
-            self.cli.ui.print_error(f"Unknown config action: {action}")
-
-    def cmd_settings(self, args: List[str]):
-        """Deprecated TUI alias"""
-        self.cli.ui.print_warning("The interactive settings TUI has been deprecated.")
-        self.cli.ui.print_info("Please use `/config set <key> <value>` to manage your settings inline.")
-        self.cli.ui.print_info("Type `/config list` to see your current configuration.")
-        self.cmd_config(["list"])
-
     def cmd_connect(self, args: List[str]):
         """Connect Provider directly"""
         if not args:
@@ -402,7 +309,36 @@ class CommandHandler:
         # Reinitialize agent dynamically
         if hasattr(self.cli, 'init_agent'):
             self.cli.init_agent()
-    
+            
+    def cmd_theme(self, args: List[str]):
+        """Switch UI theme"""
+        if not args:
+            self.cli.ui.print_error("Usage: /theme <theme_name>")
+            self.cli.ui.print_info("Available themes: ocean, hacker, dracula, monokai, matrix, synthwave, nord")
+            return
+            
+        theme_name = args[0].lower()
+        valid_themes = ['ocean', 'hacker', 'dracula', 'monokai', 'matrix', 'synthwave', 'nord']
+        if theme_name not in valid_themes:
+            self.cli.ui.print_error(f"Invalid theme. Choose from: {', '.join(valid_themes)}")
+            return
+            
+        if hasattr(self.cli, 'config_manager'):
+            config = self.cli.config_manager.config
+            if 'ui' not in config:
+                config['ui'] = {}
+            config['ui']['theme'] = theme_name
+            self.cli.config_manager.save_config()
+            
+            from bugpilot.core.terminal_ui import TerminalUI
+            # Preserve the prompt session
+            old_session = getattr(self.cli.ui, 'prompt_session', None)
+            self.cli.ui = TerminalUI(theme=theme_name)
+            if old_session:
+                self.cli.ui.prompt_session = old_session
+                
+            self.cli.ui.print_success(f"Theme changed to: {theme_name}")
+            
     def cmd_output(self, args: List[str]):
         """Set output directory"""
         if not args:

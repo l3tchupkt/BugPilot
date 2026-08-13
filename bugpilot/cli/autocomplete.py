@@ -13,7 +13,7 @@ class BugPilotCompleter(Completer):
     """Custom completer for BugPilot CLI with command and file suggestions"""
     
     COMMANDS = [
-        "/help", "/config", "/settings", "/mode", "/model", "/output", "/autopilot",
+        "/help", "/theme", "/mode", "/model", "/output", "/autopilot",
         "/save", "/export", "/sessions", "/load", "/history",
         "/tokens", "/stream", "/reset", "/clear", "/exit", "/quit",
         "/update", "/cve", "/owasp", "/connect"
@@ -30,59 +30,18 @@ class BugPilotCompleter(Completer):
         if text.startswith('/'):
             parts = text.split(' ')
             
-            # Sub-command completion for /config
-            if parts[0] == '/config':
+            # Sub-command completion for /theme
+            if parts[0] == '/theme':
                 if len(parts) == 2:
-                    # Suggest actions
-                    actions = ['set', 'get', 'list']
+                    themes = ['ocean', 'hacker', 'dracula', 'monokai', 'matrix', 'synthwave', 'nord']
                     word = parts[1]
-                    for action in actions:
-                        if action.startswith(word.lower()):
+                    for t in themes:
+                        if t.startswith(word.lower()):
                             yield Completion(
-                                action,
+                                t,
                                 start_position=-len(word),
-                                display=action,
-                                display_meta="Action"
-                            )
-                    return
-                elif len(parts) == 3 and parts[1] in ['set', 'get']:
-                    # Suggest keys
-                    keys = [
-                        'llm.default_provider', 'ui.theme', 'auto_execute_commands',
-                        'api_keys.openai', 'api_keys.gemini', 'api_keys.claude',
-                        'api_keys.groq', 'api_keys.ollama', 'api_keys.openrouter',
-                        'api_keys.deepseek', 'api_keys.nvidia'
-                    ]
-                    word = parts[2]
-                    for key in keys:
-                        if key.startswith(word.lower()):
-                            yield Completion(
-                                key,
-                                start_position=-len(word),
-                                display=key,
-                                display_meta="Config Key"
-                            )
-                    return
-                elif len(parts) >= 4 and parts[1] == 'set':
-                    # Suggest values based on key
-                    key = parts[2]
-                    word = parts[3]
-                    values = []
-                    
-                    if key == 'llm.default_provider':
-                        values = ['openai', 'gemini', 'claude', 'groq', 'ollama', 'openrouter', 'deepseek', 'nvidia']
-                    elif key == 'ui.theme':
-                        values = ['ocean', 'hacker', 'dracula', 'monokai', 'matrix', 'synthwave', 'nord']
-                    elif key == 'auto_execute_commands':
-                        values = ['true', 'false']
-                    
-                    for val in values:
-                        if val.startswith(word.lower()):
-                            yield Completion(
-                                val,
-                                start_position=-len(word),
-                                display=val,
-                                display_meta="Value"
+                                display=t,
+                                display_meta="Theme"
                             )
                     return
 
