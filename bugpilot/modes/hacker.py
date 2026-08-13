@@ -51,12 +51,33 @@ class HackerMode:
         # Inject tool schemas
         tool_schemas = json.dumps(get_core_tools(), indent=2)
         
-        MAX_AUTO_STEPS = 15 
-        steps = 0
-        
-        while steps < MAX_AUTO_STEPS:
-            steps += 1
+        # Start infinite loop for unlimited sessions
+        while True:
             self.iteration += 1
+            
+            # 1. Check for finished background jobs before asking LLM
+            finished_jobs = self.controller.executor.check_jobs()
+            for job in finished_jobs:
+                msg = (f"SYSTEM EVENT: Background Job {job['job_id']} ('{job['command']}') finished.\n"
+                       f"Exit Code: {job['returncode']}\nOutput:\n{self.truncate_output(job['output'])}")
+                self.history.append({"role": "user", "content": msg})
+                self.ui.print_info(f"Background Job {job['job_id']} finished.")
+                
+            # 2. Dynamic Context Management
+            # Calculate approx tokens (4 chars = 1 token)
+            current_tokens = sum(len(msg['content']) // 4 for msg in self.history)
+            
+            # Print token usage as requested by user
+            self.ui.print_info(f"Current Context Size: ~{current_tokens} tokens")
+            
+            # Dynamic rolling window: keep system under ~32k tokens to prevent crashing
+            max_allowed_tokens = 32000
+            if current_tokens > max_allowed_tokens and len(self.history) > 4:
+                self.ui.print_warning("Context limit approaching. Trimming oldest history to maintain performance...")
+                # Keep first 2 messages (system/initial user prompt) and trim from index 2
+                while current_tokens > max_allowed_tokens * 0.8 and len(self.history) > 4:
+                    removed = self.history.pop(2)
+                    current_tokens -= len(removed['content']) // 4
             
             prompt_content = system_prompt.format(
                 previous_findings="\n".join(self.findings) if self.findings else "None",
@@ -84,7 +105,8 @@ Example format:
 ]
 """
             
-            recent_history = self.history[-20:] # Keep moderate context window
+            # Use the entire dynamically managed history
+            recent_history = self.history
             
             if not hasattr(self.controller, 'reasoning_llm') or not self.controller.reasoning_llm:
                  self.ui.print_error("No Reasoning LLM available.")
@@ -157,26 +179,56 @@ Example format:
                 elif tool_name == "execute_command":
                     cmd = params.get("command", "")
                     timeout = params.get("timeout", 300)
-                    with self.ui.loading_indicator(f"Executing: {cmd[:50]}..."):
-                        res = self.controller.executor.execute(cmd, timeout=timeout)
+                    background = params.get("background", False)
                     
-                    # Truncate output for LLM context
-                    out_truncated = self.truncate_output(res.get('output', ''))
+                    with self.ui.loading_indicator(f"{'Starting bg job' if background else 'Executing'}: {cmd[:50]}..."):
+                        res = self.controller.executor.execute(cmd, timeout=timeout, background=background)
                     
-                    # UI display - masked to reduce clutter (extent/unextent style)
-                    if res.get('returncode') == 0:
-                        self.ui.print_success(f"Command executed successfully: `{cmd}`")
+                    if background:
+                        self.ui.print_success(f"Started background job {res.get('job_id')}: `{cmd}`")
+                        self.history.append({
+                            "role": "user",
+                            "content": f"SYSTEM TOOL RESULT (execute_command):\n{res.get('output')}"
+                        })
+                        self.findings.append(f"Started background job: `{cmd}`")
                     else:
-                        self.ui.print_error(f"Command failed (exit {res.get('returncode')}): `{cmd}`")
-                        # Show a small snippet if it failed to help user see what went wrong
-                        err_snippet = out_truncated[:500] + ("..." if len(out_truncated) > 500 else "")
-                        self.ui.print_panel(f"```text\n{err_snippet}\n```", title="Error Output Snippet", style="red")
-                    
+                        # Truncate output for LLM context
+                        out_truncated = self.truncate_output(res.get('output', ''))
+                        
+                        # UI display - masked to reduce clutter
+                        if res.get('returncode') == 0:
+                            self.ui.print_success(f"Command executed successfully: `{cmd}`")
+                        else:
+                            self.ui.print_error(f"Command failed (exit {res.get('returncode')}): `{cmd}`")
+                            err_snippet = out_truncated[:500] + ("..." if len(out_truncated) > 500 else "")
+                            self.ui.print_panel(f"```text\n{err_snippet}\n```", title="Error Output Snippet", style="red")
+                        
+                        self.history.append({
+                            "role": "user",
+                            "content": f"SYSTEM TOOL RESULT (execute_command):\nExit Code: {res.get('returncode')}\nOutput:\n{out_truncated}"
+                        })
+                        self.findings.append(f"Ran `{cmd}`")
+                        
+                elif tool_name == "wait_for_job":
+                    job_id = params.get("job_id")
+                    if not job_id:
+                        self.history.append({"role": "user", "content": "SYSTEM ERROR: job_id is required."})
+                        continue
+                        
+                    self.ui.print_info(f"Waiting for background job {job_id} to finish...")
+                    with self.ui.loading_indicator(f"Waiting for Job {job_id}..."):
+                        res = self.controller.executor.wait_for_job(job_id)
+                        
+                    out_truncated = self.truncate_output(res.get('output', ''))
+                    if res.get('returncode') == 0:
+                        self.ui.print_success(f"Job {job_id} executed successfully.")
+                    else:
+                        self.ui.print_error(f"Job {job_id} failed (exit {res.get('returncode')}).")
+                        
                     self.history.append({
                         "role": "user",
-                        "content": f"SYSTEM TOOL RESULT (execute_command):\nExit Code: {res.get('returncode')}\nOutput:\n{out_truncated}"
+                        "content": f"SYSTEM TOOL RESULT (wait_for_job {job_id}):\nExit Code: {res.get('returncode')}\nOutput:\n{out_truncated}"
                     })
-                    self.findings.append(f"Ran `{cmd}`")
 
                 elif tool_name == "todo":
                     action = params.get("action")

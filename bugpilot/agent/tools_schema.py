@@ -16,11 +16,30 @@ def get_core_tools():
                     },
                     "timeout": {
                         "type": "integer",
-                        "description": "Optional timeout in seconds.",
+                        "description": "Optional timeout in seconds. You can set this dynamically to accommodate long running commands.",
                         "default": 300
+                    },
+                    "background": {
+                        "type": "boolean",
+                        "description": "If true, runs the command in the background and returns a job ID immediately. You will be notified when it finishes.",
+                        "default": False
                     }
                 },
                 "required": ["command"]
+            }
+        },
+        {
+            "name": "wait_for_job",
+            "description": "Wait for a background job to finish. Useful if you have started a background task and need its result before continuing.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "job_id": {
+                        "type": "integer",
+                        "description": "The ID of the background job to wait for."
+                    }
+                },
+                "required": ["job_id"]
             }
         },
         {

@@ -16,7 +16,7 @@ class BugPilotCompleter(Completer):
         "/help", "/settings", "/mode", "/model", "/output", "/autopilot",
         "/save", "/export", "/sessions", "/load", "/history",
         "/tokens", "/stream", "/reset", "/clear", "/exit", "/quit",
-        "/update", "/cve", "/owasp"
+        "/update", "/cve", "/owasp", "/connect"
     ]
     
     def __init__(self, working_directory: str = "."):

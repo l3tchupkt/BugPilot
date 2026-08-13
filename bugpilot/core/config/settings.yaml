@@ -85,3 +85,4 @@ logging:
   file: .bugpilot.log
   console: true
 auto_execute_commands: true
+models_cache: {}

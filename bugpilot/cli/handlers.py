@@ -60,6 +60,11 @@ class CommandHandler:
                 "description": "Interactive settings editor",
                 "usage": "/settings [show|edit|set|toggle|export|import|reset]"
             },
+            "/connect": {
+                "handler": self.cmd_connect,
+                "description": "Connect to an LLM provider online",
+                "usage": "/connect"
+            },
             "/model": {
                 "handler": self.cmd_model,
                 "description": "Switch AI model",
@@ -281,6 +286,23 @@ class CommandHandler:
         
         # Clear screen
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    def cmd_connect(self, args: List[str]):
+        """Connect Provider directly"""
+        import os
+        from bugpilot.core.config.editor import SettingsEditor
+        
+        editor = SettingsEditor()
+        editor.edit_api_keys()
+        editor.save_settings()
+        
+        # Reload config after edit
+        if hasattr(self.cli, 'config_manager') and hasattr(self.cli.config_manager, 'load'):
+            self.cli.config_manager.load()
+            
+        # Clear screen
+        os.system('cls' if os.name == 'nt' else 'clear')
+        self.cli.ui.print_success("Provider connected!")
     
     def cmd_model(self, args: List[str]):
         """Switch AI model"""
