@@ -193,7 +193,6 @@ class TerminalUI:
         from rich.panel import Panel
         
         text_group = Group(
-            Text("\n"),  # Push text down slightly to vertically align with mascot
             Text(title, style=f"bold {self.theme['primary']}", justify="left"),
             info_line,
             dev_line
@@ -210,7 +209,9 @@ class TerminalUI:
             logo_renderable = Text.from_ansi(logo_content)
             
             grid = Table.grid(padding=(0, 4))
-            grid.add_column(justify="right", vertical="middle")
+            # Use a fixed width for the logo column so text alignment is always consistent
+            # regardless of whether the user swaps in a small or large ascii art.
+            grid.add_column(width=22, justify="center", vertical="middle")
             grid.add_column(justify="left", vertical="middle")
             grid.add_row(logo_renderable, text_group)
             
@@ -222,7 +223,7 @@ class TerminalUI:
             )
 
         self.console.print()
-        self.console.print(Align.center(panel))
+        self.console.print(panel)
         self.console.print()
     
     def print_message(self, message: str, style: str = "text"):
