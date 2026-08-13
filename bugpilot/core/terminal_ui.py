@@ -108,6 +108,10 @@ class TerminalUI:
     }
     
     def __init__(self, theme: str = "ocean", config_manager=None):
+        import sys
+        if sys.platform == "win32" and sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8')
+            
         self.console = Console()
         self.theme = self.THEMES.get(theme, self.THEMES["ocean"])
         self.config_manager = config_manager
@@ -127,8 +131,15 @@ class TerminalUI:
             self.prompt_session = None
     
     def show_banner(self, mode: str = "normal"):
-        """Display clean, responsive banner"""
+        """Display clean, responsive banner with animated logo"""
         import shutil
+        import os
+        import time
+        from rich.live import Live
+        from rich.text import Text
+        from rich.align import Align
+        from rich.console import Group
+        from rich.rule import Rule
         
         # Get terminal width
         term_width = shutil.get_terminal_size().columns
@@ -142,10 +153,6 @@ class TerminalUI:
         mode_text = "HACKER MODE" if mode == "hacker" else "NORMAL MODE"
         mode_color = self.theme['error'] if mode == 'hacker' else self.theme['success']
         
-        # Print styled header
-        self.console.print()
-        self.console.rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary'])
-        
         # Info line
         info_parts = [
             (subtitle, self.theme['secondary']),
@@ -157,16 +164,56 @@ class TerminalUI:
         for text, style in info_parts:
             info_line.append(text, style=f"bold {style}" if "MODE" in text else style)
         
-        self.console.print(Align.center(info_line))
-        
         # Developer credit
         dev_line = Text()
         dev_line.append("Developer: ", style=self.theme['dim'])
         dev_line.append("LAKSHMIKANTHAN K ", style=f"bold {self.theme['secondary']}")
         dev_line.append("(letchupkt)", style=self.theme['accent'])
         
-        self.console.print(Align.center(dev_line))
-        self.console.rule(style=self.theme['primary'])
+        # Try to load logo.txt
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "logo.txt")
+        logo_lines = []
+        if os.path.exists(logo_path):
+            with open(logo_path, "r", encoding="utf-8") as f:
+                logo_lines = f.read().splitlines()
+
+        def generate_frame(frame_idx, total_frames):
+            elements = []
+            
+            if logo_lines:
+                # Slide in from top animation
+                visible_lines = min(frame_idx, len(logo_lines))
+                # Add padding to make it slide down smoothly
+                padding = "\n" * (len(logo_lines) - visible_lines)
+                
+                logo_text = padding + "\n".join(logo_lines[:visible_lines])
+                elements.append(Align.center(Text.from_ansi(logo_text)))
+            
+            # Show the rest of the banner on the last frame
+            if frame_idx >= total_frames:
+                elements.append(Text(""))
+                elements.append(Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']))
+                elements.append(Align.center(info_line))
+                elements.append(Align.center(dev_line))
+                elements.append(Rule(style=self.theme['primary']))
+            
+            return Group(*elements)
+
+        self.console.print()
+        if logo_lines:
+            total_frames = len(logo_lines) + 1
+            # Run smooth slide-down reveal animation
+            with Live(generate_frame(0, total_frames), refresh_per_second=20, console=self.console, transient=False) as live:
+                for i in range(1, total_frames + 1):
+                    time.sleep(0.06)
+                    live.update(generate_frame(i, total_frames))
+        else:
+            # Fallback if no logo
+            self.console.print(Rule(f"[{self.theme['primary']} bold]{title}[/]", style=self.theme['primary']))
+            self.console.print(Align.center(info_line))
+            self.console.print(Align.center(dev_line))
+            self.console.print(Rule(style=self.theme['primary']))
+            
         self.console.print()
     
     def print_message(self, message: str, style: str = "text"):
