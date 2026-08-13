@@ -110,6 +110,20 @@ class TerminalUI:
     def __init__(self, theme: str = "ocean"):
         self.console = Console()
         self.theme = self.THEMES.get(theme, self.THEMES["ocean"])
+        
+        # Initialize persistent prompt session for command history
+        try:
+            from prompt_toolkit import PromptSession
+            from prompt_toolkit.history import InMemoryHistory
+            from bugpilot.cli.autocomplete import BugPilotCompleter
+            
+            self.completer = BugPilotCompleter()
+            self.prompt_session = PromptSession(
+                completer=self.completer,
+                history=InMemoryHistory()
+            )
+        except ImportError:
+            self.prompt_session = None
     
     def show_banner(self, mode: str = "normal"):
         """Display clean, responsive banner"""
@@ -385,32 +399,27 @@ Type your question or command to begin!
 
     def get_input(self, message: str, bottom_toolbar_func=None) -> str:
         """Get input using prompt_toolkit with optional bottom toolbar and autocomplete"""
-        try:
-            from prompt_toolkit import PromptSession
-            from prompt_toolkit.styles import Style
-            from prompt_toolkit.formatted_text import HTML
-            from bugpilot.cli.autocomplete import BugPilotCompleter
-            
-            # Simple style derived from theme
-            style = Style.from_dict({
-                'bottom-toolbar': f"bg:{self.theme['bg']} fg:{self.theme['secondary']}",
-            })
-            
-            # Initialize completer for commands (/) and files (@)
-            completer = BugPilotCompleter()
-            
-            session = PromptSession(completer=completer)
-            
-            # Use HTML prompt for colors
-            # Strip brackets from theme color to get hex
-            color_hex = self.theme['primary'].replace('#', '')
-            formatted_prompt = HTML(f"<b><style fg='#{color_hex}'>{message} </style></b>")
-            
-            return session.prompt(formatted_prompt, bottom_toolbar=bottom_toolbar_func, style=style)
-            
-        except ImportError:
-            # Fallback to rich prompt if prompt_toolkit not available
-            return self.prompt(message)
+        if getattr(self, 'prompt_session', None):
+            try:
+                from prompt_toolkit.styles import Style
+                from prompt_toolkit.formatted_text import HTML
+                
+                # Simple style derived from theme
+                style = Style.from_dict({
+                    'bottom-toolbar': f"bg:{self.theme['bg']} fg:{self.theme['secondary']}",
+                })
+                
+                # Use HTML prompt for colors
+                # Strip brackets from theme color to get hex
+                color_hex = self.theme['primary'].replace('#', '')
+                formatted_prompt = HTML(f"<b><style fg='#{color_hex}'>{message} </style></b>")
+                
+                return self.prompt_session.prompt(formatted_prompt, bottom_toolbar=bottom_toolbar_func, style=style)
+            except Exception:
+                pass
+                
+        # Fallback to rich prompt if prompt_toolkit fails or is unavailable
+        return self.prompt(message)
     
     def get_input_with_status(self, message: str, status_bar_callback) -> str:
         """Helper to get input with status bar"""
