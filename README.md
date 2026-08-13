@@ -93,7 +93,7 @@ Upon launching BugPilot for the first time:
 - **New UI**: Upgraded all settings menus to interactive `prompt_toolkit` dialogs.
 - **Expanded Connectors**: Added native support for DeepSeek, OpenRouter, and Nvidia NIM.
 
-### v1.3.5
+### v1.3.4
 - Added robust CVE and OWASP lookup tools.
 - Integrated `rich` for enhanced terminal formatting.
 - Added foundational local LLM support via Ollama.

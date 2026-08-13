@@ -23,7 +23,7 @@ All notable changes to BugPilot will be documented in this file.
 - **Codebase De-bloat:** Scanned and purged legacy unused files (`workflow_manager.py`, `filesystem.py`, `logic_engine.py`) resulting in a leaner, faster repository.
 - **Testing:** Added new unit tests for autocomplete caching and UI elements, boosting overall coverage.
 
-## [1.3.5] - 2026-08-11
+## [1.3.4] - 2026-08-11
 - **Documentation Overhaul:** Rewrote the README.md to a professional production standard, detailing features, architecture, and roadmaps.
 - **Security Enhancements:** Added a comprehensive `SECURITY.md` advisory policy.
 - **Slash Command Autocomplete:** Introduced the initial `/` slash command autocompleter, paving the way for the current streamlined CLI experience.

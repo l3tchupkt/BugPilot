@@ -2,7 +2,7 @@ Metadata-Version: 2.1
 Name: bugpilot-cli
 Version: 1.3.5
 Summary: AI-Powered Autonomous Penetration Testing CLI
-Home-page: https://github.com/l3tchupkt/bugpilot-cli
+Home-page: https://github.com/l3tchupkt/bugpilot
 Author: LAKSHMIKANTHAN K
 Author-email: letchupkt.dev@gmail.coms
 Classifier: Development Status :: 4 - Beta
