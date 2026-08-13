@@ -86,6 +86,20 @@ class BugPilotCompleter(Completer):
                             )
                     return
 
+            if parts[0] in ['/connect', '/model']:
+                if len(parts) == 2:
+                    providers = ['openai', 'gemini', 'claude', 'groq', 'ollama', 'openrouter', 'deepseek', 'nvidia']
+                    word = parts[1]
+                    for p in providers:
+                        if p.startswith(word.lower()):
+                            yield Completion(
+                                p,
+                                start_position=-len(word),
+                                display=p,
+                                display_meta="Provider"
+                            )
+                    return
+
             if len(parts) == 1:
                 word = text[1:]  # Remove the /
                 for cmd in self.COMMANDS:

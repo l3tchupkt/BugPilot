@@ -342,10 +342,48 @@ class CommandHandler:
         self.cmd_config(["list"])
 
     def cmd_connect(self, args: List[str]):
-        """Deprecated TUI alias"""
-        self.cli.ui.print_warning("The interactive connect TUI has been deprecated.")
-        self.cli.ui.print_info("To set an API key, use `/config set api_keys.<provider> <key>`")
-        self.cli.ui.print_info("Example: `/config set api_keys.openrouter sk-or-v1-xxx`")
+        """Connect Provider directly"""
+        if not args:
+            self.cli.ui.print_error("Usage: /connect <provider> [api_key]")
+            self.cli.ui.print_info("Supported: openai, gemini, claude, openrouter, deepseek, ollama, groq, nvidia")
+            return
+            
+        provider = args[0].lower()
+        
+        if len(args) > 1:
+            api_key = args[1]
+        else:
+            import getpass
+            api_key = getpass.getpass(f"Enter API key for {provider}: ").strip()
+            
+        if not api_key and provider != 'ollama':
+            self.cli.ui.print_error("API key cannot be empty")
+            return
+            
+        # Update config
+        if not hasattr(self.cli, 'config_manager'):
+            return
+            
+        config = self.cli.config_manager.config
+        if 'api_keys' not in config:
+            config['api_keys'] = {}
+            
+        config['api_keys'][f'{provider}_active'] = api_key
+        
+        # Also set as default provider
+        if 'llm' not in config:
+            config['llm'] = {}
+        config['llm']['default_provider'] = provider
+        
+        self.cli.config_manager.save_config()
+        self.cli.ui.print_success(f"Connected to {provider} successfully!")
+        
+        # Reinitialize agent dynamically
+        if hasattr(self.cli, 'init_agent'):
+            if self.cli.init_agent():
+                self.cli.ui.print_success("AI agent initialized and ready to use.")
+            else:
+                self.cli.ui.print_warning("Failed to initialize AI agent. Check your API key.")
     
     def cmd_model(self, args: List[str]):
         """Switch AI model"""
@@ -358,7 +396,12 @@ class CommandHandler:
         if hasattr(self.cli, 'config_manager'):
             self.cli.config_manager.update_model(provider, model)
             self.cli.config_manager.save_config()
+            
         self.cli.ui.print_success(f"Switched to: {provider}/{model}")
+        
+        # Reinitialize agent dynamically
+        if hasattr(self.cli, 'init_agent'):
+            self.cli.init_agent()
     
     def cmd_output(self, args: List[str]):
         """Set output directory"""

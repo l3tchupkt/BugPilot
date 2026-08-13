@@ -47,6 +47,11 @@ def main():
             self.ui = ui
             self.config_manager = config_mgr
             self.running = True
+            self.controller = None
+            self.agent_available = False
+            self.hacker_mode = None
+            self.forge_mode = None
+            self.model_name = "Unknown"
             
             # Session Manager
             try:
@@ -66,8 +71,58 @@ def main():
                 def get_output_dir(self):
                     return str(self.output_dir)
             self.file_exporter = SimpleFileExporter()
+            
+        def init_agent(self):
+            """Initializes or reinitializes the agent with current config"""
+            from bugpilot.core.llm.factory import get_model
+            from bugpilot.agent.controller import Controller
+            from bugpilot.modes.hacker import HackerMode
+            from bugpilot.modes.forge import ForgeMode
+            
+            config = self.config_manager.config
+            
+            try:
+                provider = config.get('llm', {}).get('default_provider', 'gemini')
+                self.model_name = "gemini-2.0-flash-exp"
+                if isinstance(config.get('llm'), dict):
+                     models_cfg = config['llm'].get('models', {})
+                     if models_cfg and isinstance(models_cfg, dict):
+                         reasoning_cfg = models_cfg.get('reasoning', {})
+                         if reasoning_cfg:
+                             self.model_name = reasoning_cfg.get('model', self.model_name)
+                
+                api_key = self.config_manager.get_api_key(provider)
+                
+                if api_key or provider == 'ollama':
+                    # Create models
+                    reasoning_llm = get_model(model_name=self.model_name, api_key=api_key, provider=provider)
+                    intent_llm = get_model(model_name=self.model_name, api_key=api_key, provider=provider)
+                    
+                    # Safety shim
+                    class SafetyShim:
+                        dangerous_commands = config.get('safety', {}).get('blocked_commands', ['rm -rf', 'format']) if isinstance(config.get('safety'), dict) else []
+                    
+                    agent_config_shim = SimpleNamespace(safety=SafetyShim())
+                    
+                    # Init Controller
+                    llms = {'intent': intent_llm, 'reasoning': reasoning_llm}
+                    self.controller = Controller(llms, agent_config_shim, self.ui)
+                    self.agent_available = True
+                    
+                    # Init Modes
+                    self.hacker_mode = HackerMode(self.controller, self.ui, config)
+                    self.forge_mode = ForgeMode(self.controller, self.ui)
+                    return True
+                else:
+                    self.agent_available = False
+                    return False
+            except Exception as e:
+                self.ui.print_error(f"LLM Setup Error: {e}")
+                self.agent_available = False
+                return False
 
     cli_app = BugPilotCLI(ui, config_mgr)
+    cli_app.init_agent()
     
     # 5. Initialize Command Handler
     from bugpilot.cli.handlers import CommandHandler
@@ -88,54 +143,7 @@ def main():
         
     ui.show_banner(mode)
 
-    # Agent setup
-    from bugpilot.core.llm.factory import get_model
-    from bugpilot.agent.controller import Controller
-    from bugpilot.modes.hacker import HackerMode
-    from bugpilot.modes.forge import ForgeMode
-    
-    controller = None
-    agent_available = False
-    model_name = "Unknown"
-    
-    try:
-        provider = config.get('llm', {}).get('default_provider', 'gemini')
-        # Try to safely get deep key
-        model_name = "gemini-2.0-flash-exp"
-        if isinstance(config.get('llm'), dict):
-             models_cfg = config['llm'].get('models', {})
-             if models_cfg and isinstance(models_cfg, dict):
-                 reasoning_cfg = models_cfg.get('reasoning', {})
-                 if reasoning_cfg:
-                     model_name = reasoning_cfg.get('model', model_name)
-        
-        api_key = config_mgr.get_api_key(provider)
-        
-        if api_key or provider == 'ollama':
-            # Create models
-            reasoning_llm = get_model(model_name=model_name, api_key=api_key, provider=provider)
-            intent_llm = get_model(model_name=model_name, api_key=api_key, provider=provider)
-            
-            # Safety shim
-            class SafetyShim:
-                dangerous_commands = config.get('safety', {}).get('blocked_commands', ['rm -rf', 'format']) if isinstance(config.get('safety'), dict) else []
-            
-            agent_config_shim = SimpleNamespace(
-                safety=SafetyShim()
-            )
-            
-            # Init Controller
-            llms = {'intent': intent_llm, 'reasoning': reasoning_llm}
-            controller = Controller(llms, agent_config_shim, ui)
-            agent_available = True
-            
-            # Init Modes
-            hacker_mode = HackerMode(controller, ui, config)
-            forge_mode = ForgeMode(controller, ui)
-            
-    except Exception as e:
-        ui.print_error(f"LLM Setup Error: {e}")
-        agent_available = False
+    # Initialization has been moved to cli_app.init_agent()
 
     history = []
 
@@ -146,8 +154,8 @@ def main():
         status_bar.update(
             tokens_used=len(str(history)) // 4,
             context_used=len(history),
-            phase="IDLE" if agent_available else "OFFLINE",
-            model=model_name
+            phase="IDLE" if cli_app.agent_available else "OFFLINE",
+            model=cli_app.model_name
         )
         return status_bar.get_toolbar_content(mode)
     
@@ -222,15 +230,15 @@ def main():
                             pass
             
             # 3. Pass to Agent
-            if agent_available and controller:
+            if cli_app.agent_available and cli_app.controller:
                 try:
                     if mode.lower() == 'hacker':
                          # HACKER MODE: Unified Session
-                         hacker_mode.chat(expanded_input)
+                         cli_app.hacker_mode.chat(expanded_input)
                     else:
                          # NORMAL MODE: Simple Chat
                          
-                         response = controller.reasoning_llm.generate(expanded_input, history)
+                         response = cli_app.controller.reasoning_llm.generate(expanded_input, history)
                          
                          history.append({"role": "user", "content": expanded_input})
                          history.append({"role": "assistant", "content": response})
