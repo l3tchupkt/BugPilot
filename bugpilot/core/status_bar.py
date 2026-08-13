@@ -51,7 +51,7 @@ class StatusBar:
             f"[ {mode.upper()} ]  "
             f"{self.current_phase}  "
             f"{display_model}  "
-            f"Tokens: {self.tokens_used}/{self.tokens_limit}  "
+            f"Tokens: {self.tokens_used}  "
             f"Findings: {self.total_findings}  "
             f"{time_str}"
         )
