@@ -75,7 +75,8 @@ Or manually: `pip install --upgrade {PACKAGE_NAME}`
 """
     
     ui.console.print(Panel(
-        message,
+        message.strip('\n'),
         title="[yellow][!] Update Available[/yellow]",
-        border_style="yellow"
+        border_style="yellow",
+        expand=False,
     ))

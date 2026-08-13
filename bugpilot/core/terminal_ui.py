@@ -211,7 +211,7 @@ class TerminalUI:
             grid = Table.grid(padding=(0, 4))
             # Use a fixed width for the logo column so text alignment is always consistent
             # regardless of whether the user swaps in a small or large ascii art.
-            grid.add_column(width=22, justify="center", vertical="middle")
+            grid.add_column(width=22, justify="left", vertical="middle")
             grid.add_column(justify="left", vertical="middle")
             grid.add_row(logo_renderable, text_group)
             
