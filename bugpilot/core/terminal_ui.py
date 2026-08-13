@@ -174,13 +174,18 @@ class TerminalUI:
         logo_path = os.path.join(os.path.dirname(__file__), "logo.txt")
         logo_content = ""
         if os.path.exists(logo_path):
+            import re
             with open(logo_path, "r", encoding="utf-8") as f:
                 raw_lines = f.read().splitlines()
-                # Strip empty lines (even those with just spaces) from start and end
+                
+                def is_invisible(line):
+                    clean = re.sub(r'\x1b\[[0-9;]*m', '', line)
+                    return not clean.strip()
+
                 start, end = 0, len(raw_lines)
-                while start < end and not raw_lines[start].strip():
+                while start < end and is_invisible(raw_lines[start]):
                     start += 1
-                while end > start and not raw_lines[end - 1].strip():
+                while end > start and is_invisible(raw_lines[end - 1]):
                     end -= 1
                 logo_content = "\n".join(raw_lines[start:end])
 
@@ -188,6 +193,7 @@ class TerminalUI:
         from rich.panel import Panel
         
         text_group = Group(
+            Text("\n"),  # Push text down slightly to vertically align with mascot
             Text(title, style=f"bold {self.theme['primary']}", justify="left"),
             info_line,
             dev_line
