@@ -1,5 +1,5 @@
 llm:
-  default_provider: groq
+  default_provider: nvidia
   models:
     intent_detection:
       provider: groq
@@ -27,6 +27,8 @@ api_keys:
   openai: ''
   claude: ''
   groq_active: ''
+  nvidia nvapi-09tvG6X4O-_cStPILjQwDv9BTYPCYCI8tvIU_Co3LfUzwj7dKKwPVbybK5Ut9FVA_active: ''
+  nvidia_active: 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
 safety:
   require_confirmation: false
   dangerous_commands:
@@ -54,10 +56,10 @@ context:
   max_history: 50
   save_conversations: true
 session:
-  enable_persistence: false
   auto_save: true
   save_dir: .bugpilot_sessions
   export_format: markdown
+  enable_persistence: false
 tools:
   enable_mcp: true
   mcp_servers: []

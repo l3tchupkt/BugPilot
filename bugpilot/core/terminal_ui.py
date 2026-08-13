@@ -123,7 +123,7 @@ class TerminalUI:
                 completer=self.completer,
                 history=InMemoryHistory()
             )
-        except ImportError:
+        except Exception:
             self.prompt_session = None
     
     def show_banner(self, mode: str = "normal"):

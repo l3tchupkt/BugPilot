@@ -12,7 +12,7 @@ The project follows a modular, hybrid execution architecture combining standard 
   - `hacker.py`: Autonomous mode (`Hacker Mode`) designed for sequential, goal-oriented penetration testing and analysis.
   - `forge.py`: Interactive mode (`Forge Mode / Normal`) designed for standard Q&A and manual analysis with file context.
 - **`bugpilot/tools/`**: Built-in capabilities available to the user and agent, including `security_knowledge.py` (CVE and OWASP integration), Model Context Protocol (`mcp.py`), and tool orchestration (`manager.py`).
-- **`bugpilot/cli/`**: Handles user-facing slash commands (e.g., `/cve`, `/owasp`, `/update`, `/mode`, `/settings`).
+- **`bugpilot/cli/`**: Handles user-facing slash commands (`/connect`, `/model`, `/theme`, `/output`, `/cve`, `/owasp`, `/update`). The interactive settings TUI was deprecated in favor of fast, inline top-level commands.
 - **`bugpilot/core/`**: Application scaffolding, including configuration management (`config/`), Terminal UI and theming (`terminal_ui.py`, `status_bar.py`), state persistence (`state/`), and LLM factories (`llm/`).
 
 ## Agent Execution Flow
