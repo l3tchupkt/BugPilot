@@ -192,10 +192,11 @@ class TerminalUI:
         from rich.table import Table
         from rich.panel import Panel
         
-        # Little bigger size ASCII text for BUGPILOT
-        ascii_title = "▄▄▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄ ▄   ▄▄▄ ▄▄▄\n" \
-                      "█▄▄ █ █ █ ▄ █▄▄ █ █   █ █  █ \n" \
-                      "█▄▄ ▀▄▀ ▀▄▀ █   █ ▀▄▄ ▀▄▀  █ "
+        # Little bigger size ASCII text for BUGPILOT, using upper/lower half blocks
+        # to avoid vertical gaps that make B look like E
+        ascii_title = "█▀▀▄ █  █ ▄▀▀▀ █▀▀▄ █ █   ▄▀▀▄ ▀█▀\n" \
+                      "█▀▀▄ █  █ █ ▀█ █▄▄▀ █ █   █  █  █  \n" \
+                      "█▄▄▀ ▀▄▄▀ ▀▄▄█ █    █ █▄▄ ▀▄▄▀  █  "
         
         text_group = Group(
             Text(ascii_title, style=f"bold {self.theme['primary']}", justify="left"),
