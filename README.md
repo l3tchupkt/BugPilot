@@ -112,8 +112,6 @@ Upon launching BugPilot for the first time:
 ## 🛡️ Security Policy
 Please review our [SECURITY.md](SECURITY.md) for information on supported versions and responsible disclosure guidelines. 
 
-**Do not report vulnerabilities in BugPilot via public GitHub issues.** Please use the GitHub Security Advisory feature or email `letchu.geek@gmail`.
-
 ---
 
 ## 🤝 Contributing
